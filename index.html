@@ -4,8 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Field Tools</title>
-  <link rel="manifest" href="manifest.json">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
   <script defer src="app.js"></script>
 </head>
 <body>
@@ -13,7 +12,7 @@
     <h1>Field Tools</h1>
     <nav>
       <button onclick="showSection('angle')">Angle</button>
-      <button onclick="showSection('load')">Load</button>
+      <button onclick="showSection('load')">Load Balance</button>
       <button onclick="showSection('weight')">Weight</button>
       <button onclick="showSection('temp')">Temp</button>
       <button onclick="showSection('sling')">Sling</button>
@@ -21,13 +20,15 @@
   </header>
 
   <main>
+    <!-- Angle Converter -->
     <section id="angle" class="tool">
-      <h2>Angle Calculator</h2>
+      <h2>Angle Converter</h2>
       <label>Degrees: <input type="number" id="deg" oninput="angleConvert('deg')"></label>
       <label>Radians: <input type="number" id="rad" oninput="angleConvert('rad')"></label>
       <label>Percent Grade: <input type="number" id="pct" oninput="angleConvert('pct')"></label>
     </section>
 
+    <!-- Load Balancer -->
     <section id="load" class="tool hidden">
       <h2>Load Balancer</h2>
       <label>Total Weight (lbs): <input type="number" id="totalWeight"></label>
@@ -36,6 +37,7 @@
       <ul id="loadOutput"></ul>
     </section>
 
+    <!-- Weight Converter -->
     <section id="weight" class="tool hidden">
       <h2>Weight Converter</h2>
       <label>Value: <input type="number" id="weightInput" oninput="convertWeight()"></label>
@@ -48,6 +50,7 @@
       <ul id="weightOutput"></ul>
     </section>
 
+    <!-- Temperature Converter -->
     <section id="temp" class="tool hidden">
       <h2>Temperature Converter</h2>
       <label>Fahrenheit: <input type="number" id="f" oninput="tempConvert('f')"></label>
@@ -55,20 +58,27 @@
       <label>Kelvin: <input type="number" id="k" oninput="tempConvert('k')"></label>
     </section>
 
+    <!-- Advanced Sling Load Calculator -->
     <section id="sling" class="tool hidden">
-      <h2>Sling Load Calculator</h2>
-      <img src="D744E2B6-1AB3-466B-A4E8-A64711BD01F5.png" alt="Sling Diagram" style="width:100%; max-width:500px; margin-bottom:20px;">
-      <label>Total Load (lbs): <input type="number" id="slingLoad"></label>
-      <label>Left Sling Length (L1): <input type="number" id="slingL1"></label>
-      <label>Right Sling Length (L2): <input type="number" id="slingL2"></label>
-      <label>Distance to CG from Left Pick Point (D1): <input type="number" id="slingD1"></label>
-      <label>Distance to CG from Right Pick Point (D2): <input type="number" id="slingD2"></label>
-      <label>Vertical Height (H): <input type="number" id="slingH"></label>
-      <button onclick="calcSlingLoad()">Calculate</button>
-      <ul id="slingOutput"></ul>
-      <label for="pdfFilename" style="margin-top: 10px;">File Name (no .pdf):</label>
-      <input type="text" id="pdfFilename" placeholder="sling-report">
-      <button onclick="downloadSlingPDF()" style="margin-top: 10px;">Save Results as PDF</button>
+      <h2>Advanced Sling Load Calculator</h2>
+      <label>Total Load (lbs): <input type="number" id="load" placeholder="Enter load in pounds"></label>
+      <label>Distance to CG from Left Pick Point (D1): <input type="number" id="d1" placeholder="Left CG distance"></label>
+      <label>Distance to CG from Right Pick Point (D2): <input type="number" id="d2" placeholder="Right CG distance"></label>
+      <label>Vertical Height to Hook (H): <input type="number" id="height" placeholder="Vertical height to hook"></label>
+      <button onclick="calcSlingFromAngles()">Calculate</button>
+
+      <table id="resultTable">
+        <thead>
+          <tr>
+            <th>Angle (°)</th>
+            <th>Left Leg (L1)</th>
+            <th>Right Leg (L2)</th>
+            <th>Left Tension</th>
+            <th>Right Tension</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
     </section>
   </main>
 </body>
