@@ -1,10 +1,11 @@
 {
   "name": "Field Tools",
   "short_name": "FieldTools",
-  "start_url": "index.html",
+  "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#f3f3f3",
-  "description": "Quick field calculators for work",
+  "background_color": "#000000",
+  "theme_color": "#333333",
+  "orientation": "portrait",
   "icons": [
     {
       "src": "icon.png",
@@ -16,6 +17,5 @@
       "sizes": "512x512",
       "type": "image/png"
     }
-  ],
-  "theme_color": "#333"
+  ]
 }
