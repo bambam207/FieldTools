@@ -1,29 +1,23 @@
 // ----------------- Utility: Unit Conversion for Sling -----------------
 function getConversionFactors() {
-  // Sling page uses #weightUnit and #lengthUnit
+  // Sling page selectors
   const weightUnit = document.getElementById('weightUnit')?.value || 'lbs';
   const lengthUnit = document.getElementById('lengthUnit')?.value || 'ft';
 
-  // Weight → base (lbs)
-  let weightFactor = 1;
-  let weightDisplayUnit = 'lbs';
+  // Convert weight to base unit (lbs)
+  let weightFactor = 1, weightDisplayUnit = 'lbs';
   if (weightUnit === 'us_ton') {
-    weightFactor = 2000;
-    weightDisplayUnit = 'US tons';
+    weightFactor = 2000; weightDisplayUnit = 'US tons';
   } else if (weightUnit === 'kg') {
-    weightFactor = 2.20462;
-    weightDisplayUnit = 'kg';
+    weightFactor = 2.20462; weightDisplayUnit = 'kg';
   } else if (weightUnit === 'metric_ton') {
-    weightFactor = 2204.62;
-    weightDisplayUnit = 'metric tons';
+    weightFactor = 2204.62; weightDisplayUnit = 'metric tons';
   }
 
-  // Length → base (ft)
-  let lengthFactor = 1;
-  let lengthDisplayUnit = 'ft';
+  // Convert length to base unit (ft)
+  let lengthFactor = 1, lengthDisplayUnit = 'ft';
   if (lengthUnit === 'm') {
-    lengthFactor = 3.28084;
-    lengthDisplayUnit = 'm';
+    lengthFactor = 3.28084; lengthDisplayUnit = 'm';
   }
 
   return { weightFactor, lengthFactor, weightDisplayUnit, lengthDisplayUnit };
@@ -33,7 +27,6 @@ function getConversionFactors() {
 function calcSling() {
   const { weightFactor, lengthFactor, weightDisplayUnit, lengthDisplayUnit } = getConversionFactors();
 
-  // Inputs (converted to base units)
   const loadInput = parseFloat(document.getElementById('load').value);
   const D1Input   = parseFloat(document.getElementById('d1').value);
   const D2Input   = parseFloat(document.getElementById('d2').value);
@@ -41,7 +34,6 @@ function calcSling() {
   const D1Base    = D1Input * lengthFactor;
   const D2Base    = D2Input * lengthFactor;
 
-  // Optional fields
   const H_input  = document.getElementById('height').value;
   const L1_input = document.getElementById('l1').value;
   const L2_input = document.getElementById('l2').value;
@@ -49,9 +41,8 @@ function calcSling() {
   const tbody = document.querySelector('#resultTable tbody');
   tbody.innerHTML = '';
 
-  // Validate required
   if (isNaN(loadBase) || isNaN(D1Base) || isNaN(D2Base)) {
-    tbody.innerHTML = '<tr><td colspan="5">Please enter valid Load, D1 and D2.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="5">Please enter valid Load, D1, and D2.</td></tr>';
     return;
   }
 
@@ -59,7 +50,7 @@ function calcSling() {
   const hasLegs   = !(L1_input === '' || isNaN(parseFloat(L1_input))) &&
                     !(L2_input === '' || isNaN(parseFloat(L2_input)));
 
-  // Preset angles mode
+  // Preset‐angles mode
   if (!hasHeight && !hasLegs) {
     [60,50,45,35].forEach(thetaDeg => {
       const θ = thetaDeg * Math.PI/180;
@@ -94,14 +85,11 @@ function calcSling() {
     L1b = parseFloat(L1_input)*lengthFactor;
     L2b = parseFloat(L2_input)*lengthFactor;
     mode = 'Manual Legs';
-  } else if (hasHeight) {
+  } else {
     const Hb = parseFloat(H_input)*lengthFactor;
     L1b = Math.hypot(D1Base, Hb);
     L2b = Math.hypot(D2Base, Hb);
     mode = 'Auto Legs (from H)';
-  } else {
-    tbody.innerHTML = '<tr><td colspan="5">Enter either L1 & L2 or Hook Height.</td></tr>';
-    return;
   }
 
   const H1b = Math.sqrt(L1b*L1b - D1Base*D1Base),
@@ -138,79 +126,72 @@ function calcContainer() {
   // Unit selectors
   const wUnit = document.getElementById('cbWeightUnit').value;   // "lbs","kg","us_ton","metric_ton"
   const lUnit = document.getElementById('cbLengthUnit').value;   // "ft" or "m"
-  const cType = parseFloat(document.getElementById('cbContainerType').value); // 20 or 40
+  const cType = parseFloat(document.getElementById('cbContainerType').value); // ft
 
   // Converters
-  const toMeters        = v => v * 0.3048;
-  const toFeet          = v => v / 0.3048;
-  const toLbsFromKg     = v => v * 2.20462;
-  const toLbsFromUsTon  = v => v * 2000;
-  const toLbsFromMTon   = v => v * 2204.62;
-  const fromLbsToKg     = v => v / 2.20462;
-  const fromLbsToUsTon  = v => v / 2000;
-  const fromLbsToMTon   = v => v / 2204.62;
+  const toMeters       = v => v * 0.3048;
+  const toFeet         = v => v / 0.3048;
+  const toLbsFromKg    = v => v * 2.20462;
+  const toLbsFromUsTon = v => v * 2000;
+  const toLbsFromMTon  = v => v * 2204.62;
+  const fromLbsToKg    = v => v / 2.20462;
+  const fromLbsToUsTon = v => v / 2000;
+  const fromLbsToMTon  = v => v / 2204.62;
 
-  // Container length in chosen unit
-  let contLen = cType;           // in ft
-  if (lUnit === 'm') contLen = toMeters(cType);
+  // Desired center in ft
+  const desiredCenterFt = cType / 2;
 
-  // Six evenly spaced positions along the rack
-  const positions = [];
-  for (let i = 1; i <= 6; i++) {
-    positions.push(contLen * i / 7);
-  }
-
-  // Read loads, compute moments
-  let totalLoadLbs = 0, totalMoment = 0;
+  let cumW = 0, cumM = 0;
   const tbody = document.querySelector('#containerTable tbody');
   tbody.innerHTML = '';
 
   for (let i = 1; i <= 6; i++) {
-    const raw = parseFloat(document.getElementById(`cbLoad${i}`).value);
-    if (!isNaN(raw)) {
-      let loadLbs;
-      if (wUnit === 'kg') loadLbs = toLbsFromKg(raw);
-      else if (wUnit === 'us_ton') loadLbs = toLbsFromUsTon(raw);
-      else if (wUnit === 'metric_ton') loadLbs = toLbsFromMTon(raw);
-      else loadLbs = raw; // lbs
+    const wRaw = parseFloat(document.getElementById(`cbLoad${i}W`).value);
+    const dRaw = parseFloat(document.getElementById(`cbLoad${i}D`).value);
+    if (isNaN(wRaw) || isNaN(dRaw)) continue;
 
-      // Position for moment in ft
-      const posFt = (lUnit === 'm') ? toFeet(positions[i-1]) : positions[i-1];
+    let wLbs = wRaw;
+    if (wUnit === 'kg')         wLbs = toLbsFromKg(wRaw);
+    else if (wUnit === 'us_ton')    wLbs = toLbsFromUsTon(wRaw);
+    else if (wUnit === 'metric_ton') wLbs = toLbsFromMTon(wRaw);
 
-      totalLoadLbs += loadLbs;
-      totalMoment  += loadLbs * posFt;
+    // Solve placement so cumulative CG remains at container center:
+    const posFt = (desiredCenterFt * (cumW + wLbs) - cumM) / wLbs;
+    const leftFt = posFt - (dRaw/2) * (lUnit==='m'? toFeet(1):1);
 
-      // Append row
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>Object ${i}</td>
-        <td>${raw.toFixed(2)} ${wUnit}</td>
-        <td>${positions[i-1].toFixed(2)} ${lUnit}</td>
-      `;
-      tbody.appendChild(tr);
-    }
+    cumW += wLbs;
+    cumM += wLbs * posFt;
+
+    const posDisp  = (lUnit==='m'? toMeters(posFt): posFt).toFixed(2);
+    const leftDisp = (lUnit==='m'? toMeters(leftFt): leftFt).toFixed(2);
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td style="border:1px solid #ccc;padding:8px">Obj ${i}</td>
+      <td style="border:1px solid #ccc;padding:8px">${wRaw.toFixed(2)} ${wUnit}</td>
+      <td style="border:1px solid #ccc;padding:8px">${dRaw.toFixed(2)} ${lUnit}</td>
+      <td style="border:1px solid #ccc;padding:8px">${posDisp} ${lUnit}</td>
+      <td style="border:1px solid #ccc;padding:8px">${leftDisp} ${lUnit}</td>
+    `;
+    tbody.appendChild(tr);
   }
 
   const resultDiv = document.getElementById('containerResult');
-  if (totalLoadLbs === 0) {
+  if (cumW === 0) {
     resultDiv.textContent = 'No loads entered.';
     return;
   }
-
-  // Compute overall CG
-  const cgFt  = totalMoment / totalLoadLbs;
-  const cgDisp = (lUnit === 'm') ? toMeters(cgFt) : cgFt;
-
-  // Convert total load back to chosen unit
-  let loadDisp;
-  if (wUnit === 'kg')         loadDisp = fromLbsToKg(totalLoadLbs).toFixed(2);
-  else if (wUnit === 'us_ton') loadDisp = fromLbsToUsTon(totalLoadLbs).toFixed(2);
-  else if (wUnit === 'metric_ton') loadDisp = fromLbsToMTon(totalLoadLbs).toFixed(2);
-  else                          loadDisp = totalLoadLbs.toFixed(2);
+  const overallCGFt = cumM / cumW;
+  const cgDisp     = (lUnit==='m'? toMeters(overallCGFt): overallCGFt).toFixed(2);
+  const totalLoadDisp =
+    wUnit==='kg'         ? fromLbsToKg(cumW).toFixed(2) :
+    wUnit==='us_ton'     ? fromLbsToUsTon(cumW).toFixed(2) :
+    wUnit==='metric_ton' ? fromLbsToMTon(cumW).toFixed(2) :
+                           cumW.toFixed(2);
 
   resultDiv.innerHTML = `
-    Total Load: ${loadDisp} ${wUnit}<br>
-    Overall CG: ${cgDisp.toFixed(2)} ${lUnit} from left<br>
-    (${((cgFt/cType)*100).toFixed(1)}% of container length)
+    Total Load: ${totalLoadDisp} ${wUnit}<br>
+    Overall CG: ${cgDisp} ${lUnit} from left 
+    (${((overallCGFt/cType)*100).toFixed(1)}% of container length)
   `;
 }
