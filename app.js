@@ -1,107 +1,150 @@
-// SECTION SWITCHING (for multi-tool integration)
-function showSection(id) {
-  document.querySelectorAll('.tool').forEach(el => el.classList.add('hidden'));
-  document.getElementById(id).classList.remove('hidden');
+// A helper to convert input values from the chosen unit system to base units (lbs and ft)
+function getConversionFactors() {
+  const unit = document.getElementById('units').value;
+  let weightFactor = 1; // to convert user weight to lbs
+  let lengthFactor = 1; // to convert user lengths to ft
+  let weightDisplayUnit = "lbs";
+  let lengthDisplayUnit = "ft";
+  
+  if (unit === "lb_ft") {
+    // No conversion needed.
+    weightFactor = 1;
+    lengthFactor = 1;
+    weightDisplayUnit = "lbs";
+    lengthDisplayUnit = "ft";
+  } else if (unit === "us_ton_ft") {
+    weightFactor = 2000; // 1 US ton = 2000 lbs
+    lengthFactor = 1;
+    weightDisplayUnit = "US tons";
+    lengthDisplayUnit = "ft";
+  } else if (unit === "kg_m") {
+    weightFactor = 2.20462; // 1 kg = 2.20462 lbs
+    lengthFactor = 3.28084; // 1 meter = 3.28084 ft
+    weightDisplayUnit = "kg";
+    lengthDisplayUnit = "m";
+  } else if (unit === "metric_ton_m") {
+    weightFactor = 2204.62; // 1 metric ton ≈ 2204.62 lbs
+    lengthFactor = 3.28084; // 1 meter = 3.28084 ft
+    weightDisplayUnit = "metric tons";
+    lengthDisplayUnit = "m";
+  }
+  
+  return { weightFactor, lengthFactor, weightDisplayUnit, lengthDisplayUnit };
 }
 
-// ADVANCED SLING CALCULATOR
+// Advanced Sling Calculator
 function calcSling() {
-  // Parse required fields
-  const load = parseFloat(document.getElementById('load').value);
-  const D1 = parseFloat(document.getElementById('d1').value);
-  const D2 = parseFloat(document.getElementById('d2').value);
+  // Get conversion factors based on selected unit.
+  const { weightFactor, lengthFactor, weightDisplayUnit, lengthDisplayUnit } = getConversionFactors();
+
+  // Retrieve inputs and convert to base units (lbs for weight, ft for lengths)
+  const loadInput = parseFloat(document.getElementById('load').value);
+  const D1Input = parseFloat(document.getElementById('d1').value);
+  const D2Input = parseFloat(document.getElementById('d2').value);
   
-  // Optional fields from input (as strings)
+  // Convert to base units:
+  const loadBase = loadInput * weightFactor;       // lbs
+  const D1Base = D1Input * lengthFactor;             // ft
+  const D2Base = D2Input * lengthFactor;             // ft
+  
+  // Optional fields:
   const H_input = document.getElementById('height').value;
   const L1_input = document.getElementById('l1').value;
   const L2_input = document.getElementById('l2').value;
   
+  const HProvided = !(H_input === '' || isNaN(parseFloat(H_input)));
+  const L1Provided = !(L1_input === '' || isNaN(parseFloat(L1_input)));
+  const L2Provided = !(L2_input === '' || isNaN(parseFloat(L2_input)));
+  
   const tbody = document.querySelector("#resultTable tbody");
   tbody.innerHTML = '';
-
-  // Validate required fields
-  if (isNaN(load) || isNaN(D1) || isNaN(D2)) {
+  
+  // Validate required inputs
+  if (isNaN(loadBase) || isNaN(D1Base) || isNaN(D2Base)) {
     tbody.innerHTML = '<tr><td colspan="5">Please enter valid values for Load, D1, and D2.</td></tr>';
     return;
   }
-
-  // Determine if optional values are provided
-  const hasHeight = !(H_input === '' || isNaN(parseFloat(H_input)));
-  const hasLegs = !(L1_input === '' || isNaN(parseFloat(L1_input))) && !(L2_input === '' || isNaN(parseFloat(L2_input)));
-
-  // If no height or leg lengths are provided, output preset rows for each preset angle
-  if (!hasHeight && !hasLegs) {
+  
+  // Case 1: If neither hook height nor leg lengths provided, use preset angles.
+  if (!HProvided && !(L1Provided && L2Provided)) {
     const presets = [60, 50, 45, 35];
     presets.forEach(thetaDeg => {
       const thetaRad = thetaDeg * Math.PI / 180;
-      // For a given preset angle, assume the leg forms this angle with the horizontal.
-      // Then the leg length is L = D / cos(theta) and vertical component is H = L * sin(theta) = D * tan(theta).
-      const L1_calc = D1 / Math.cos(thetaRad);
-      const L2_calc = D2 / Math.cos(thetaRad);
-      const H1_calc = D1 * Math.tan(thetaRad); // vertical component for left leg
-      const H2_calc = D2 * Math.tan(thetaRad); // for right leg
+      // For a preset angle, assume the leg makes that angle with the horizontal.
+      // Then L = D / cos(theta) for each leg.
+      const L1_calcBase = D1Base / Math.cos(thetaRad);
+      const L2_calcBase = D2Base / Math.cos(thetaRad);
+      // Vertical components based on tangent:
+      const H1_calcBase = D1Base * Math.tan(thetaRad);
+      const H2_calcBase = D2Base * Math.tan(thetaRad);
+      // Calculate tensions:
+      const T1_base = (loadBase * D2Base * L1_calcBase) / (H1_calcBase * (D1Base + D2Base));
+      const T2_base = (loadBase * D1Base * L2_calcBase) / (H2_calcBase * (D1Base + D2Base));
       
-      // Calculate tensions using the same formula as before:
-      // T1 = (load * D2 * L1) / (H1 * (D1+D2)) and similarly T2.
-      const T1 = (load * D2 * L1_calc) / ((H1_calc) * (D1 + D2));
-      const T2 = (load * D1 * L2_calc) / ((H2_calc) * (D1 + D2));
+      // Convert outputs back to chosen units:
+      const L1_display = L1_calcBase / lengthFactor;
+      const L2_display = L2_calcBase / lengthFactor;
+      const T1_display = T1_base / weightFactor;
+      const T2_display = T2_base / weightFactor;
       
       const row = document.createElement('tr');
       row.innerHTML = `
         <td>Preset ${thetaDeg}°</td>
-        <td>${L1_calc.toFixed(2)} ft<br>${thetaDeg.toFixed(1)}°</td>
-        <td>${L2_calc.toFixed(2)} ft<br>${thetaDeg.toFixed(1)}°</td>
-        <td>${T1.toFixed(2)} lbs</td>
-        <td>${T2.toFixed(2)} lbs</td>
+        <td>${L1_display.toFixed(2)} ${lengthDisplayUnit}<br>${thetaDeg.toFixed(1)}°</td>
+        <td>${L2_display.toFixed(2)} ${lengthDisplayUnit}<br>${thetaDeg.toFixed(1)}°</td>
+        <td>${T1_display.toFixed(2)} ${weightDisplayUnit}</td>
+        <td>${T2_display.toFixed(2)} ${weightDisplayUnit}</td>
       `;
       tbody.appendChild(row);
     });
     return;
   }
-
-  // Otherwise, use provided height or leg lengths
+  
+  // Case 2: Use provided H or manual leg lengths.
   let mode = '';
-  let L1_val, L2_val;
-  if (hasLegs) {
-    L1_val = parseFloat(L1_input);
-    L2_val = parseFloat(L2_input);
+  let L1_base, L2_base;
+  if (L1Provided && L2Provided) {
+    L1_base = parseFloat(L1_input) * lengthFactor;
+    L2_base = parseFloat(L2_input) * lengthFactor;
     mode = 'Manual Legs';
-  } else if (hasHeight) {
-    const H_val = parseFloat(H_input);
-    L1_val = Math.sqrt(D1 * D1 + H_val * H_val);
-    L2_val = Math.sqrt(D2 * D2 + H_val * H_val);
+  } else if (HProvided) {
+    const H_valBase = parseFloat(H_input) * lengthFactor; // convert height to ft
+    L1_base = Math.sqrt(D1Base * D1Base + H_valBase * H_valBase);
+    L2_base = Math.sqrt(D2Base * D2Base + H_valBase * H_valBase);
     mode = 'Auto Legs (from H)';
   } else {
-    tbody.innerHTML = '<tr><td colspan="5">Unexpected error: Missing inputs.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="5">Enter either L1 & L2 or Vertical Hook Height (H).</td></tr>';
     return;
   }
-
-  // Compute vertical components from each leg length
-  const H1 = Math.sqrt(L1_val * L1_val - D1 * D1);
-  const H2 = Math.sqrt(L2_val * L2_val - D2 * D2);
-
-  if (isNaN(H1) || isNaN(H2) || H1 <= 0 || H2 <= 0) {
-    tbody.innerHTML = '<tr><td colspan="5">Invalid geometry: Check that L1 > D1 and L2 > D2 (or provide valid H).</td></tr>';
+  
+  // Compute vertical components from each leg length:
+  const H1_base = Math.sqrt(L1_base * L1_base - D1Base * D1Base);
+  const H2_base = Math.sqrt(L2_base * L2_base - D2Base * D2Base);
+  
+  if (isNaN(H1_base) || isNaN(H2_base) || H1_base <= 0 || H2_base <= 0) {
+    tbody.innerHTML = '<tr><td colspan="5">Invalid geometry: Ensure L1 > D1 and L2 > D2 (or valid H provided).</td></tr>';
     return;
   }
-
-  // Calculate leg angles (in degrees) from horizontal: angle = asin(vertical / leg)
-  const angle1 = Math.asin(H1 / L1_val) * (180 / Math.PI);
-  const angle2 = Math.asin(H2 / L2_val) * (180 / Math.PI);
-
-  // Calculate tensions:
-  // T1 = (load * D2 * L1) / (H1 * (D1 + D2))
-  // T2 = (load * D1 * L2) / (H2 * (D1 + D2))
-  const T1 = (load * D2 * L1_val) / (H1 * (D1 + D2));
-  const T2 = (load * D1 * L2_val) / (H2 * (D1 + D2));
-
+  
+  const angle1 = Math.asin(H1_base / L1_base) * (180 / Math.PI);
+  const angle2 = Math.asin(H2_base / L2_base) * (180 / Math.PI);
+  
+  const T1_base = (loadBase * D2Base * L1_base) / (H1_base * (D1Base + D2Base));
+  const T2_base = (loadBase * D1Base * L2_base) / (H2_base * (D1Base + D2Base));
+  
+  // Convert computed values back to chosen units:
+  const L1_display = L1_base / lengthFactor;
+  const L2_display = L2_base / lengthFactor;
+  const T1_display = T1_base / weightFactor;
+  const T2_display = T2_base / weightFactor;
+  
   const row = document.createElement('tr');
   row.innerHTML = `
     <td>${mode}</td>
-    <td>${L1_val.toFixed(2)} ft<br>${angle1.toFixed(1)}°</td>
-    <td>${L2_val.toFixed(2)} ft<br>${angle2.toFixed(1)}°</td>
-    <td>${T1.toFixed(2)} lbs</td>
-    <td>${T2.toFixed(2)} lbs</td>
+    <td>${L1_display.toFixed(2)} ${lengthDisplayUnit}<br>${angle1.toFixed(1)}°</td>
+    <td>${L2_display.toFixed(2)} ${lengthDisplayUnit}<br>${angle2.toFixed(1)}°</td>
+    <td>${T1_display.toFixed(2)} ${weightDisplayUnit}</td>
+    <td>${T2_display.toFixed(2)} ${weightDisplayUnit}</td>
   `;
   tbody.appendChild(row);
 }
