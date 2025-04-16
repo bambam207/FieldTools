@@ -1,84 +1,101 @@
-/* Reset and base */
+/* Reset box-sizing for consistency */
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
+/* Base font / layout */
 html, body {
   font-family: sans-serif;
   background: #f9f9f9;
-  /* iOS doesn't zoom if font-size >= 16px */
+  /* iOS won't auto-zoom if font-size is >=16px */
   font-size: 16px;
   -webkit-text-size-adjust: 100%;
   color: #333;
-}
-
-body {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
+  height: 100%;
 }
 
 /* Header */
 header {
   background: #333;
   color: #fff;
-  text-align: center;
   padding: 15px;
+  text-align: center;
+}
+
+nav {
+  margin-top: 10px;
+}
+
+nav button {
+  margin: 5px;
+  padding: 10px 20px;
+  font-size: 16px;
+  background: #555;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+nav button:hover {
+  background: #777;
 }
 
 /* Main container */
 main {
-  flex: 1; 
-  display: flex;
-  flex-direction: column;
-  align-items: center; 
-  padding: 15px;
+  padding: 20px;
 }
 
-/* The sling calculator section */
-section.tool {
-  width: 100%;
-  max-width: 500px; /* center content, limit width for easy reading */
+/* Center the content via a container */
+.container {
+  max-width: 600px; /* Adjust to your preference */
+  margin: 0 auto;
+}
+
+/* The tool section with a slight card style */
+.tool {
   background: #fff;
   border-radius: 6px;
+  border: 1px solid #ddd;
   padding: 20px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-/* Headings */
-section.tool h2 {
+.tool h2 {
   text-align: center;
   margin-bottom: 20px;
 }
 
 /* Diagram image */
-section.tool img {
+.tool img {
   display: block;
-  margin: 0 auto 20px auto;
   max-width: 100%;
-  height: auto;
+  margin: 0 auto 20px;
 }
 
 /* Labels and inputs */
-section.tool label {
+.tool label {
   display: block;
   margin-bottom: 15px;
-  font-size: 16px; /* ensures no auto-zoom on iOS */
-}
-
-section.tool label input,
-section.tool select {
-  width: 100%;
-  margin-top: 5px;
-  padding: 8px;
   font-size: 16px;
 }
 
-/* Button */
-section.tool button {
-  display: inline-block;
+.tool label input,
+.tool select {
+  display: block;
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  font-size: 16px; /* crucial to avoid iOS zoom */
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* Button style */
+.tool button {
+  display: block;
+  margin: 0 auto;
   padding: 10px 20px;
   font-size: 16px;
   background: #333;
@@ -86,6 +103,9 @@ section.tool button {
   border: none;
   border-radius: 4px;
   cursor: pointer;
+}
+.tool button:hover {
+  background: #555;
 }
 
 /* Table styling */
@@ -95,17 +115,10 @@ table {
   margin-top: 20px;
 }
 
-table th, table td {
+table th, 
+table td {
   border: 1px solid #ccc;
-  text-align: center;
   padding: 10px;
   font-size: 16px;
-}
-
-/* Make sure last row doesn't cling to bottom on tall screens */
-footer {
   text-align: center;
-  padding: 10px;
-  background: #333;
-  color: #fff;
 }
