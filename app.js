@@ -12,6 +12,7 @@ function getConversionFactors() {
 }
 
 // ----------------- Sling Load Calculator -----------------
+// (unchanged from before)
 function calcSling() {
   const { weightFactor, lengthFactor, weightDisplayUnit, lengthDisplayUnit } = getConversionFactors();
   const loadInput = parseFloat(document.getElementById('load').value);
@@ -35,7 +36,6 @@ function calcSling() {
   const hasLegs   = !(L1_input === '' || isNaN(parseFloat(L1_input))) &&
                     !(L2_input === '' || isNaN(parseFloat(L2_input)));
 
-  // Preset angles if no height or legs
   if (!hasHeight && !hasLegs) {
     [60,50,45,35].forEach(thetaDeg => {
       const θ   = thetaDeg * Math.PI/180;
@@ -64,7 +64,6 @@ function calcSling() {
     return;
   }
 
-  // Manual legs or auto from height
   let mode = '', L1b, L2b;
   if (hasLegs) {
     L1b = parseFloat(L1_input) * lengthFactor;
@@ -108,85 +107,84 @@ function calcSling() {
 
 // ----------------- Container Balance Calculator -----------------
 function calcContainer() {
-  // 1) units & rack
-  const wU = document.getElementById('cbWeightUnit').value;
-  const lU = document.getElementById('cbLengthUnit').value;
-  const L  = parseFloat(document.getElementById('cbContainerType').value); // ft
-  const m  = 8/12;    // margin in ft
-  const C  = L/2;     // desired CG
+  // 1) Read units and rack size
+  const wU = document.getElementById('cbWeightUnit').value;  // lbs, kg, us_ton, metric_ton
+  const lU = document.getElementById('cbLengthUnit').value;  // ft, m
+  const L  = parseFloat(document.getElementById('cbContainerType').value); // 20 or 40
+  const marginFt = 8/12;    // 8" margin
+  const C = L/2;            // target CG
 
-  // 2) converters
+  // 2) Converters
   const toFt = v => lU==='m' ? v/0.3048 : v;
   const toLbs = v => {
-    if (wU==='kg') return v*2.20462;
-    if (wU==='us_ton') return v*2000;
-    if (wU==='metric_ton') return v*2204.62;
-    return v;
+    if (wU==='kg')        return v*2.20462;
+    if (wU==='us_ton')    return v*2000;
+    if (wU==='metric_ton')return v*2204.62;
+    return v; // lbs
   };
   const fromLbs = v => {
-    if (wU==='kg') return (v/2.20462).toFixed(2);
-    if (wU==='us_ton') return (v/2000).toFixed(2);
-    if (wU==='metric_ton') return (v/2204.62).toFixed(2);
+    if (wU==='kg')        return (v/2.20462).toFixed(2);
+    if (wU==='us_ton')    return (v/2000).toFixed(2);
+    if (wU==='metric_ton')return (v/2204.62).toFixed(2);
     return v.toFixed(2);
   };
 
-  // 3) collect
-  let objs = [];
+  // 3) Gather objects
+  const objs = [];
   for (let i=1; i<=6; i++) {
-    const wR = parseFloat(document.getElementById(`cbLoad${i}W`).value);
-    const dR = parseFloat(document.getElementById(`cbLoad${i}D`).value);
-    if (isNaN(wR)||isNaN(dR)) continue;
-    const wL = toLbs(wR);
-    const dF = toFt(dR);
-    objs.push({ i, wR, dR, wL, dF });
+    const w = parseFloat(document.getElementById(`cbLoad${i}W`).value);
+    const d = parseFloat(document.getElementById(`cbLoad${i}D`).value);
+    if (isNaN(w) || isNaN(d)) continue;
+    objs.push({
+      idx: i,
+      wLbs: toLbs(w),
+      dFt : toFt(d)
+    });
   }
   if (!objs.length) {
     document.getElementById('containerResult').textContent = 'Enter at least one object.';
     return;
   }
 
-  // 4) prefix-CG and weight sum
-  let prefix=0, sumW=0, sumWC=0;
-  objs.forEach(o=>{
-    const cip = m + prefix + o.dF/2;
-    sumW   += o.wL;
-    sumWC  += o.wL * cip;
-    o.cip   = cip;
-    prefix += o.dF;
+  // 4) Compute CIP (center‑if‑packed) and sums
+  let prefix = 0, sumW = 0, sumWC = 0;
+  objs.forEach(o => {
+    const cip = marginFt + prefix + o.dFt/2;
+    o.cip = cip;
+    sumW   += o.wLbs;
+    sumWC  += o.wLbs * cip;
+    prefix += o.dFt;
   });
 
-  // 5) compute g shift for leveling
-  //    (sumW*(C) - sumWC)/sumW  → shift of CIP
-  let g = (sumW*C - sumWC)/sumW;
-  // clamp so band stays within margins
-  const bandW = prefix;            // total width
-  const maxG  = L - 2*m - bandW;  
-  if (g<0) g=0;
-  if (g>maxG) g=maxG;
+  // 5) Check fit
+  const effectiveLen = L - 2*marginFt;
+  if (prefix > effectiveLen) {
+    document.getElementById('containerResult').textContent =
+      `Total width ${prefix.toFixed(2)} ft exceeds effective length ${effectiveLen.toFixed(2)} ft.`;
+    return;
+  }
 
-  // 6) final positions
-  objs.forEach(o=>{
-    o.xF = o.cip + g;
-  });
+  // 6) Compute shift g to level at center, then clamp into [0, maxG]
+  const maxG = effectiveLen - prefix;                // max breathing room
+  let g = C - (sumWC / sumW);
+  g = Math.max(0, Math.min(g, maxG));
 
-  // 7) render
+  // 7) Final positions & render
   const tbody = document.querySelector('#containerTable tbody');
   tbody.innerHTML = '';
-  objs.forEach(o=>{
-    const wDisp = fromLbs(o.wL);
-    const dDisp = (lU==='m') ? (o.dF*0.3048).toFixed(2) : o.dF.toFixed(2);
-    const xDisp = (lU==='m') ? (o.xF*0.3048).toFixed(2) : o.xF.toFixed(2);
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td style="border:1px solid #ccc;padding:8px">Obj ${o.i}</td>
-      <td style="border:1px solid #ccc;padding:8px">${wDisp} ${wU}</td>
-      <td style="border:1px solid #ccc;padding:8px">${dDisp} ${lU}</td>
-      <td style="border:1px solid #ccc;padding:8px">${xDisp} ${lU}</td>
+  objs.forEach(o => {
+    const x = o.cip + g;
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>Obj ${o.idx}</td>
+      <td>${fromLbs(o.wLbs)} ${wU}</td>
+      <td>${(lU==='m' ? (o.dFt*0.3048).toFixed(2) : o.dFt.toFixed(2))} ${lU}</td>
+      <td>${(lU==='m' ? (x*0.3048).toFixed(2) : x.toFixed(2))} ${lU}</td>
     `;
-    tbody.appendChild(tr);
+    tbody.appendChild(row);
   });
 
-  // 8) summary
+  // 8) Summary
   document.getElementById('containerResult').textContent =
-    `Block leveled (CG=${C.toFixed(2)} ft), breathing shift = ${g.toFixed(2)} ft.`;
+    `Block leveled (CG=${C.toFixed(2)} ft), breathing room = ${g.toFixed(2)} ft.`;
 }
