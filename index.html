@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <!-- Prevents iOS auto-zoom when inputs are focused -->
+  <!-- Prevent iOS auto-zoom -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Field Tools</title>
   
-  <!-- PWA/Apple Support -->
+  <!-- PWA and Apple Touch Support -->
   <link rel="manifest" href="manifest.json" />
   <link rel="apple-touch-icon" href="icon-192.png" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -16,20 +16,20 @@
   <!-- Stylesheet -->
   <link rel="stylesheet" href="style.css" />
   
-  <!-- Register Service Worker -->
+  <!-- Service Worker registration -->
   <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('service-worker.js');
     }
   </script>
   
-  <!-- App Logic -->
+  <!-- App logic -->
   <script defer src="app.js"></script>
 </head>
 <body>
   <header>
     <h1>Field Tools</h1>
-    <!-- Tools Dropdown Menu -->
+    <!-- Tools drop-down menu -->
     <nav>
       <label for="toolsMenu">TOOLS: </label>
       <select id="toolsMenu" onchange="showToolPage()">
@@ -47,28 +47,49 @@
       <!-- Sling Load Calculator Section (working page) -->
       <section id="sling" class="tool">
         <h2>Sling Load Calculator</h2>
-        <!-- Diagram image – be sure this file is in your repo -->
+        <!-- Diagram image (ensure the file exists in your repo) -->
         <img src="D744E2B6-1AB3-466B-A4E8-A64711BD01F5.png" alt="Sling Diagram" />
-        <!-- Inputs -->
-        <label>Total Load (lbs):
+        
+        <!-- Unit selectors (if you plan to add conversion later, but you can leave them out if not used) -->
+        <label>Weight Unit:
+          <select id="weightUnit">
+            <option value="lbs">lbs</option>
+            <option value="us_ton">US Ton</option>
+            <option value="kg">kg</option>
+            <option value="metric_ton">Metric Ton</option>
+          </select>
+        </label>
+        <label>Length Unit:
+          <select id="lengthUnit">
+            <option value="ft">ft</option>
+            <option value="m">m</option>
+          </select>
+        </label>
+        
+        <!-- Required inputs -->
+        <label>Total Load (in chosen unit):
           <input type="number" id="load" placeholder="Required" />
         </label>
-        <label>Distance to CG from Left (D1, ft):
+        <label>Distance to CG from Left (D1, in chosen unit):
           <input type="number" id="d1" placeholder="Required" />
         </label>
-        <label>Distance to CG from Right (D2, ft):
+        <label>Distance to CG from Right (D2, in chosen unit):
           <input type="number" id="d2" placeholder="Required" />
         </label>
-        <label>Vertical Hook Height (H, ft) [optional]:
+        
+        <!-- Optional inputs -->
+        <label>Vertical Hook Height (H) [optional]:
           <input type="number" id="height" placeholder="Optional" />
         </label>
-        <label>Left Leg Length (L1, ft) [optional]:
+        <label>Left Leg Length (L1) [optional]:
           <input type="number" id="l1" placeholder="Optional" />
         </label>
-        <label>Right Leg Length (L2, ft) [optional]:
+        <label>Right Leg Length (L2) [optional]:
           <input type="number" id="l2" placeholder="Optional" />
         </label>
+        
         <button onclick="calcSling()">Calculate</button>
+        
         <!-- Results Table -->
         <table id="resultTable">
           <thead>
@@ -87,7 +108,35 @@
       <!-- Container Balance Section (blank) -->
       <section id="container" class="tool hidden">
         <h2>Container Balance</h2>
-        <p>This page is under construction.</p>
+        <label>Container Type:
+          <select id="containerType">
+            <option value="20">20ft</option>
+            <option value="40">40ft</option>
+          </select>
+        </label>
+        <p>Enter load weights for up to six loads at fixed positions along the container.</p>
+        <div id="loadInputs">
+          <label>Load 1:
+            <input type="number" id="cLoad1" placeholder="Optional" />
+          </label>
+          <label>Load 2:
+            <input type="number" id="cLoad2" placeholder="Optional" />
+          </label>
+          <label>Load 3:
+            <input type="number" id="cLoad3" placeholder="Optional" />
+          </label>
+          <label>Load 4:
+            <input type="number" id="cLoad4" placeholder="Optional" />
+          </label>
+          <label>Load 5:
+            <input type="number" id="cLoad5" placeholder="Optional" />
+          </label>
+          <label>Load 6:
+            <input type="number" id="cLoad6" placeholder="Optional" />
+          </label>
+        </div>
+        <button onclick="calcContainerBalance()">Calculate Container Balance</button>
+        <div id="containerResult"></div>
       </section>
       
       <!-- Weight Conversion Section (blank) -->
