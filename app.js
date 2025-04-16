@@ -137,7 +137,6 @@ function calcContainer() {
     objs.push({idx:i,wLbs,dFt,wRaw});
   }
 
-  // baseline placements
   objs.forEach((o,k)=>{
     let xFt = k===0
       ? marginFt + o.dFt/2
@@ -150,7 +149,6 @@ function calcContainer() {
     o.xFt = xFt;
   });
 
-  // center the band
   const leftEdge  = Math.min(...objs.map(o=>o.xFt - o.dFt/2));
   const rightEdge = Math.max(...objs.map(o=>o.xFt + o.dFt/2));
   const leftGap   = leftEdge - marginFt;
@@ -162,7 +160,6 @@ function calcContainer() {
       L-marginFt-o.dFt/2);
   });
 
-  // render
   const tbody = document.querySelector('#containerTable tbody');
   tbody.innerHTML = '';
   objs.forEach(o=>{
@@ -171,7 +168,7 @@ function calcContainer() {
     const xDisp = (lUnit==='m')? (o.xFt*0.3048).toFixed(2):o.xFt.toFixed(2);
     const tr = document.createElement('tr');
     tr.innerHTML=`
-      <td style="border:1px solid #ccc;padding:8px">${o.idx}</td>
+      <td style="border:1px solid #ccc;padding:8px">Obj ${o.idx}</td>
       <td style="border:1px solid #ccc;padding:8px">${wDisp} ${wUnit}</td>
       <td style="border:1px solid #ccc;padding:8px">${dDisp} ${lUnit}</td>
       <td style="border:1px solid #ccc;padding:8px">${xDisp} ${lUnit}</td>
