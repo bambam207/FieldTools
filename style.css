@@ -1,20 +1,21 @@
-/* Reset and base styles */
+/* Reset */
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
+/* Base styles */
 html, body {
   font-family: sans-serif;
   background: #f9f9f9;
-  font-size: 16px;  /* ensures no iOS auto-zoom */
+  font-size: 16px;       /* Ensures iOS doesn't auto-zoom */
   -webkit-text-size-adjust: 100%;
   color: #333;
   height: 100%;
 }
 
-/* Container for centering content */
+/* Container centers content */
 .container {
   max-width: 600px;
   margin: 0 auto;
@@ -36,15 +37,16 @@ header {
   border-radius: 6px;
   padding: 20px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
 }
 
-/* Section Heading */
+/* Section heading */
 .tool h2 {
   text-align: center;
   margin-bottom: 20px;
 }
 
-/* Diagram Image */
+/* Diagram image */
 .tool img {
   display: block;
   max-width: 100%;
@@ -61,19 +63,17 @@ header {
 
 .tool label input,
 .tool select {
-  display: block;
   width: 100%;
   padding: 8px;
   margin-top: 5px;
-  font-size: 16px; /* ensures no iOS zoom on focus */
+  font-size: 16px;       /* Prevents iOS zoom */
   border: 1px solid #ccc;
   border-radius: 4px;
 }
 
-/* Button Styling */
+/* Button */
 .tool button {
   display: block;
-  width: auto;
   margin: 20px auto;
   padding: 10px 20px;
   font-size: 16px;
@@ -87,8 +87,9 @@ header {
   background: #555;
 }
 
-/* Table Styling */
+/* Results Table */
 table {
+  table-layout: fixed;
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
@@ -99,18 +100,21 @@ table thead {
   color: #fff;
 }
 
-table th, table td {
+table th,
+table td {
   border: 1px solid #ccc;
   padding: 12px 8px;
   text-align: center;
   font-size: 16px;
+  white-space: normal;
+  overflow-wrap: break-word;
 }
 
 table tbody tr:nth-child(even) {
   background-color: #f2f2f2;
 }
 
-/* Responsive Table: Ensure horizontal scrolling on very small devices */
+/* Responsive adjustments */
 @media (max-width: 400px) {
   table {
     font-size: 14px;
