@@ -2,20 +2,20 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <!-- Prevent iOS auto-zoom: font sizes 16px or larger -->
+  <!-- Prevent auto-zoom on mobile -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Field Tools - Sling Calculator</title>
   
-  <!-- PWA and Apple touch support -->
+  <!-- PWA manifest and Apple touch support (if used) -->
   <link rel="manifest" href="manifest.json" />
   <link rel="apple-touch-icon" href="icon-192.png" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-title" content="Field Tools" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-  
+
   <!-- Stylesheet -->
   <link rel="stylesheet" href="style.css" />
-
+  
   <!-- Register Service Worker -->
   <script>
     if ('serviceWorker' in navigator) {
@@ -35,16 +35,22 @@
     <div class="container">
       <section class="tool">
         <h2>Sling Load Calculator</h2>
-        <!-- Diagram image (ensure the file exists in your repo) -->
+        <!-- Diagram image (ensure this file exists) -->
         <img src="D744E2B6-1AB3-466B-A4E8-A64711BD01F5.png" alt="Sling Diagram" />
         
-        <!-- Unit Selection -->
-        <label>Units:
-          <select id="units">
-            <option value="lb_ft">Lbs/ft</option>
-            <option value="us_ton_ft">US Ton/ft</option>
-            <option value="kg_m">kg/m</option>
-            <option value="metric_ton_m">Metric Ton/m</option>
+        <!-- Separate Unit Selectors -->
+        <label>Weight Unit:
+          <select id="weightUnit">
+            <option value="lbs">lbs</option>
+            <option value="us_ton">US Ton</option>
+            <option value="kg">kg</option>
+            <option value="metric_ton">Metric Ton</option>
+          </select>
+        </label>
+        <label>Length Unit:
+          <select id="lengthUnit">
+            <option value="ft">ft</option>
+            <option value="m">m</option>
           </select>
         </label>
         
@@ -77,8 +83,8 @@
           <thead>
             <tr>
               <th>Mode</th>
-              <th>Left Leg<br>(L1 & Angle)</th>
-              <th>Right Leg<br>(L2 & Angle)</th>
+              <th>Left Leg<br>(L1 &amp; Angle)</th>
+              <th>Right Leg<br>(L2 &amp; Angle)</th>
               <th>Tension 1</th>
               <th>Tension 2</th>
             </tr>
