@@ -2,9 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
-  <!-- Prevent mobile zoom on focus -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Field Tools – Container Balance</title>
+  <title>Field Tools</title>
   <link rel="stylesheet" href="style.css"/>
   <link rel="manifest" href="manifest.json"/>
   <link rel="apple-touch-icon" href="icon-192.png"/>
@@ -12,7 +11,9 @@
   <meta name="apple-mobile-web-app-title" content="Field Tools"/>
   <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
   <script>
-    if ('serviceWorker' in navigator) navigator.serviceWorker.register('service-worker.js');
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js');
+    }
   </script>
   <script defer src="app.js"></script>
 </head>
@@ -21,29 +22,58 @@
     <h1>Field Tools</h1>
     <nav>
       <label for="toolsMenu">TOOLS:&nbsp;</label>
-      <select id="toolsMenu" onchange="window.location=this.value">
-        <option value="index.html">Sling Load Calculator</option>
-        <option value="container.html" selected>Container Balance</option>
-        <option value="weightconversion.html">Weight Conversion</option>
-        <option value="weightcalculator.html">Weight Calculator</option>
-        <option value="pressureconversion.html">Pressure Conversion</option>
+      <select id="toolsMenu" onchange="showToolPage()">
+        <option value="sling">Sling Load Calculator</option>
+        <option value="container">Container Balance</option>
       </select>
     </nav>
   </header>
 
   <main>
     <div class="container">
-      <section class="tool">
+      <!-- Sling Load Calculator -->
+      <section id="sling" class="tool">
+        <h2>Sling Load Calculator</h2>
+        <img src="D744E2B6-1AB3-466B-A4E8-A64711BD01F5.png" alt="Sling Diagram"/>
+        <label>Weight Unit:
+          <select id="weightUnit">
+            <option value="lbs">lbs</option>
+            <option value="us_ton">US Ton</option>
+            <option value="kg">kg</option>
+            <option value="metric_ton">Metric Ton</option>
+          </select>
+        </label>
+        <label>Length Unit:
+          <select id="lengthUnit">
+            <option value="ft">ft</option>
+            <option value="m">m</option>
+          </select>
+        </label>
+        <label>Total Load: <input type="number" id="load" placeholder="Required"/></label>
+        <label>D1: <input type="number" id="d1" placeholder="Required"/></label>
+        <label>D2: <input type="number" id="d2" placeholder="Required"/></label>
+        <label>Hook Height: <input type="number" id="height" placeholder="Optional"/></label>
+        <label>L1: <input type="number" id="l1" placeholder="Optional"/></label>
+        <label>L2: <input type="number" id="l2" placeholder="Optional"/></label>
+        <button onclick="calcSling()">Calculate</button>
+        <table id="resultTable">
+          <thead>
+            <tr>
+              <th>Mode</th>
+              <th>L1 &amp; Angle</th>
+              <th>L2 &amp; Angle</th>
+              <th>T1</th>
+              <th>T2</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </section>
+
+      <!-- Container Balance -->
+      <section id="container" class="tool hidden">
         <h2>Container Balance</h2>
-
-        <!-- Flat‑rack diagram -->
-        <img
-          src="D59FF921-1A7D-4D24-ACED-8A1639528E03.png"
-          alt="Flat Rack Diagram"
-          style="display:block;max-width:100%;margin:0 auto 20px;"
-        />
-
-        <!-- Unit selectors -->
+        <img src="D59FF921-1A7D-4D24-ACED-8A1639528E03.png" alt="Flat Rack Diagram"/>
         <label>Weight Unit:
           <select id="cbWeightUnit">
             <option value="lbs">lbs</option>
@@ -52,14 +82,12 @@
             <option value="metric_ton">Metric tons</option>
           </select>
         </label>
-
         <label>Length Unit:
           <select id="cbLengthUnit">
             <option value="ft">ft</option>
             <option value="m">m</option>
           </select>
         </label>
-
         <label>Container Length:
           <select id="cbContainerType">
             <option value="20">20 ft</option>
@@ -67,53 +95,58 @@
           </select>
         </label>
 
-        <!-- Up to six objects: Weight & Width -->
         <div id="loadInputs" style="margin:20px 0;">
           <div>
-            <label>Obj 1 Weight: <input type="number" id="cbLoad1W" placeholder="—" /></label>
-            <label>Obj 1 Width:  <input type="number" id="cbLoad1D" placeholder="—" /></label>
+            <label>Obj 1 Weight:<input type="number" id="cbLoad1W"/></label>
+            <label>Obj 1 Width: <input type="number" id="cbLoad1D"/></label>
           </div>
           <div>
-            <label>Obj 2 Weight: <input type="number" id="cbLoad2W" placeholder="—" /></label>
-            <label>Obj 2 Width:  <input type="number" id="cbLoad2D" placeholder="—" /></label>
+            <label>Obj 2 Weight:<input type="number" id="cbLoad2W"/></label>
+            <label>Obj 2 Width: <input type="number" id="cbLoad2D"/></label>
           </div>
           <div>
-            <label>Obj 3 Weight: <input type="number" id="cbLoad3W" placeholder="—" /></label>
-            <label>Obj 3 Width:  <input type="number" id="cbLoad3D" placeholder="—" /></label>
+            <label>Obj 3 Weight:<input type="number" id="cbLoad3W"/></label>
+            <label>Obj 3 Width: <input type="number" id="cbLoad3D"/></label>
           </div>
           <div>
-            <label>Obj 4 Weight: <input type="number" id="cbLoad4W" placeholder="—" /></label>
-            <label>Obj 4 Width:  <input type="number" id="cbLoad4D" placeholder="—" /></label>
+            <label>Obj 4 Weight:<input type="number" id="cbLoad4W"/></label>
+            <label>Obj 4 Width: <input type="number" id="cbLoad4D"/></label>
           </div>
           <div>
-            <label>Obj 5 Weight: <input type="number" id="cbLoad5W" placeholder="—" /></label>
-            <label>Obj 5 Width:  <input type="number" id="cbLoad5D" placeholder="—" /></label>
+            <label>Obj 5 Weight:<input type="number" id="cbLoad5W"/></label>
+            <label>Obj 5 Width: <input type="number" id="cbLoad5D"/></label>
           </div>
           <div>
-            <label>Obj 6 Weight: <input type="number" id="cbLoad6W" placeholder="—" /></label>
-            <label>Obj 6 Width:  <input type="number" id="cbLoad6D" placeholder="—" /></label>
+            <label>Obj 6 Weight:<input type="number" id="cbLoad6W"/></label>
+            <label>Obj 6 Width: <input type="number" id="cbLoad6D"/></label>
           </div>
         </div>
 
         <button onclick="calcContainer()">Calculate</button>
-
-        <!-- Results Table -->
-        <table id="containerTable" style="width:100%;border-collapse:collapse;margin-top:20px;">
+        <table id="containerTable">
           <thead>
             <tr>
-              <th style="border:1px solid #ccc;padding:8px">Object</th>
-              <th style="border:1px solid #ccc;padding:8px">Weight</th>
-              <th style="border:1px solid #ccc;padding:8px">Width</th>
-              <th style="border:1px solid #ccc;padding:8px">CG Pos</th>
+              <th>Object</th>
+              <th>Weight</th>
+              <th>Width</th>
+              <th>CG Pos</th>
             </tr>
           </thead>
           <tbody></tbody>
         </table>
 
-        <!-- Summary -->
         <div id="containerResult" style="margin-top:20px;font-size:1.1em;"></div>
       </section>
     </div>
   </main>
+
+  <script>
+    function showToolPage() {
+      const sel = document.getElementById('toolsMenu').value;
+      document.querySelectorAll('.tool').forEach(s => s.classList.add('hidden'));
+      document.getElementById(sel).classList.remove('hidden');
+    }
+    document.addEventListener('DOMContentLoaded', showToolPage);
+  </script>
 </body>
 </html>
