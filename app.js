@@ -1,4 +1,10 @@
-// Angle Conversion
+// Tab switching
+function showSection(id) {
+  document.querySelectorAll('.tool').forEach(el => el.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+}
+
+// --------------------- ANGLE CONVERTER ---------------------
 function angleConvert(from) {
   let deg = parseFloat(document.getElementById('deg').value) || 0;
   let rad = parseFloat(document.getElementById('rad').value) || 0;
@@ -20,7 +26,7 @@ function angleConvert(from) {
   document.getElementById('pct').value = pct.toFixed(2);
 }
 
-// Load Balancer
+// --------------------- LOAD BALANCER ---------------------
 function calcLoad() {
   const total = parseFloat(document.getElementById('totalWeight').value) || 0;
   const supports = parseInt(document.getElementById('numSupports').value) || 1;
@@ -34,7 +40,7 @@ function calcLoad() {
   }
 }
 
-// Weight Converter
+// --------------------- WEIGHT CONVERTER ---------------------
 function convertWeight() {
   const value = parseFloat(document.getElementById('weightInput').value) || 0;
   const unit = document.getElementById('weightUnit').value;
@@ -54,7 +60,7 @@ function convertWeight() {
   `;
 }
 
-// Temperature Converter
+// --------------------- TEMPERATURE CONVERTER ---------------------
 function tempConvert(from) {
   let f = parseFloat(document.getElementById('f').value) || 0;
   let c = parseFloat(document.getElementById('c').value) || 0;
@@ -76,95 +82,40 @@ function tempConvert(from) {
   document.getElementById('k').value = k.toFixed(1);
 }
 
-// Sling Load Calculator
-function calcSlingLoad() {
-  const load = parseFloat(document.getElementById('slingLoad').value) || 0;
-  let L1 = parseFloat(document.getElementById('slingL1').value);
-  let L2 = parseFloat(document.getElementById('slingL2').value);
-  const D1 = parseFloat(document.getElementById('slingD1').value) || 0;
-  const D2 = parseFloat(document.getElementById('slingD2').value) || 0;
-  let H = parseFloat(document.getElementById('slingH').value);
+// --------------------- ADVANCED SLING CALCULATOR ---------------------
+function calcSlingFromAngles() {
+  const angles = [60, 50, 45, 35];
+  const load = parseFloat(document.getElementById('load').value) || 0;
+  const D1 = parseFloat(document.getElementById('d1').value) || 0;
+  const D2 = parseFloat(document.getElementById('d2').value) || 0;
+  const H = parseFloat(document.getElementById('height').value) || 0;
 
-  const output = document.getElementById('slingOutput');
-  output.innerHTML = '';
+  const tbody = document.querySelector("#resultTable tbody");
+  tbody.innerHTML = '';
 
-  if ((isNaN(L1) || isNaN(L2)) && isNaN(H)) {
-    output.innerHTML = '<li>Please enter either both sling lengths or vertical height.</li>';
+  if (load <= 0 || D1 <= 0 || D2 <= 0 || H <= 0) {
+    const row = document.createElement('tr');
+    row.innerHTML = `<td colspan="5" style="text-align:center;">Please enter valid load, D1, D2, and height.</td>`;
+    tbody.appendChild(row);
     return;
   }
 
-  // Auto-calculate height
-  if (!isNaN(L1) && !isNaN(L2) && isNaN(H)) {
-    const h1 = Math.sqrt(Math.max(L1 * L1 - D1 * D1, 0));
-    const h2 = Math.sqrt(Math.max(L2 * L2 - D2 * D2, 0));
-    H = (h1 + h2) / 2;
-  }
+  angles.forEach(angleDeg => {
+    const angleRad = angleDeg * Math.PI / 180;
+    const L1 = Math.sqrt(D1 * D1 + H * H);
+    const L2 = Math.sqrt(D2 * D2 + H * H);
 
-  // Auto-calculate missing L1/L2
-  if (!isNaN(H) && (isNaN(L1) || isNaN(L2))) {
-    if (!isNaN(D1) && !isNaN(D2)) {
-      if (isNaN(L1)) L1 = Math.sqrt(H * H + D1 * D1);
-      if (isNaN(L2)) L2 = Math.sqrt(H * H + D2 * D2);
-    } else {
-      output.innerHTML = '<li>Need D1 and D2 to calculate missing sling lengths from height.</li>';
-      return;
-    }
-  }
+    const T1 = (load * D2 * L1) / (H * (D1 + D2));
+    const T2 = (load * D1 * L2) / (H * (D1 + D2));
 
-  if (isNaN(L1) || isNaN(L2) || isNaN(H) || H === 0 || D1 + D2 === 0) {
-    output.innerHTML = '<li>Invalid input. Make sure all dimensions are valid numbers.</li>';
-    return;
-  }
-
-  const T1 = (load * D2 * L1) / (H * (D1 + D2));
-  const T2 = (load * D1 * L2) / (H * (D1 + D2));
-  const angle1 = Math.acos(H / L1) * (180 / Math.PI);
-  const angle2 = Math.acos(H / L2) * (180 / Math.PI);
-
-  output.innerHTML = `
-    <li>Left Sling Tension: ${T1.toFixed(2)} lbs</li>
-    <li>Right Sling Tension: ${T2.toFixed(2)} lbs</li>
-    <li>Left Sling Angle: ${angle1.toFixed(1)}°</li>
-    <li>Right Sling Angle: ${angle2.toFixed(1)}°</li>
-    <li>Vertical Height Used: ${H.toFixed(2)}</li>
-  `;
-}
-
-// PDF Export
-function downloadSlingPDF() {
-  const output = document.getElementById('slingOutput');
-  const filenameInput = document.getElementById('pdfFilename');
-  let filename = filenameInput?.value.trim() || "sling-load";
-
-  if (!output || output.innerHTML.trim() === '') {
-    alert("Calculate first, you lazy bastard.");
-    return;
-  }
-
-  const win = window.open('', '', 'width=800,height=600');
-  win.document.write(`
-    <html>
-      <head>
-        <title>${filename}</title>
-        <style>
-          body { font-family: sans-serif; padding: 20px; }
-          h2 { margin-top: 0; }
-        </style>
-      </head>
-      <body>
-        <h2>Sling Load Calculator Results</h2>
-        <ul>${output.innerHTML}</ul>
-      </body>
-    </html>
-  `);
-  win.document.close();
-  win.focus();
-  win.print();
-  win.close();
-}
-
-// Tab switching
-function showSection(id) {
-  document.querySelectorAll('.tool').forEach(el => el.classList.add('hidden'));
-  document.getElementById(id).classList.remove('hidden');
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${angleDeg}°</td>
+      <td>${L1.toFixed(2)} ft</td>
+      <td>${L2.toFixed(2)} ft</td>
+      <td>${T1.toFixed(2)} lbs</td>
+      <td>${T2.toFixed(2)} lbs</td>
+    `;
+    tbody.appendChild(row);
+  });
 }
