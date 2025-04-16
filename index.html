@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <!-- Ensures inputs don’t trigger zoom on mobile -->
+  <!-- Prevents iOS auto-zoom if font-size is >= 16px -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Field Tools - Sling Calculator</title>
-  <!-- Link your CSS and JS -->
+  <!-- Link your stylesheet -->
   <link rel="stylesheet" href="style.css" />
   <script defer src="app.js"></script>
 </head>
@@ -24,7 +24,7 @@
           alt="Sling Diagram"
         />
 
-        <!-- Unit selection (if using unit conversion) -->
+        <!-- Unit selection -->
         <label>Units:
           <select id="units">
             <option value="lb_ft">Lbs/ft</option>
@@ -35,24 +35,24 @@
         </label>
 
         <!-- Required Inputs -->
-        <label>Total Load (in chosen unit): 
+        <label>Total Load (in chosen unit):
           <input type="number" id="load" placeholder="Required" />
         </label>
-        <label>Distance to CG from Left (D1, in chosen unit): 
+        <label>Distance to CG from Left (D1, in chosen unit):
           <input type="number" id="d1" placeholder="Required" />
         </label>
-        <label>Distance to CG from Right (D2, in chosen unit): 
+        <label>Distance to CG from Right (D2, in chosen unit):
           <input type="number" id="d2" placeholder="Required" />
         </label>
 
         <!-- Optional Inputs -->
-        <label>Vertical Hook Height (H) [optional]: 
+        <label>Vertical Hook Height (H) [optional]:
           <input type="number" id="height" placeholder="Optional" />
         </label>
-        <label>Left Leg Length (L1) [optional]: 
+        <label>Left Leg Length (L1) [optional]:
           <input type="number" id="l1" placeholder="Optional" />
         </label>
-        <label>Right Leg Length (L2) [optional]: 
+        <label>Right Leg Length (L2) [optional]:
           <input type="number" id="l2" placeholder="Optional" />
         </label>
 
