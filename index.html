@@ -4,16 +4,23 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Field Tools</title>
-  <link rel="stylesheet" href="style.css" />
+
+  <!-- PWA support -->
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" type="image/png" href="icon.png" />
+  <meta name="theme-color" content="#333333" />
+
   <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('service-worker.js');
     }
   </script>
+
+  <!-- Styles and Logic -->
+  <link rel="stylesheet" href="style.css" />
   <script defer src="app.js"></script>
 </head>
+
 <body>
   <header>
     <h1>Field Tools</h1>
@@ -27,7 +34,7 @@
   </header>
 
   <main>
-    <!-- Angle -->
+    <!-- Angle Converter -->
     <section id="angle" class="tool">
       <h2>Angle Converter</h2>
       <label>Degrees: <input type="number" id="deg" oninput="angleConvert('deg')"></label>
