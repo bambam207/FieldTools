@@ -1,4 +1,4 @@
-// ----------------- Utility: Unit Conversion -----------------
+// ----------------- Utility: Unit Conversion for Sling -----------------
 function getConversionFactors() {
   // Sling page uses #weightUnit and #lengthUnit
   const weightUnit = document.getElementById('weightUnit')?.value || 'lbs';
@@ -135,44 +135,56 @@ function calcSling() {
 
 // ----------------- Container Balance Calculator -----------------
 function calcContainer() {
-  // Units selectors
-  const wUnit = document.getElementById('cbWeightUnit').value;   // "lbs" or "kg"
+  // Unit selectors
+  const wUnit = document.getElementById('cbWeightUnit').value;   // "lbs","kg","us_ton","metric_ton"
   const lUnit = document.getElementById('cbLengthUnit').value;   // "ft" or "m"
-  const cType = parseFloat(document.getElementById('cbContainerType').value); // 20 or 40 (ft)
+  const cType = parseFloat(document.getElementById('cbContainerType').value); // 20 or 40
 
   // Converters
-  const toMeters = v => v * 0.3048;
-  const toLbs    = v => v * 2.20462;
+  const toMeters        = v => v * 0.3048;
+  const toFeet          = v => v / 0.3048;
+  const toLbsFromKg     = v => v * 2.20462;
+  const toLbsFromUsTon  = v => v * 2000;
+  const toLbsFromMTon   = v => v * 2204.62;
+  const fromLbsToKg     = v => v / 2.20462;
+  const fromLbsToUsTon  = v => v / 2000;
+  const fromLbsToMTon   = v => v / 2204.62;
 
   // Container length in chosen unit
-  let contLen = cType;
-  if (lUnit === 'm') contLen = toMeters(contLen);
+  let contLen = cType;           // in ft
+  if (lUnit === 'm') contLen = toMeters(cType);
 
-  // Six positions evenly at i/7 of container
+  // Six evenly spaced positions along the rack
   const positions = [];
-  for (let i=1; i<=6; i++) positions.push(contLen * i/7);
+  for (let i = 1; i <= 6; i++) {
+    positions.push(contLen * i / 7);
+  }
 
-  // Collect loads & compute moments
+  // Read loads, compute moments
   let totalLoadLbs = 0, totalMoment = 0;
   const tbody = document.querySelector('#containerTable tbody');
   tbody.innerHTML = '';
 
-  for (let i=1; i<=6; i++) {
-    const input = document.getElementById(`cbLoad${i}`);
-    const val   = parseFloat(input?.value);
-    if (!isNaN(val)) {
-      // convert to base lbs
-      const loadLbs = (wUnit==='kg'? toLbs(val) : val);
-      // moment in base-ft: use contLen in ft
-      const posFt = (lUnit==='m'? positions[i-1]/0.3048 : positions[i-1]);
+  for (let i = 1; i <= 6; i++) {
+    const raw = parseFloat(document.getElementById(`cbLoad${i}`).value);
+    if (!isNaN(raw)) {
+      let loadLbs;
+      if (wUnit === 'kg') loadLbs = toLbsFromKg(raw);
+      else if (wUnit === 'us_ton') loadLbs = toLbsFromUsTon(raw);
+      else if (wUnit === 'metric_ton') loadLbs = toLbsFromMTon(raw);
+      else loadLbs = raw; // lbs
+
+      // Position for moment in ft
+      const posFt = (lUnit === 'm') ? toFeet(positions[i-1]) : positions[i-1];
+
       totalLoadLbs += loadLbs;
       totalMoment  += loadLbs * posFt;
 
-      // display in table
+      // Append row
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td>Object ${i}</td>
-        <td>${val.toFixed(2)} ${wUnit}</td>
+        <td>${raw.toFixed(2)} ${wUnit}</td>
         <td>${positions[i-1].toFixed(2)} ${lUnit}</td>
       `;
       tbody.appendChild(tr);
@@ -185,15 +197,20 @@ function calcContainer() {
     return;
   }
 
-  // overall CG
-  const cgFt = totalMoment / totalLoadLbs;
-  const cgDisp = (lUnit === 'm'? toMeters(cgFt) : cgFt);
-  // totalLoad back to selected unit
-  const loadDisp = (wUnit==='kg'? (totalLoadLbs/2.20462).toFixed(2) : totalLoadLbs.toFixed(2));
+  // Compute overall CG
+  const cgFt  = totalMoment / totalLoadLbs;
+  const cgDisp = (lUnit === 'm') ? toMeters(cgFt) : cgFt;
+
+  // Convert total load back to chosen unit
+  let loadDisp;
+  if (wUnit === 'kg')         loadDisp = fromLbsToKg(totalLoadLbs).toFixed(2);
+  else if (wUnit === 'us_ton') loadDisp = fromLbsToUsTon(totalLoadLbs).toFixed(2);
+  else if (wUnit === 'metric_ton') loadDisp = fromLbsToMTon(totalLoadLbs).toFixed(2);
+  else                          loadDisp = totalLoadLbs.toFixed(2);
 
   resultDiv.innerHTML = `
     Total Load: ${loadDisp} ${wUnit}<br>
-    Overall CG: ${cgDisp.toFixed(2)} ${lUnit} from left
-    (${((cgFt/cType)*100).toFixed(1)}% of container length).
+    Overall CG: ${cgDisp.toFixed(2)} ${lUnit} from left<br>
+    (${((cgFt/cType)*100).toFixed(1)}% of container length)
   `;
 }
