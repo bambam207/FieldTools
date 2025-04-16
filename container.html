@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <!-- Prevent mobile zoom on focus -->
+  <!-- Prevent mobile auto‑zoom on focus -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Field Tools – Container Balance</title>
   <link rel="stylesheet" href="style.css" />
@@ -18,6 +18,7 @@
   </script>
   <script defer src="app.js"></script>
 </head>
+
 <body>
   <header>
     <h1>Field Tools</h1>
@@ -42,7 +43,7 @@
         <img
           src="D59FF921-1A7D-4D24-ACED-8A1639528E03.png"
           alt="Flat Rack Diagram"
-          style="display:block;max-width:100%;margin:0 auto 20px;"
+          style="display:block; max-width:100%; margin:0 auto 20px;"
         />
 
         <!-- Unit selectors -->
@@ -54,64 +55,62 @@
             <option value="metric_ton">Metric tons</option>
           </select>
         </label>
-
         <label>Length Unit:
           <select id="cbLengthUnit">
             <option value="ft">ft</option>
             <option value="m">m</option>
           </select>
         </label>
-
-        <label>Container Type:
+        <label>Container Length:
           <select id="cbContainerType">
             <option value="20">20 ft</option>
             <option value="40">40 ft</option>
           </select>
         </label>
 
-        <!-- Up to six objects -->
+        <!-- Up to six objects: Weight & CG position -->
         <div id="loadInputs" style="margin:20px 0;">
           <div>
             <label>Obj 1 Weight: <input type="number" id="cbLoad1W" placeholder="—" /></label>
-            <label>Width:       <input type="number" id="cbLoad1D" placeholder="—" /></label>
+            <label>Obj 1 CG from left: <input type="number" id="cbLoad1X" placeholder="—" /></label>
           </div>
           <div>
             <label>Obj 2 Weight: <input type="number" id="cbLoad2W" placeholder="—" /></label>
-            <label>Width:       <input type="number" id="cbLoad2D" placeholder="—" /></label>
+            <label>Obj 2 CG from left: <input type="number" id="cbLoad2X" placeholder="—" /></label>
           </div>
           <div>
             <label>Obj 3 Weight: <input type="number" id="cbLoad3W" placeholder="—" /></label>
-            <label>Width:       <input type="number" id="cbLoad3D" placeholder="—" /></label>
+            <label>Obj 3 CG from left: <input type="number" id="cbLoad3X" placeholder="—" /></label>
           </div>
           <div>
             <label>Obj 4 Weight: <input type="number" id="cbLoad4W" placeholder="—" /></label>
-            <label>Width:       <input type="number" id="cbLoad4D" placeholder="—" /></label>
+            <label>Obj 4 CG from left: <input type="number" id="cbLoad4X" placeholder="—" /></label>
           </div>
           <div>
             <label>Obj 5 Weight: <input type="number" id="cbLoad5W" placeholder="—" /></label>
-            <label>Width:       <input type="number" id="cbLoad5D" placeholder="—" /></label>
+            <label>Obj 5 CG from left: <input type="number" id="cbLoad5X" placeholder="—" /></label>
           </div>
           <div>
             <label>Obj 6 Weight: <input type="number" id="cbLoad6W" placeholder="—" /></label>
-            <label>Width:       <input type="number" id="cbLoad6D" placeholder="—" /></label>
+            <label>Obj 6 CG from left: <input type="number" id="cbLoad6X" placeholder="—" /></label>
           </div>
         </div>
 
         <button onclick="calcContainer()">Calculate</button>
 
+        <!-- Results Table -->
         <table id="containerTable" style="width:100%;border-collapse:collapse;margin-top:20px;">
           <thead>
             <tr>
               <th style="border:1px solid #ccc;padding:8px">Object</th>
               <th style="border:1px solid #ccc;padding:8px">Weight</th>
-              <th style="border:1px solid #ccc;padding:8px">Width</th>
               <th style="border:1px solid #ccc;padding:8px">CG Pos</th>
-              <th style="border:1px solid #ccc;padding:8px">Left Edge</th>
             </tr>
           </thead>
           <tbody></tbody>
         </table>
 
+        <!-- Summary -->
         <div id="containerResult" style="margin-top:20px;font-size:1.1em;"></div>
       </section>
     </div>
