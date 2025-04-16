@@ -1,10 +1,10 @@
-// Switch tabs
+// -------------------- SECTION SWITCH --------------------
 function showSection(id) {
   document.querySelectorAll('.tool').forEach(el => el.classList.add('hidden'));
   document.getElementById(id).classList.remove('hidden');
 }
 
-// Angle Converter
+// -------------------- ANGLE CONVERTER --------------------
 function angleConvert(from) {
   let deg = parseFloat(document.getElementById('deg').value) || 0;
   let rad = parseFloat(document.getElementById('rad').value) || 0;
@@ -26,7 +26,7 @@ function angleConvert(from) {
   document.getElementById('pct').value = pct.toFixed(2);
 }
 
-// Load Balancer
+// -------------------- LOAD BALANCER --------------------
 function calcLoad() {
   const total = parseFloat(document.getElementById('totalWeight').value) || 0;
   const supports = parseInt(document.getElementById('numSupports').value) || 1;
@@ -40,7 +40,7 @@ function calcLoad() {
   }
 }
 
-// Weight Converter
+// -------------------- WEIGHT CONVERTER --------------------
 function convertWeight() {
   const value = parseFloat(document.getElementById('weightInput').value) || 0;
   const unit = document.getElementById('weightUnit').value;
@@ -60,7 +60,7 @@ function convertWeight() {
   `;
 }
 
-// Temp Converter
+// -------------------- TEMP CONVERTER --------------------
 function tempConvert(from) {
   let f = parseFloat(document.getElementById('f').value) || 0;
   let c = parseFloat(document.getElementById('c').value) || 0;
@@ -82,18 +82,19 @@ function tempConvert(from) {
   document.getElementById('k').value = k.toFixed(1);
 }
 
-// Sling Calculator — auto or manual
+// -------------------- ADVANCED SLING CALCULATOR --------------------
 function calcSling() {
-  const load = parseFloat(document.getElementById('load').value) || 0;
-  const D1 = parseFloat(document.getElementById('d1').value) || 0;
-  const D2 = parseFloat(document.getElementById('d2').value) || 0;
+  const load = parseFloat(document.getElementById('load').value);
+  const D1 = parseFloat(document.getElementById('d1').value);
+  const D2 = parseFloat(document.getElementById('d2').value);
   const H = parseFloat(document.getElementById('height').value);
   let L1 = parseFloat(document.getElementById('l1').value);
   let L2 = parseFloat(document.getElementById('l2').value);
   const tbody = document.querySelector("#resultTable tbody");
   tbody.innerHTML = '';
 
-  if (load <= 0 || D1 <= 0 || D2 <= 0) {
+  // Required base values
+  if (isNaN(load) || isNaN(D1) || isNaN(D2)) {
     tbody.innerHTML = '<tr><td colspan="5">Please enter Load, D1, and D2.</td></tr>';
     return;
   }
@@ -107,17 +108,26 @@ function calcSling() {
     L2 = Math.sqrt(D2 ** 2 + H ** 2);
     mode = 'Auto Legs (from H)';
   } else {
-    tbody.innerHTML = '<tr><td colspan="5">Please enter either L1/L2 or Height (H).</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="5">Enter either L1 & L2 or Height (H).</td></tr>';
     return;
   }
 
-  const T1 = (load * D2 * L1) / ((D1 + D2) * Math.sqrt(L1 ** 2 - D1 ** 2));
-  const T2 = (load * D1 * L2) / ((D1 + D2) * Math.sqrt(L2 ** 2 - D2 ** 2));
+  // Vertical projection of legs
+  let H1 = Math.sqrt(L1 ** 2 - D1 ** 2);
+  let H2 = Math.sqrt(L2 ** 2 - D2 ** 2);
 
-  const angle1 = Math.acos(D1 / L1) * (180 / Math.PI);
-  const angle2 = Math.acos(D2 / L2) * (180 / Math.PI);
+  if (H1 <= 0 || H2 <= 0 || isNaN(H1) || isNaN(H2)) {
+    tbody.innerHTML = '<tr><td colspan="5">Invalid geometry. Check Lx² - Dx² isn’t negative.</td></tr>';
+    return;
+  }
 
-  const row = document.createElement("tr");
+  const angle1 = Math.asin(H1 / L1) * (180 / Math.PI);
+  const angle2 = Math.asin(H2 / L2) * (180 / Math.PI);
+
+  const T1 = (load * D2 * L1) / (H1 * (D1 + D2));
+  const T2 = (load * D1 * L2) / (H2 * (D1 + D2));
+
+  const row = document.createElement('tr');
   row.innerHTML = `
     <td>${mode}</td>
     <td>${L1.toFixed(2)} ft<br>${angle1.toFixed(1)}°</td>
