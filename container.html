@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <!-- Prevent mobile zoom on focus -->
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Field Tools – Container Balance</title>
-  <link rel="stylesheet" href="style.css" />
-  <link rel="manifest" href="manifest.json" />
-  <link rel="apple-touch-icon" href="icon-192.png" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-title" content="Field Tools" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <link rel="stylesheet" href="style.css"/>
+  <link rel="manifest" href="manifest.json"/>
+  <link rel="apple-touch-icon" href="icon-192.png"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-title" content="Field Tools"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
   <script>
     if ('serviceWorker' in navigator) navigator.serviceWorker.register('service-worker.js');
   </script>
@@ -36,7 +36,7 @@
       <section class="tool">
         <h2>Container Balance</h2>
 
-        <!-- Diagram -->
+        <!-- Flat‑rack diagram -->
         <img
           src="D59FF921-1A7D-4D24-ACED-8A1639528E03.png"
           alt="Flat Rack Diagram"
@@ -52,12 +52,14 @@
             <option value="metric_ton">Metric tons</option>
           </select>
         </label>
+
         <label>Length Unit:
           <select id="cbLengthUnit">
             <option value="ft">ft</option>
             <option value="m">m</option>
           </select>
         </label>
+
         <label>Container Length:
           <select id="cbContainerType">
             <option value="20">20 ft</option>
