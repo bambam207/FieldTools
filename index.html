@@ -16,8 +16,10 @@
       <button onclick="showSection('load')">Load</button>
       <button onclick="showSection('weight')">Weight</button>
       <button onclick="showSection('temp')">Temp</button>
+      <button onclick="showSection('sling')">Sling</button>
     </nav>
   </header>
+
   <main>
     <section id="angle" class="tool">
       <h2>Angle Calculator</h2>
@@ -25,6 +27,7 @@
       <label>Radians: <input type="number" id="rad" oninput="angleConvert('rad')"></label>
       <label>Percent Grade: <input type="number" id="pct" oninput="angleConvert('pct')"></label>
     </section>
+
     <section id="load" class="tool hidden">
       <h2>Load Balancer</h2>
       <label>Total Weight (lbs): <input type="number" id="totalWeight"></label>
@@ -32,6 +35,7 @@
       <button onclick="calcLoad()">Calculate</button>
       <ul id="loadOutput"></ul>
     </section>
+
     <section id="weight" class="tool hidden">
       <h2>Weight Converter</h2>
       <label>Value: <input type="number" id="weightInput" oninput="convertWeight()"></label>
@@ -43,11 +47,24 @@
       </select>
       <ul id="weightOutput"></ul>
     </section>
+
     <section id="temp" class="tool hidden">
       <h2>Temperature Converter</h2>
       <label>Fahrenheit: <input type="number" id="f" oninput="tempConvert('f')"></label>
       <label>Celsius: <input type="number" id="c" oninput="tempConvert('c')"></label>
       <label>Kelvin: <input type="number" id="k" oninput="tempConvert('k')"></label>
+    </section>
+
+    <section id="sling" class="tool hidden">
+      <h2>Sling Load Calculator</h2>
+      <img src="sling-diagram.jpg" alt="Sling Diagram" style="width:100%; max-width:500px; margin-bottom:20px;">
+      <label>Total Load (lbs): <input type="number" id="slingLoad"></label>
+      <label>Left Sling Length (L1): <input type="number" id="slingL1"></label>
+      <label>Right Sling Length (L2): <input type="number" id="slingL2"></label>
+      <label>Distance to CG from Left Pick Point (D1): <input type="number" id="slingD1"></label>
+      <label>Distance to CG from Right Pick Point (D2): <input type="number" id="slingD2"></label>
+      <button onclick="calcSlingLoad()">Calculate</button>
+      <ul id="slingOutput"></ul>
     </section>
   </main>
 </body>
