@@ -6,14 +6,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Field Tools – Container Balance</title>
 
-  <!-- PWA/Apple support (if you have these) -->
+  <!-- PWA / Apple Touch Support -->
   <link rel="manifest" href="manifest.json" />
   <link rel="apple-touch-icon" href="icon-192.png" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-title" content="Field Tools" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
 
+  <!-- Stylesheet -->
   <link rel="stylesheet" href="style.css" />
+
+  <!-- Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js');
+    }
+  </script>
+
+  <!-- App Logic -->
   <script defer src="app.js"></script>
 </head>
 <body>
@@ -36,50 +46,56 @@
       <section class="tool">
         <h2>Container Balance</h2>
 
-        <!-- Your flat‑rack diagram -->
-        <img src="D59FF921-1A7D-4D24-ACED-8A1639528E03.png"
-             alt="Flat Rack Diagram"
-             style="width:100%; max-width:500px; margin-bottom:20px;" />
+        <!-- Flat‑rack diagram -->
+        <img
+          src="D59FF921-1A7D-4D24-ACED-8A1639528E03.png"
+          alt="Flat Rack Diagram"
+          style="width:100%; max-width:500px; margin-bottom:20px;"
+        />
 
         <!-- Unit selectors -->
         <label>Weight Unit:
           <select id="cbWeightUnit">
             <option value="lbs">lbs</option>
+            <option value="us_ton">US tons</option>
             <option value="kg">kg</option>
+            <option value="metric_ton">Metric tons</option>
           </select>
         </label>
+
         <label>Length Unit:
           <select id="cbLengthUnit">
             <option value="ft">ft</option>
             <option value="m">m</option>
           </select>
         </label>
+
         <label>Container Type:
           <select id="cbContainerType">
-            <option value="20">20 ft</option>
-            <option value="40">40 ft</option>
+            <option value="20">20 ft</option>
+            <option value="40">40 ft</option>
           </select>
         </label>
 
         <!-- Six load inputs -->
-        <div id="loadInputs">
-          <label>Load 1: <input type="number" id="cbLoad1" /></label>
-          <label>Load 2: <input type="number" id="cbLoad2" /></label>
-          <label>Load 3: <input type="number" id="cbLoad3" /></label>
-          <label>Load 4: <input type="number" id="cbLoad4" /></label>
-          <label>Load 5: <input type="number" id="cbLoad5" /></label>
-          <label>Load 6: <input type="number" id="cbLoad6" /></label>
+        <div id="loadInputs" style="margin:20px 0;">
+          <label>Load 1: <input type="number" id="cbLoad1" placeholder="Optional" /></label>
+          <label>Load 2: <input type="number" id="cbLoad2" placeholder="Optional" /></label>
+          <label>Load 3: <input type="number" id="cbLoad3" placeholder="Optional" /></label>
+          <label>Load 4: <input type="number" id="cbLoad4" placeholder="Optional" /></label>
+          <label>Load 5: <input type="number" id="cbLoad5" placeholder="Optional" /></label>
+          <label>Load 6: <input type="number" id="cbLoad6" placeholder="Optional" /></label>
         </div>
 
         <button onclick="calcContainer()">Calculate</button>
 
-        <!-- Results table -->
-        <table id="containerTable">
+        <!-- Results Table -->
+        <table id="containerTable" style="margin-top:20px;">
           <thead>
             <tr>
               <th>Object</th>
               <th>Weight</th>
-              <th>Position (from left)</th>
+              <th>Position (from left)</th>
             </tr>
           </thead>
           <tbody></tbody>
