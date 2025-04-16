@@ -1,132 +1,70 @@
-// -------------------- SECTION SWITCH --------------------
+// SECTION SWITCHING (if you integrate more tools later)
 function showSection(id) {
   document.querySelectorAll('.tool').forEach(el => el.classList.add('hidden'));
   document.getElementById(id).classList.remove('hidden');
 }
 
-// -------------------- ANGLE CONVERTER --------------------
-function angleConvert(from) {
-  let deg = parseFloat(document.getElementById('deg').value) || 0;
-  let rad = parseFloat(document.getElementById('rad').value) || 0;
-  let pct = parseFloat(document.getElementById('pct').value) || 0;
-
-  if (from === 'deg') {
-    rad = deg * (Math.PI / 180);
-    pct = Math.tan(rad) * 100;
-  } else if (from === 'rad') {
-    deg = rad * (180 / Math.PI);
-    pct = Math.tan(rad) * 100;
-  } else if (from === 'pct') {
-    rad = Math.atan(pct / 100);
-    deg = rad * (180 / Math.PI);
-  }
-
-  document.getElementById('deg').value = deg.toFixed(2);
-  document.getElementById('rad').value = rad.toFixed(4);
-  document.getElementById('pct').value = pct.toFixed(2);
-}
-
-// -------------------- LOAD BALANCER --------------------
-function calcLoad() {
-  const total = parseFloat(document.getElementById('totalWeight').value) || 0;
-  const supports = parseInt(document.getElementById('numSupports').value) || 1;
-  const per = (total / supports).toFixed(2);
-  const output = document.getElementById('loadOutput');
-  output.innerHTML = '';
-  for (let i = 1; i <= supports; i++) {
-    const li = document.createElement('li');
-    li.textContent = `Support ${i}: ${per} lbs`;
-    output.appendChild(li);
-  }
-}
-
-// -------------------- WEIGHT CONVERTER --------------------
-function convertWeight() {
-  const value = parseFloat(document.getElementById('weightInput').value) || 0;
-  const unit = document.getElementById('weightUnit').value;
-  let lb = 0;
-
-  if (unit === 'lb') lb = value;
-  else if (unit === 'kg') lb = value * 2.20462;
-  else if (unit === 'ton') lb = value * 2000;
-  else if (unit === 'kn') lb = value * 224.809;
-
-  const output = document.getElementById('weightOutput');
-  output.innerHTML = `
-    <li>${lb.toFixed(2)} lb</li>
-    <li>${(lb / 2.20462).toFixed(2)} kg</li>
-    <li>${(lb / 2000).toFixed(2)} US tons</li>
-    <li>${(lb / 224.809).toFixed(2)} kN</li>
-  `;
-}
-
-// -------------------- TEMP CONVERTER --------------------
-function tempConvert(from) {
-  let f = parseFloat(document.getElementById('f').value) || 0;
-  let c = parseFloat(document.getElementById('c').value) || 0;
-  let k = parseFloat(document.getElementById('k').value) || 0;
-
-  if (from === 'f') {
-    c = (f - 32) * 5 / 9;
-    k = c + 273.15;
-  } else if (from === 'c') {
-    f = (c * 9 / 5) + 32;
-    k = c + 273.15;
-  } else if (from === 'k') {
-    c = k - 273.15;
-    f = (c * 9 / 5) + 32;
-  }
-
-  document.getElementById('f').value = f.toFixed(1);
-  document.getElementById('c').value = c.toFixed(1);
-  document.getElementById('k').value = k.toFixed(1);
-}
-
-// -------------------- ADVANCED SLING CALCULATOR --------------------
+// ADVANCED SLING CALCULATOR
 function calcSling() {
+  // Parse required inputs:
   const load = parseFloat(document.getElementById('load').value);
   const D1 = parseFloat(document.getElementById('d1').value);
   const D2 = parseFloat(document.getElementById('d2').value);
-  const H = parseFloat(document.getElementById('height').value);
+  
+  // Optional inputs:
+  let H = parseFloat(document.getElementById('height').value);
   let L1 = parseFloat(document.getElementById('l1').value);
   let L2 = parseFloat(document.getElementById('l2').value);
+  
   const tbody = document.querySelector("#resultTable tbody");
   tbody.innerHTML = '';
-
-  // Required base values
+  
+  // Validate required fields
   if (isNaN(load) || isNaN(D1) || isNaN(D2)) {
-    tbody.innerHTML = '<tr><td colspan="5">Please enter Load, D1, and D2.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="5">Please enter valid values for Load, D1, and D2.</td></tr>';
     return;
   }
-
+  
   let mode = '';
-
+  // Case 1: Manual leg entry provided for both
   if (!isNaN(L1) && !isNaN(L2)) {
     mode = 'Manual Legs';
-  } else if (!isNaN(H)) {
-    L1 = Math.sqrt(D1 ** 2 + H ** 2);
-    L2 = Math.sqrt(D2 ** 2 + H ** 2);
+  }
+  // Case 2: If legs are not provided but hook height is, calculate legs
+  else if (!isNaN(H)) {
+    L1 = Math.sqrt(D1 * D1 + H * H);
+    L2 = Math.sqrt(D2 * D2 + H * H);
     mode = 'Auto Legs (from H)';
-  } else {
-    tbody.innerHTML = '<tr><td colspan="5">Enter either L1 & L2 or Height (H).</td></tr>';
+  }
+  // Otherwise, error out
+  else {
+    tbody.innerHTML = '<tr><td colspan="5">Enter either both leg lengths (L1 & L2) or Vertical Hook Height (H).</td></tr>';
     return;
   }
-
-  // Vertical projection of legs
-  let H1 = Math.sqrt(L1 ** 2 - D1 ** 2);
-  let H2 = Math.sqrt(L2 ** 2 - D2 ** 2);
-
-  if (H1 <= 0 || H2 <= 0 || isNaN(H1) || isNaN(H2)) {
-    tbody.innerHTML = '<tr><td colspan="5">Invalid geometry. Check Lx² - Dx² isn’t negative.</td></tr>';
+  
+  // Compute the vertical component for each leg.
+  // If L is computed from H then vertical component Hx = H,
+  // but if L is entered manually, we calculate Hx = √(L² - D²)
+  const H1 = (isNaN(H)) ? Math.sqrt(L1 * L1 - D1 * D1) : H;
+  const H2 = (isNaN(H)) ? Math.sqrt(L2 * L2 - D2 * D2) : H;
+  
+  // Ensure geometry is valid
+  if (isNaN(H1) || isNaN(H2) || H1 <= 0 || H2 <= 0) {
+    tbody.innerHTML = '<tr><td colspan="5">Invalid geometry: Ensure L1 > D1 and L2 > D2 (or valid H provided).</td></tr>';
     return;
   }
-
+  
+  // Calculate angles for each leg (in degrees)
   const angle1 = Math.asin(H1 / L1) * (180 / Math.PI);
   const angle2 = Math.asin(H2 / L2) * (180 / Math.PI);
-
+  
+  // Calculate tensions using the formula:
+  // T1 = (load * D2 * L1) / (H1 * (D1 + D2))
+  // T2 = (load * D1 * L2) / (H2 * (D1 + D2))
   const T1 = (load * D2 * L1) / (H1 * (D1 + D2));
   const T2 = (load * D1 * L2) / (H2 * (D1 + D2));
-
+  
+  // Render results in table:
   const row = document.createElement('tr');
   row.innerHTML = `
     <td>${mode}</td>
