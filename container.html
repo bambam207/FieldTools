@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>Field Tools</title>
 
+  <!-- Styles & PWA -->
   <link rel="stylesheet" href="style.css"/>
   <link rel="manifest" href="manifest.json"/>
   <link rel="apple-touch-icon" href="icon-192.png"/>
@@ -12,14 +13,17 @@
   <meta name="apple-mobile-web-app-title" content="Field Tools"/>
   <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
 
-  <style>
-    .hidden { display: none; }
-    /* tweak spacing if you like */
-  </style>
+  <!-- Simple show/hide -->
+  <style>.hidden { display: none; }</style>
 
+  <!-- Service worker -->
   <script>
-    if ('serviceWorker' in navigator) navigator.serviceWorker.register('service-worker.js');
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js');
+    }
   </script>
+
+  <!-- App logic -->
   <script defer src="app.js"></script>
 </head>
 <body>
@@ -30,6 +34,10 @@
       <select id="toolsMenu" onchange="showToolPage()">
         <option value="sling">Sling Load Calculator</option>
         <option value="container">Container Balance</option>
+        <option value="weightConversion">Weight Conversion</option>
+        <option value="weightCalculator">Weight Calculator</option>
+        <option value="pressureConversion">Pressure Conversion</option>
+        <option value="boltTorque">Bolt Torque Values</option>
       </select>
     </nav>
   </header>
@@ -40,7 +48,10 @@
       <!-- Sling Load Calculator -->
       <section id="sling" class="tool">
         <h2>Sling Load Calculator</h2>
-        <img src="D744E2B6-1AB3-466B-A4E8-A64711BD01F5.png" alt="Sling Diagram" style="max-width:100%;height:auto;"/>
+        <img src="D744E2B6-1AB3-466B-A4E8-A64711BD01F5.png"
+             alt="Sling Diagram"
+             style="max-width:100%;height:auto;margin-bottom:1em;"/>
+
         <label>Weight Unit:
           <select id="weightUnit">
             <option value="lbs">lbs</option>
@@ -49,23 +60,27 @@
             <option value="metric_ton">Metric Ton</option>
           </select>
         </label>
+
         <label>Length Unit:
           <select id="lengthUnit">
             <option value="ft">ft</option>
             <option value="m">m</option>
           </select>
         </label>
-        <label>Total Load: <input type="number" id="load" placeholder="Required"/></label>
-        <label>D1:         <input type="number" id="d1"    placeholder="Required"/></label>
-        <label>D2:         <input type="number" id="d2"    placeholder="Required"/></label>
-        <label>Hook H:     <input type="number" id="height"placeholder="Optional"/></label>
-        <label>L1:         <input type="number" id="l1"   placeholder="Optional"/></label>
-        <label>L2:         <input type="number" id="l2"   placeholder="Optional"/></label>
+
+        <label>Total Load:    <input type="number" id="load"    placeholder="Required"/></label>
+        <label>D1:              <input type="number" id="d1"      placeholder="Required"/></label>
+        <label>D2:              <input type="number" id="d2"      placeholder="Required"/></label>
+        <label>Hook Height:     <input type="number" id="height" placeholder="Optional"/></label>
+        <label>L1:              <input type="number" id="l1"     placeholder="Optional"/></label>
+        <label>L2:              <input type="number" id="l2"     placeholder="Optional"/></label>
+
         <button onclick="calcSling()">Calculate</button>
+
         <table id="resultTable" style="width:100%;border-collapse:collapse;margin-top:1em;">
           <thead>
             <tr>
-              <th>Mode</th><th>L1 & Angle</th><th>L2 & Angle</th><th>T1</th><th>T2</th>
+              <th>Mode</th><th>L1 &amp; Angle</th><th>L2 &amp; Angle</th><th>T1</th><th>T2</th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -75,7 +90,9 @@
       <!-- Container Balance -->
       <section id="container" class="tool hidden">
         <h2>Container Balance</h2>
-        <img src="D59FF921-1A7D-4D24-ACED-8A1639528E03.png" alt="Flat Rack Diagram" style="max-width:100%;height:auto;"/>
+        <img src="D59FF921-1A7D-4D24-ACED-8A1639528E03.png"
+             alt="Flat Rack Diagram"
+             style="max-width:100%;height:auto;margin-bottom:1em;"/>
 
         <label>Weight Unit:
           <select id="cbWeightUnit">
@@ -85,12 +102,14 @@
             <option value="metric_ton">Metric tons</option>
           </select>
         </label>
+
         <label>Length Unit:
           <select id="cbLengthUnit">
             <option value="ft">ft</option>
             <option value="m">m</option>
           </select>
         </label>
+
         <label>Container Length:
           <select id="cbContainerType">
             <option value="20">20 ft</option>
@@ -126,6 +145,7 @@
         </div>
 
         <button onclick="calcContainer()">Calculate</button>
+
         <table id="containerTable" style="width:100%;border-collapse:collapse;margin-top:1em;">
           <thead>
             <tr>
@@ -134,7 +154,32 @@
           </thead>
           <tbody></tbody>
         </table>
+
         <div id="containerResult" style="margin-top:1em;font-size:1.1em;"></div>
+      </section>
+
+      <!-- Weight Conversion -->
+      <section id="weightConversion" class="tool hidden">
+        <h2>Weight Conversion</h2>
+        <p>This page is under construction.</p>
+      </section>
+
+      <!-- Weight Calculator -->
+      <section id="weightCalculator" class="tool hidden">
+        <h2>Weight Calculator</h2>
+        <p>This page is under construction.</p>
+      </section>
+
+      <!-- Pressure Conversion -->
+      <section id="pressureConversion" class="tool hidden">
+        <h2>Pressure Conversion</h2>
+        <p>This page is under construction.</p>
+      </section>
+
+      <!-- Bolt Torque Values -->
+      <section id="boltTorque" class="tool hidden">
+        <h2>Bolt Torque Values</h2>
+        <p>This page is under construction.</p>
       </section>
 
     </div>
