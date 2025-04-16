@@ -12,7 +12,9 @@
   <meta name="apple-mobile-web-app-title" content="Field Tools" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <script>
-    if ('serviceWorker' in navigator) navigator.serviceWorker.register('service-worker.js');
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js');
+    }
   </script>
   <script defer src="app.js"></script>
 </head>
@@ -36,9 +38,12 @@
       <section class="tool">
         <h2>Container Balance</h2>
 
-        <img src="D59FF921-1A7D-4D24-ACED-8A1639528E03.png"
-             alt="Flat Rack Diagram"
-             style="display:block;max-width:100%;margin:0 auto 20px;" />
+        <!-- Diagram -->
+        <img
+          src="D59FF921-1A7D-4D24-ACED-8A1639528E03.png"
+          alt="Flat Rack Diagram"
+          style="display:block;max-width:100%;margin:0 auto 20px;"
+        />
 
         <!-- Unit selectors -->
         <label>Weight Unit:
@@ -49,12 +54,14 @@
             <option value="metric_ton">Metric tons</option>
           </select>
         </label>
+
         <label>Length Unit:
           <select id="cbLengthUnit">
             <option value="ft">ft</option>
             <option value="m">m</option>
           </select>
         </label>
+
         <label>Container Type:
           <select id="cbContainerType">
             <option value="20">20 ft</option>
