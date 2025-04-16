@@ -1,21 +1,19 @@
-/* Reset */
+/* Reset and base styles */
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
-
-/* Base styles */
 html, body {
   font-family: sans-serif;
   background: #f9f9f9;
-  font-size: 16px;       /* Ensures iOS doesn't auto-zoom */
+  font-size: 16px;
   -webkit-text-size-adjust: 100%;
   color: #333;
   height: 100%;
 }
 
-/* Container centers content */
+/* Container for centering content */
 .container {
   max-width: 600px;
   margin: 0 auto;
@@ -30,7 +28,7 @@ header {
   padding: 15px;
 }
 
-/* Tool Section (Card Style) */
+/* Tool Section (Card style) */
 .tool {
   background: #fff;
   border: 1px solid #ddd;
@@ -54,26 +52,26 @@ header {
   margin: 0 auto 20px;
 }
 
-/* Labels and Inputs */
+/* Labels & Inputs */
 .tool label {
   display: block;
   margin-bottom: 15px;
   font-size: 16px;
 }
-
 .tool label input,
 .tool select {
   width: 100%;
   padding: 8px;
   margin-top: 5px;
-  font-size: 16px;       /* Prevents iOS zoom */
+  font-size: 16px;
   border: 1px solid #ccc;
   border-radius: 4px;
 }
 
-/* Button */
+/* Button styling */
 .tool button {
   display: block;
+  width: auto;
   margin: 20px auto;
   padding: 10px 20px;
   font-size: 16px;
@@ -87,21 +85,18 @@ header {
   background: #555;
 }
 
-/* Results Table */
+/* Table styling */
 table {
   table-layout: fixed;
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
 }
-
 table thead {
   background-color: #333;
   color: #fff;
 }
-
-table th,
-table td {
+table th, table td {
   border: 1px solid #ccc;
   padding: 12px 8px;
   text-align: center;
@@ -109,12 +104,11 @@ table td {
   white-space: normal;
   overflow-wrap: break-word;
 }
-
 table tbody tr:nth-child(even) {
   background-color: #f2f2f2;
 }
 
-/* Responsive adjustments */
+/* Responsive adjustments for narrow screens */
 @media (max-width: 400px) {
   table {
     font-size: 14px;
