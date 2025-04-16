@@ -1,10 +1,10 @@
-// Tab switching
+// -------------------- SECTION SWITCHING --------------------
 function showSection(id) {
   document.querySelectorAll('.tool').forEach(el => el.classList.add('hidden'));
   document.getElementById(id).classList.remove('hidden');
 }
 
-// --------------------- ANGLE CONVERTER ---------------------
+// -------------------- ANGLE CONVERTER --------------------
 function angleConvert(from) {
   let deg = parseFloat(document.getElementById('deg').value) || 0;
   let rad = parseFloat(document.getElementById('rad').value) || 0;
@@ -26,21 +26,21 @@ function angleConvert(from) {
   document.getElementById('pct').value = pct.toFixed(2);
 }
 
-// --------------------- LOAD BALANCER ---------------------
+// -------------------- LOAD BALANCER --------------------
 function calcLoad() {
   const total = parseFloat(document.getElementById('totalWeight').value) || 0;
   const supports = parseInt(document.getElementById('numSupports').value) || 1;
-  const perSupport = (total / supports).toFixed(2);
+  const per = (total / supports).toFixed(2);
   const output = document.getElementById('loadOutput');
   output.innerHTML = '';
   for (let i = 1; i <= supports; i++) {
     const li = document.createElement('li');
-    li.textContent = `Support ${i}: ${perSupport} lbs`;
+    li.textContent = `Support ${i}: ${per} lbs`;
     output.appendChild(li);
   }
 }
 
-// --------------------- WEIGHT CONVERTER ---------------------
+// -------------------- WEIGHT CONVERTER --------------------
 function convertWeight() {
   const value = parseFloat(document.getElementById('weightInput').value) || 0;
   const unit = document.getElementById('weightUnit').value;
@@ -60,7 +60,7 @@ function convertWeight() {
   `;
 }
 
-// --------------------- TEMPERATURE CONVERTER ---------------------
+// -------------------- TEMPERATURE CONVERTER --------------------
 function tempConvert(from) {
   let f = parseFloat(document.getElementById('f').value) || 0;
   let c = parseFloat(document.getElementById('c').value) || 0;
@@ -82,39 +82,61 @@ function tempConvert(from) {
   document.getElementById('k').value = k.toFixed(1);
 }
 
-// --------------------- ADVANCED SLING CALCULATOR ---------------------
-function calcSlingFromAngles() {
+// -------------------- ADVANCED SLING CALCULATOR --------------------
+function calcSling() {
   const angles = [60, 50, 45, 35];
+
   const load = parseFloat(document.getElementById('load').value) || 0;
   const D1 = parseFloat(document.getElementById('d1').value) || 0;
   const D2 = parseFloat(document.getElementById('d2').value) || 0;
   const H = parseFloat(document.getElementById('height').value) || 0;
+  let L1 = parseFloat(document.getElementById('l1').value);
+  let L2 = parseFloat(document.getElementById('l2').value);
 
   const tbody = document.querySelector("#resultTable tbody");
   tbody.innerHTML = '';
 
   if (load <= 0 || D1 <= 0 || D2 <= 0 || H <= 0) {
     const row = document.createElement('tr');
-    row.innerHTML = `<td colspan="5" style="text-align:center;">Please enter valid load, D1, D2, and height.</td>`;
+    row.innerHTML = `<td colspan="5">Please enter Load, D1, D2, and Height.</td>`;
     tbody.appendChild(row);
     return;
   }
 
-  angles.forEach(angleDeg => {
-    const angleRad = angleDeg * Math.PI / 180;
-    const L1 = Math.sqrt(D1 * D1 + H * H);
-    const L2 = Math.sqrt(D2 * D2 + H * H);
+  if (isNaN(L1)) L1 = Math.sqrt(D1 * D1 + H * H);
+  if (isNaN(L2)) L2 = Math.sqrt(D2 * D2 + H * H);
 
-    const T1 = (load * D2 * L1) / (H * (D1 + D2));
-    const T2 = (load * D1 * L2) / (H * (D1 + D2));
+  const angle1 = Math.acos(H / L1) * (180 / Math.PI);
+  const angle2 = Math.acos(H / L2) * (180 / Math.PI);
+
+  const T1 = (load * D2 * L1) / (H * (D1 + D2));
+  const T2 = (load * D1 * L2) / (H * (D1 + D2));
+
+  const row = document.createElement("tr");
+  row.innerHTML = `
+    <td>Auto</td>
+    <td>${L1.toFixed(2)} ft</td>
+    <td>${L2.toFixed(2)} ft</td>
+    <td>${T1.toFixed(2)} lbs<br>${angle1.toFixed(1)}°</td>
+    <td>${T2.toFixed(2)} lbs<br>${angle2.toFixed(1)}°</td>
+  `;
+  tbody.appendChild(row);
+
+  // Optional: show calculated version for known standard angles
+  angles.forEach(angle => {
+    const angleRad = angle * Math.PI / 180;
+    const l1 = H / Math.cos(angleRad);
+    const l2 = H / Math.cos(angleRad);
+    const t1 = (load * D2 * l1) / (H * (D1 + D2));
+    const t2 = (load * D1 * l2) / (H * (D1 + D2));
 
     const row = document.createElement("tr");
     row.innerHTML = `
-      <td>${angleDeg}°</td>
-      <td>${L1.toFixed(2)} ft</td>
-      <td>${L2.toFixed(2)} ft</td>
-      <td>${T1.toFixed(2)} lbs</td>
-      <td>${T2.toFixed(2)} lbs</td>
+      <td>${angle}°</td>
+      <td>${l1.toFixed(2)} ft</td>
+      <td>${l2.toFixed(2)} ft</td>
+      <td>${t1.toFixed(2)} lbs</td>
+      <td>${t2.toFixed(2)} lbs</td>
     `;
     tbody.appendChild(row);
   });
