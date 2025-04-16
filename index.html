@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Field Tools</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css">
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <header>
+    <h1>Field Tools</h1>
+    <nav>
+      <button onclick="showSection('angle')">Angle</button>
+      <button onclick="showSection('load')">Load</button>
+      <button onclick="showSection('weight')">Weight</button>
+      <button onclick="showSection('temp')">Temp</button>
+    </nav>
+  </header>
+  <main>
+    <section id="angle" class="tool">
+      <h2>Angle Calculator</h2>
+      <label>Degrees: <input type="number" id="deg" oninput="angleConvert('deg')"></label>
+      <label>Radians: <input type="number" id="rad" oninput="angleConvert('rad')"></label>
+      <label>Percent Grade: <input type="number" id="pct" oninput="angleConvert('pct')"></label>
+    </section>
+    <section id="load" class="tool hidden">
+      <h2>Load Balancer</h2>
+      <label>Total Weight (lbs): <input type="number" id="totalWeight"></label>
+      <label>Number of Supports: <input type="number" id="numSupports"></label>
+      <button onclick="calcLoad()">Calculate</button>
+      <ul id="loadOutput"></ul>
+    </section>
+    <section id="weight" class="tool hidden">
+      <h2>Weight Converter</h2>
+      <label>Value: <input type="number" id="weightInput" oninput="convertWeight()"></label>
+      <select id="weightUnit" onchange="convertWeight()">
+        <option value="lb">Pounds (lb)</option>
+        <option value="kg">Kilograms (kg)</option>
+        <option value="ton">US Tons</option>
+        <option value="kn">Kilonewtons (kN)</option>
+      </select>
+      <ul id="weightOutput"></ul>
+    </section>
+    <section id="temp" class="tool hidden">
+      <h2>Temperature Converter</h2>
+      <label>Fahrenheit: <input type="number" id="f" oninput="tempConvert('f')"></label>
+      <label>Celsius: <input type="number" id="c" oninput="tempConvert('c')"></label>
+      <label>Kelvin: <input type="number" id="k" oninput="tempConvert('k')"></label>
+    </section>
+  </main>
+</body>
+</html>
