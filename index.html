@@ -2,20 +2,21 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <!-- Prevent auto-zoom on mobile by using an initial-scale of 1 -->
+  <!-- Prevent auto-zoom on mobile -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Field Tools - Sling Load Calculator</title>
+  <title>Field Tools</title>
   
-  <!-- PWA/Apple Touch Support -->
+  <!-- PWA / Apple Support -->
   <link rel="manifest" href="manifest.json" />
   <link rel="apple-touch-icon" href="icon-192.png" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-title" content="Field Tools" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   
-  <!-- Styles -->
+  <!-- Stylesheet -->
   <link rel="stylesheet" href="style.css" />
-  <!-- Service Worker registration -->
+  
+  <!-- Register Service Worker -->
   <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('service-worker.js');
@@ -28,7 +29,7 @@
 <body>
   <header>
     <h1>Field Tools</h1>
-    <!-- Drop-down menu for tool navigation -->
+    <!-- Tools Drop-down Menu -->
     <nav>
       <label for="toolsMenu">TOOLS: </label>
       <select id="toolsMenu" onchange="window.location=this.value;">
@@ -36,14 +37,14 @@
         <option value="container.html">Container Balance</option>
         <option value="weightconversion.html">Weight Conversion</option>
         <option value="weightcalculator.html">Weight Calculator</option>
-        <option value="pressureconversion.html">Pressure Conversation</option>
+        <option value="pressureconversion.html">Pressure Conversion</option>
       </select>
     </nav>
   </header>
   
   <main>
     <div class="container">
-      <!-- This is your working Sling Load Calculator page -->
+      <!-- Sling Load Calculator Section (Working Page) -->
       <section id="sling" class="tool">
         <h2>Sling Load Calculator</h2>
         <!-- Diagram image (ensure this file exists in your repo) -->
