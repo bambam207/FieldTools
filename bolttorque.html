@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Field Tools – Bolt Torque Values</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link rel="manifest" href="manifest.json"/>
+  <link rel="apple-touch-icon" href="icon-192.png"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-title" content="Field Tools"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+  <script>
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('service-worker.js');
+  </script>
+</head>
+<body>
+  <header>
+    <h1>Field Tools</h1>
+    <nav>
+      <label for="toolsMenu">TOOLS:&nbsp;</label>
+      <select id="toolsMenu" onchange="window.location=this.value">
+        <option value="index.html">Sling Load Calculator</option>
+        <option value="container.html">Container Balance</option>
+        <option value="weightconversion.html">Weight Conversion</option>
+        <option value="weightcalculator.html">Weight Calculator</option>
+        <option value="pressureconversion.html">Pressure Conversion</option>
+        <option value="bolttorque.html" selected>Bolt Torque Values</option>
+      </select>
+    </nav>
+  </header>
+  <main class="container">
+    <section class="tool">
+      <h2>Bolt Torque Values</h2>
+      <p>This page is under construction.</p>
+    </section>
+  </main>
+</body>
+</html>
