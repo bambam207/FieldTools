@@ -2,14 +2,15 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <!-- Prevent mobile zoom on focus -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Field Tools – Container Balance</title>
   <link rel="stylesheet" href="style.css" />
-  <link rel="manifest" href="manifest.json"/>
-  <link rel="apple-touch-icon" href="icon-192.png"/>
-  <meta name="apple-mobile-web-app-capable" content="yes"/>
-  <meta name="apple-mobile-web-app-title" content="Field Tools"/>
-  <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Field Tools" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <script>
     if ('serviceWorker' in navigator) navigator.serviceWorker.register('service-worker.js');
   </script>
@@ -35,12 +36,11 @@
       <section class="tool">
         <h2>Container Balance</h2>
 
-        <!-- Diagram -->
         <img src="D59FF921-1A7D-4D24-ACED-8A1639528E03.png"
              alt="Flat Rack Diagram"
-             style="display:block;max-width:100%;margin:0 auto 20px;"/>
+             style="display:block;max-width:100%;margin:0 auto 20px;" />
 
-        <!-- Selectors -->
+        <!-- Unit selectors -->
         <label>Weight Unit:
           <select id="cbWeightUnit">
             <option value="lbs">lbs</option>
@@ -49,14 +49,12 @@
             <option value="metric_ton">Metric tons</option>
           </select>
         </label>
-
         <label>Length Unit:
           <select id="cbLengthUnit">
             <option value="ft">ft</option>
             <option value="m">m</option>
           </select>
         </label>
-
         <label>Container Type:
           <select id="cbContainerType">
             <option value="20">20 ft</option>
@@ -64,37 +62,36 @@
           </select>
         </label>
 
-        <!-- Six load entries -->
+        <!-- Up to six objects -->
         <div id="loadInputs" style="margin:20px 0;">
           <div>
-            <label>Obj 1 Weight: <input type="number" id="cbLoad1W" placeholder="—"/></label>
-            <label>Width:      <input type="number" id="cbLoad1D" placeholder="—"/></label>
+            <label>Obj 1 Weight: <input type="number" id="cbLoad1W" placeholder="—" /></label>
+            <label>Width:       <input type="number" id="cbLoad1D" placeholder="—" /></label>
           </div>
           <div>
-            <label>Obj 2 Weight: <input type="number" id="cbLoad2W" placeholder="—"/></label>
-            <label>Width:      <input type="number" id="cbLoad2D" placeholder="—"/></label>
+            <label>Obj 2 Weight: <input type="number" id="cbLoad2W" placeholder="—" /></label>
+            <label>Width:       <input type="number" id="cbLoad2D" placeholder="—" /></label>
           </div>
           <div>
-            <label>Obj 3 Weight: <input type="number" id="cbLoad3W" placeholder="—"/></label>
-            <label>Width:      <input type="number" id="cbLoad3D" placeholder="—"/></label>
+            <label>Obj 3 Weight: <input type="number" id="cbLoad3W" placeholder="—" /></label>
+            <label>Width:       <input type="number" id="cbLoad3D" placeholder="—" /></label>
           </div>
           <div>
-            <label>Obj 4 Weight: <input type="number" id="cbLoad4W" placeholder="—"/></label>
-            <label>Width:      <input type="number" id="cbLoad4D" placeholder="—"/></label>
+            <label>Obj 4 Weight: <input type="number" id="cbLoad4W" placeholder="—" /></label>
+            <label>Width:       <input type="number" id="cbLoad4D" placeholder="—" /></label>
           </div>
           <div>
-            <label>Obj 5 Weight: <input type="number" id="cbLoad5W" placeholder="—"/></label>
-            <label>Width:      <input type="number" id="cbLoad5D" placeholder="—"/></label>
+            <label>Obj 5 Weight: <input type="number" id="cbLoad5W" placeholder="—" /></label>
+            <label>Width:       <input type="number" id="cbLoad5D" placeholder="—" /></label>
           </div>
           <div>
-            <label>Obj 6 Weight: <input type="number" id="cbLoad6W" placeholder="—"/></label>
-            <label>Width:      <input type="number" id="cbLoad6D" placeholder="—"/></label>
+            <label>Obj 6 Weight: <input type="number" id="cbLoad6W" placeholder="—" /></label>
+            <label>Width:       <input type="number" id="cbLoad6D" placeholder="—" /></label>
           </div>
         </div>
 
         <button onclick="calcContainer()">Calculate</button>
 
-        <!-- Output table -->
         <table id="containerTable" style="width:100%;border-collapse:collapse;margin-top:20px;">
           <thead>
             <tr>
@@ -108,7 +105,6 @@
           <tbody></tbody>
         </table>
 
-        <!-- Overall CG summary -->
         <div id="containerResult" style="margin-top:20px;font-size:1.1em;"></div>
       </section>
     </div>
