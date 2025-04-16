@@ -2,20 +2,19 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <!-- Prevent iOS auto-zoom -->
+  <!-- Prevent auto-zoom on mobile by using an initial-scale of 1 -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Field Tools</title>
+  <title>Field Tools - Sling Load Calculator</title>
   
-  <!-- PWA and Apple Touch Support -->
+  <!-- PWA/Apple Touch Support -->
   <link rel="manifest" href="manifest.json" />
   <link rel="apple-touch-icon" href="icon-192.png" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-title" content="Field Tools" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   
-  <!-- Stylesheet -->
+  <!-- Styles -->
   <link rel="stylesheet" href="style.css" />
-  
   <!-- Service Worker registration -->
   <script>
     if ('serviceWorker' in navigator) {
@@ -29,28 +28,28 @@
 <body>
   <header>
     <h1>Field Tools</h1>
-    <!-- Tools drop-down menu -->
+    <!-- Drop-down menu for tool navigation -->
     <nav>
       <label for="toolsMenu">TOOLS: </label>
-      <select id="toolsMenu" onchange="showToolPage()">
-        <option value="sling">Sling Load Calculator</option>
-        <option value="container">Container Balance</option>
-        <option value="weightConversion">Weight Conversion</option>
-        <option value="weightCalculator">Weight Calculator</option>
-        <option value="pressureConversation">Pressure Conversation</option>
+      <select id="toolsMenu" onchange="window.location=this.value;">
+        <option value="index.html" selected>Sling Load Calculator</option>
+        <option value="container.html">Container Balance</option>
+        <option value="weightconversion.html">Weight Conversion</option>
+        <option value="weightcalculator.html">Weight Calculator</option>
+        <option value="pressureconversation.html">Pressure Conversation</option>
       </select>
     </nav>
   </header>
   
   <main>
     <div class="container">
-      <!-- Sling Load Calculator Section (working page) -->
+      <!-- This is your working Sling Load Calculator page -->
       <section id="sling" class="tool">
         <h2>Sling Load Calculator</h2>
-        <!-- Diagram image (ensure the file exists in your repo) -->
+        <!-- Diagram image (ensure this file exists in your repo) -->
         <img src="D744E2B6-1AB3-466B-A4E8-A64711BD01F5.png" alt="Sling Diagram" />
         
-        <!-- Unit selectors (if you plan to add conversion later, but you can leave them out if not used) -->
+        <!-- Unit selectors (if needed) -->
         <label>Weight Unit:
           <select id="weightUnit">
             <option value="lbs">lbs</option>
@@ -103,58 +102,6 @@
           </thead>
           <tbody></tbody>
         </table>
-      </section>
-      
-      <!-- Container Balance Section (blank) -->
-      <section id="container" class="tool hidden">
-        <h2>Container Balance</h2>
-        <label>Container Type:
-          <select id="containerType">
-            <option value="20">20ft</option>
-            <option value="40">40ft</option>
-          </select>
-        </label>
-        <p>Enter load weights for up to six loads at fixed positions along the container.</p>
-        <div id="loadInputs">
-          <label>Load 1:
-            <input type="number" id="cLoad1" placeholder="Optional" />
-          </label>
-          <label>Load 2:
-            <input type="number" id="cLoad2" placeholder="Optional" />
-          </label>
-          <label>Load 3:
-            <input type="number" id="cLoad3" placeholder="Optional" />
-          </label>
-          <label>Load 4:
-            <input type="number" id="cLoad4" placeholder="Optional" />
-          </label>
-          <label>Load 5:
-            <input type="number" id="cLoad5" placeholder="Optional" />
-          </label>
-          <label>Load 6:
-            <input type="number" id="cLoad6" placeholder="Optional" />
-          </label>
-        </div>
-        <button onclick="calcContainerBalance()">Calculate Container Balance</button>
-        <div id="containerResult"></div>
-      </section>
-      
-      <!-- Weight Conversion Section (blank) -->
-      <section id="weightConversion" class="tool hidden">
-        <h2>Weight Conversion</h2>
-        <p>This page is under construction.</p>
-      </section>
-      
-      <!-- Weight Calculator Section (blank) -->
-      <section id="weightCalculator" class="tool hidden">
-        <h2>Weight Calculator</h2>
-        <p>This page is under construction.</p>
-      </section>
-      
-      <!-- Pressure Conversation Section (blank) -->
-      <section id="pressureConversation" class="tool hidden">
-        <h2>Pressure Conversation</h2>
-        <p>This page is under construction.</p>
       </section>
     </div>
   </main>
