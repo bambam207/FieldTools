@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <!-- Prevent mobile auto‑zoom on focus -->
+  <!-- Prevent mobile zoom on focus -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Field Tools – Container Balance</title>
   <link rel="stylesheet" href="style.css" />
@@ -12,13 +12,10 @@
   <meta name="apple-mobile-web-app-title" content="Field Tools" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('service-worker.js');
-    }
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('service-worker.js');
   </script>
   <script defer src="app.js"></script>
 </head>
-
 <body>
   <header>
     <h1>Field Tools</h1>
@@ -43,7 +40,7 @@
         <img
           src="D59FF921-1A7D-4D24-ACED-8A1639528E03.png"
           alt="Flat Rack Diagram"
-          style="display:block; max-width:100%; margin:0 auto 20px;"
+          style="display:block;max-width:100%;margin:0 auto 20px;"
         />
 
         <!-- Unit selectors -->
@@ -68,31 +65,31 @@
           </select>
         </label>
 
-        <!-- Up to six objects: Weight & CG position -->
+        <!-- Up to six objects: Weight & Width -->
         <div id="loadInputs" style="margin:20px 0;">
           <div>
             <label>Obj 1 Weight: <input type="number" id="cbLoad1W" placeholder="—" /></label>
-            <label>Obj 1 CG from left: <input type="number" id="cbLoad1X" placeholder="—" /></label>
+            <label>Obj 1 Width:  <input type="number" id="cbLoad1D" placeholder="—" /></label>
           </div>
           <div>
             <label>Obj 2 Weight: <input type="number" id="cbLoad2W" placeholder="—" /></label>
-            <label>Obj 2 CG from left: <input type="number" id="cbLoad2X" placeholder="—" /></label>
+            <label>Obj 2 Width:  <input type="number" id="cbLoad2D" placeholder="—" /></label>
           </div>
           <div>
             <label>Obj 3 Weight: <input type="number" id="cbLoad3W" placeholder="—" /></label>
-            <label>Obj 3 CG from left: <input type="number" id="cbLoad3X" placeholder="—" /></label>
+            <label>Obj 3 Width:  <input type="number" id="cbLoad3D" placeholder="—" /></label>
           </div>
           <div>
             <label>Obj 4 Weight: <input type="number" id="cbLoad4W" placeholder="—" /></label>
-            <label>Obj 4 CG from left: <input type="number" id="cbLoad4X" placeholder="—" /></label>
+            <label>Obj 4 Width:  <input type="number" id="cbLoad4D" placeholder="—" /></label>
           </div>
           <div>
             <label>Obj 5 Weight: <input type="number" id="cbLoad5W" placeholder="—" /></label>
-            <label>Obj 5 CG from left: <input type="number" id="cbLoad5X" placeholder="—" /></label>
+            <label>Obj 5 Width:  <input type="number" id="cbLoad5D" placeholder="—" /></label>
           </div>
           <div>
             <label>Obj 6 Weight: <input type="number" id="cbLoad6W" placeholder="—" /></label>
-            <label>Obj 6 CG from left: <input type="number" id="cbLoad6X" placeholder="—" /></label>
+            <label>Obj 6 Width:  <input type="number" id="cbLoad6D" placeholder="—" /></label>
           </div>
         </div>
 
@@ -104,6 +101,7 @@
             <tr>
               <th style="border:1px solid #ccc;padding:8px">Object</th>
               <th style="border:1px solid #ccc;padding:8px">Weight</th>
+              <th style="border:1px solid #ccc;padding:8px">Width</th>
               <th style="border:1px solid #ccc;padding:8px">CG Pos</th>
             </tr>
           </thead>
