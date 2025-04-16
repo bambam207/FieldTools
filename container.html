@@ -2,32 +2,24 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>Field Tools</title>
 
-  <!-- Your stylesheet -->
   <link rel="stylesheet" href="style.css"/>
-
-  <!-- PWA / iOS support -->
   <link rel="manifest" href="manifest.json"/>
   <link rel="apple-touch-icon" href="icon-192.png"/>
   <meta name="apple-mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-title" content="Field Tools"/>
   <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
 
-  <!-- Simple hide/show CSS -->
   <style>
     .hidden { display: none; }
+    /* tweak spacing if you like */
   </style>
 
-  <!-- Service worker -->
   <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('service-worker.js');
-    }
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('service-worker.js');
   </script>
-
-  <!-- Your logic -->
   <script defer src="app.js"></script>
 </head>
 <body>
@@ -64,20 +56,16 @@
           </select>
         </label>
         <label>Total Load: <input type="number" id="load" placeholder="Required"/></label>
-        <label>D1: <input type="number" id="d1" placeholder="Required"/></label>
-        <label>D2: <input type="number" id="d2" placeholder="Required"/></label>
-        <label>Hook Height: <input type="number" id="height" placeholder="Optional"/></label>
-        <label>L1: <input type="number" id="l1" placeholder="Optional"/></label>
-        <label>L2: <input type="number" id="l2" placeholder="Optional"/></label>
+        <label>D1:         <input type="number" id="d1"    placeholder="Required"/></label>
+        <label>D2:         <input type="number" id="d2"    placeholder="Required"/></label>
+        <label>Hook H:     <input type="number" id="height"placeholder="Optional"/></label>
+        <label>L1:         <input type="number" id="l1"   placeholder="Optional"/></label>
+        <label>L2:         <input type="number" id="l2"   placeholder="Optional"/></label>
         <button onclick="calcSling()">Calculate</button>
         <table id="resultTable" style="width:100%;border-collapse:collapse;margin-top:1em;">
           <thead>
             <tr>
-              <th>Mode</th>
-              <th>L1 & Angle</th>
-              <th>L2 & Angle</th>
-              <th>T1</th>
-              <th>T2</th>
+              <th>Mode</th><th>L1 & Angle</th><th>L2 & Angle</th><th>T1</th><th>T2</th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -141,17 +129,14 @@
         <table id="containerTable" style="width:100%;border-collapse:collapse;margin-top:1em;">
           <thead>
             <tr>
-              <th>Object</th>
-              <th>Weight</th>
-              <th>Width</th>
-              <th>CG Pos</th>
+              <th>Object</th><th>Weight</th><th>Width</th><th>CG Pos</th>
             </tr>
           </thead>
           <tbody></tbody>
         </table>
-
         <div id="containerResult" style="margin-top:1em;font-size:1.1em;"></div>
       </section>
+
     </div>
   </main>
 
