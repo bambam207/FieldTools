@@ -63,8 +63,12 @@
       <label>Right Sling Length (L2): <input type="number" id="slingL2"></label>
       <label>Distance to CG from Left Pick Point (D1): <input type="number" id="slingD1"></label>
       <label>Distance to CG from Right Pick Point (D2): <input type="number" id="slingD2"></label>
+      <label>Vertical Height (H): <input type="number" id="slingH"></label>
       <button onclick="calcSlingLoad()">Calculate</button>
       <ul id="slingOutput"></ul>
+      <label for="pdfFilename" style="margin-top: 10px;">File Name (no .pdf):</label>
+      <input type="text" id="pdfFilename" placeholder="sling-report">
+      <button onclick="downloadSlingPDF()" style="margin-top: 10px;">Save Results as PDF</button>
     </section>
   </main>
 </body>
