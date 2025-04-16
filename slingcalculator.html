@@ -10,6 +10,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-title" content="Field Tools"/>
   <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+
   <script>
     if ('serviceWorker' in navigator) navigator.serviceWorker.register('service-worker.js');
   </script>
@@ -21,7 +22,8 @@
     <nav>
       <label for="toolsMenu">TOOLS:&nbsp;</label>
       <select id="toolsMenu" onchange="window.location=this.value">
-        <option value="index.html" selected>Sling Load Calculator</option>
+        <option value="index.html">Home</option>
+        <option value="slingcalculator.html" selected>Sling Load Calculator</option>
         <option value="container.html">Container Balance</option>
         <option value="weightconversion.html">Weight Conversion</option>
         <option value="weightcalculator.html">Weight Calculator</option>
@@ -54,12 +56,12 @@
         </select>
       </label>
 
-      <label>Total Load:    <input type="number" id="load"    placeholder="Required"/></label>
-      <label>D1:              <input type="number" id="d1"      placeholder="Required"/></label>
-      <label>D2:              <input type="number" id="d2"      placeholder="Required"/></label>
-      <label>Hook Height:     <input type="number" id="height" placeholder="Optional"/></label>
-      <label>L1:              <input type="number" id="l1"     placeholder="Optional"/></label>
-      <label>L2:              <input type="number" id="l2"     placeholder="Optional"/></label>
+      <label>Total Load: <input type="number" id="load" placeholder="Required"/></label>
+      <label>D1:         <input type="number" id="d1"   placeholder="Required"/></label>
+      <label>D2:         <input type="number" id="d2"   placeholder="Required"/></label>
+      <label>Hook Height:<input type="number" id="height" placeholder="Optional"/></label>
+      <label>L1:         <input type="number" id="l1"    placeholder="Optional"/></label>
+      <label>L2:         <input type="number" id="l2"    placeholder="Optional"/></label>
 
       <button onclick="calcSling()">Calculate</button>
 
