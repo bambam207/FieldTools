@@ -1,99 +1,113 @@
-function calcContainer() {
-  // 1) Read selectors
-  const wUnit = document.getElementById('cbWeightUnit').value;   // "lbs","kg","us_ton","metric_ton"
-  const lUnit = document.getElementById('cbLengthUnit').value;   // "ft" or "m"
-  const cType = parseFloat(document.getElementById('cbContainerType').value); // e.g. 40
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <!-- Prevent mobile zoom on focus -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Field Tools – Container Balance</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Field Tools" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <script>
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('service-worker.js');
+  </script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <header>
+    <h1>Field Tools</h1>
+    <nav>
+      <label for="toolsMenu">TOOLS:&nbsp;</label>
+      <select id="toolsMenu" onchange="window.location=this.value">
+        <option value="index.html">Sling Load Calculator</option>
+        <option value="container.html" selected>Container Balance</option>
+        <option value="weightconversion.html">Weight Conversion</option>
+        <option value="weightcalculator.html">Weight Calculator</option>
+        <option value="pressureconversion.html">Pressure Conversion</option>
+      </select>
+    </nav>
+  </header>
 
-  // 2) Conversion helpers
-  const toFeet      = v => v;                  // input in ft
-  const toFeetFromM = v => v / 0.3048;         // input in m
-  const toLbsFromKg = v => v * 2.20462;        // input in kg
-  const toLbsFromUS = v => v * 2000;           // input in US tons
-  const toLbsFromMT = v => v * 2204.62;        // input in metric tons
-  const fromLbs     = (v,unit) => {
-    if(unit==='kg') return (v/2.20462).toFixed(2);
-    if(unit==='us_ton') return (v/2000).toFixed(2);
-    if(unit==='metric_ton') return (v/2204.62).toFixed(2);
-    return v.toFixed(2);                     // lbs
-  };
+  <main>
+    <div class="container">
+      <section class="tool">
+        <h2>Container Balance</h2>
 
-  // 3) Desired CG
-  const L = cType;         // container length in ft
-  const C = L/2;           // desired center in ft
+        <img src="D59FF921-1A7D-4D24-ACED-8A1639528E03.png"
+             alt="Flat Rack Diagram"
+             style="display:block;max-width:100%;margin:0 auto 20px;" />
 
-  // 4) Gather objects
-  let weights = [], widths = [];
-  for (let i = 1; i <= 6; i++) {
-    const wRaw = parseFloat(document.getElementById(`cbLoad${i}W`).value);
-    const dRaw = parseFloat(document.getElementById(`cbLoad${i}D`).value);
-    if (!isNaN(wRaw) && !isNaN(dRaw)) {
-      // Convert to base units (lbs, ft)
-      let wLbs = wRaw;
-      if (wUnit==='kg')        wLbs = toLbsFromKg(wRaw);
-      else if (wUnit==='us_ton')   wLbs = toLbsFromUS(wRaw);
-      else if (wUnit==='metric_ton') wLbs = toLbsFromMT(wRaw);
+        <!-- Unit selectors -->
+        <label>Weight Unit:
+          <select id="cbWeightUnit">
+            <option value="lbs">lbs</option>
+            <option value="us_ton">US tons</option>
+            <option value="kg">kg</option>
+            <option value="metric_ton">Metric tons</option>
+          </select>
+        </label>
+        <label>Length Unit:
+          <select id="cbLengthUnit">
+            <option value="ft">ft</option>
+            <option value="m">m</option>
+          </select>
+        </label>
+        <label>Container Type:
+          <select id="cbContainerType">
+            <option value="20">20 ft</option>
+            <option value="40">40 ft</option>
+          </select>
+        </label>
 
-      let dFt = (lUnit==='m') ? toFeetFromM(dRaw) : toFeet(dRaw);
+        <!-- Up to six objects -->
+        <div id="loadInputs" style="margin:20px 0;">
+          <div>
+            <label>Obj 1 Weight: <input type="number" id="cbLoad1W" placeholder="—" /></label>
+            <label>Width:       <input type="number" id="cbLoad1D" placeholder="—" /></label>
+          </div>
+          <div>
+            <label>Obj 2 Weight: <input type="number" id="cbLoad2W" placeholder="—" /></label>
+            <label>Width:       <input type="number" id="cbLoad2D" placeholder="—" /></label>
+          </div>
+          <div>
+            <label>Obj 3 Weight: <input type="number" id="cbLoad3W" placeholder="—" /></label>
+            <label>Width:       <input type="number" id="cbLoad3D" placeholder="—" /></label>
+          </div>
+          <div>
+            <label>Obj 4 Weight: <input type="number" id="cbLoad4W" placeholder="—" /></label>
+            <label>Width:       <input type="number" id="cbLoad4D" placeholder="—" /></label>
+          </div>
+          <div>
+            <label>Obj 5 Weight: <input type="number" id="cbLoad5W" placeholder="—" /></label>
+            <label>Width:       <input type="number" id="cbLoad5D" placeholder="—" /></label>
+          </div>
+          <div>
+            <label>Obj 6 Weight: <input type="number" id="cbLoad6W" placeholder="—" /></label>
+            <label>Width:       <input type="number" id="cbLoad6D" placeholder="—" /></label>
+          </div>
+        </div>
 
-      weights.push(wLbs);
-      widths.push(dFt);
-    }
-  }
+        <button onclick="calcContainer()">Calculate</button>
 
-  const n = weights.length;
-  if (n === 0) {
-    document.getElementById('containerResult').textContent = 'Enter at least one object.';
-    return;
-  }
+        <table id="containerTable" style="width:100%;border-collapse:collapse;margin-top:20px;">
+          <thead>
+            <tr>
+              <th style="border:1px solid #ccc;padding:8px">Object</th>
+              <th style="border:1px solid #ccc;padding:8px">Weight</th>
+              <th style="border:1px solid #ccc;padding:8px">Width</th>
+              <th style="border:1px solid #ccc;padding:8px">CG Pos</th>
+              <th style="border:1px solid #ccc;padding:8px">Left Edge</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
 
-  // 5) Compute prefix widths P_i and moment M0
-  let W = 0, M0 = 0;
-  const P = new Array(n).fill(0);
-  for (let i = 0; i < n; i++) {
-    if (i > 0) P[i] = P[i-1] + widths[i-1];
-    W += weights[i];
-    M0 += weights[i] * (P[i] + widths[i]/2);
-  }
-
-  // 6) Solve x1 = (W*C - M0)/W
-  const x1 = (W*C - M0)/W;
-
-  // 7) Build table
-  const tbody = document.querySelector('#containerTable tbody');
-  tbody.innerHTML = '';
-  let cumW = 0, cumM = 0;
-  for (let i = 0; i < n; i++) {
-    const leftFt = x1 + P[i];
-    const cgFt   = leftFt + widths[i]/2;
-
-    // Update cumulatives
-    cumW += weights[i];
-    cumM += weights[i] * cgFt;
-
-    // Convert back to display units
-    const leftDisp = (lUnit==='m' ? (leftFt*0.3048).toFixed(2) : leftFt.toFixed(2));
-    const cgDisp   = (lUnit==='m' ? (cgFt*0.3048).toFixed(2) : cgFt.toFixed(2));
-    const wDisp    = fromLbs(weights[i], wUnit);
-    const dDisp    = (lUnit==='m' ? (widths[i]*0.3048).toFixed(2) : widths[i].toFixed(2));
-
-    const row = document.createElement('tr');
-    row.innerHTML = `
-      <td style="border:1px solid #ccc;padding:8px">Obj ${i+1}</td>
-      <td style="border:1px solid #ccc;padding:8px">${wDisp} ${wUnit}</td>
-      <td style="border:1px solid #ccc;padding:8px">${dDisp} ${lUnit}</td>
-      <td style="border:1px solid #ccc;padding:8px">${cgDisp} ${lUnit}</td>
-      <td style="border:1px solid #ccc;padding:8px">${leftDisp} ${lUnit}</td>
-    `;
-    tbody.appendChild(row);
-  }
-
-  // 8) Summary
-  const overallCGFt = cumM/cumW;
-  const overallCGDisp = (lUnit==='m'? (overallCGFt*0.3048).toFixed(2) : overallCGFt.toFixed(2));
-  const totalLoadDisp= fromLbs(cumW, wUnit);
-  document.getElementById('containerResult').innerHTML = `
-    Total Load: ${totalLoadDisp} ${wUnit}<br>
-    Overall CG: ${overallCGDisp} ${lUnit} from left 
-    (${((overallCGFt/L)*100).toFixed(1)}% of length)
-  `;
-}
+        <div id="containerResult" style="margin-top:20px;font-size:1.1em;"></div>
+      </section>
+    </div>
+  </main>
+</body>
+</html>
