@@ -1,4 +1,4 @@
-// (Keep your Sling Calculator functions unchanged)
+// Sling Load Calculator function
 function calcSling() {
   const load = parseFloat(document.getElementById('load').value);
   const D1 = parseFloat(document.getElementById('d1').value);
