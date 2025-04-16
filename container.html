@@ -2,35 +2,35 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <!-- Prevent iOS auto‑zoom -->
+  <!-- Prevent mobile zooming when inputs are focused -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Field Tools – Container Balance</title>
 
-  <!-- PWA / Apple Touch Support -->
+  <!-- PWA + Apple Touch Support (if you use them) -->
   <link rel="manifest" href="manifest.json" />
   <link rel="apple-touch-icon" href="icon-192.png" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-title" content="Field Tools" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
 
-  <!-- Stylesheet -->
+  <!-- Your existing CSS -->
   <link rel="stylesheet" href="style.css" />
 
-  <!-- Service Worker Registration -->
+  <!-- Register Service Worker -->
   <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('service-worker.js');
     }
   </script>
 
-  <!-- App Logic -->
+  <!-- Your existing app.js (with calcContainer) -->
   <script defer src="app.js"></script>
 </head>
 <body>
   <header>
     <h1>Field Tools</h1>
     <nav>
-      <label for="toolsMenu">TOOLS: </label>
+      <label for="toolsMenu">TOOLS:&nbsp;</label>
       <select id="toolsMenu" onchange="window.location=this.value">
         <option value="index.html">Sling Load Calculator</option>
         <option value="container.html" selected>Container Balance</option>
@@ -50,16 +50,16 @@
         <img
           src="D59FF921-1A7D-4D24-ACED-8A1639528E03.png"
           alt="Flat Rack Diagram"
-          style="width:100%; max-width:500px; margin-bottom:20px;"
+          style="display:block; max-width:100%; margin:0 auto 20px;"
         />
 
         <!-- Unit selectors -->
         <label>Weight Unit:
           <select id="cbWeightUnit">
             <option value="lbs">lbs</option>
-            <option value="us_ton">US tons</option>
+            <option value="us_ton">US tons</option>
             <option value="kg">kg</option>
-            <option value="metric_ton">Metric tons</option>
+            <option value="metric_ton">Metric tons</option>
           </select>
         </label>
 
@@ -72,12 +72,12 @@
 
         <label>Container Type:
           <select id="cbContainerType">
-            <option value="20">20 ft</option>
-            <option value="40">40 ft</option>
+            <option value="20">20 ft</option>
+            <option value="40">40 ft</option>
           </select>
         </label>
 
-        <!-- Six load inputs -->
+        <!-- Six optional load fields -->
         <div id="loadInputs" style="margin:20px 0;">
           <label>Load 1: <input type="number" id="cbLoad1" placeholder="Optional" /></label>
           <label>Load 2: <input type="number" id="cbLoad2" placeholder="Optional" /></label>
@@ -90,18 +90,18 @@
         <button onclick="calcContainer()">Calculate</button>
 
         <!-- Results Table -->
-        <table id="containerTable" style="margin-top:20px;">
+        <table id="containerTable" style="margin-top:20px; width:100%; border-collapse:collapse;">
           <thead>
             <tr>
-              <th>Object</th>
-              <th>Weight</th>
-              <th>Position (from left)</th>
+              <th style="border:1px solid #ccc; padding:8px;">Object</th>
+              <th style="border:1px solid #ccc; padding:8px;">Weight</th>
+              <th style="border:1px solid #ccc; padding:8px;">Position (from left)</th>
             </tr>
           </thead>
           <tbody></tbody>
         </table>
 
-        <!-- Summary of overall CG -->
+        <!-- Overall CG summary -->
         <div id="containerResult" style="margin-top:20px; font-size:1.1em;"></div>
       </section>
     </div>
