@@ -1,37 +1,38 @@
-const CACHE_NAME = 'field-tools-cache-v1';
-const FILES_TO_CACHE = [
-  '/',
-  '/index.html',
-  '/style.css',
-  '/app.js',
-  '/manifest.json'
-];
-self.addEventListener('install', (evt) => {
-  evt.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(FILES_TO_CACHE);
+// Install the service worker and cache app files
+self.addEventListener('install', event => {
+  event.waitUntil(
+    caches.open('field-tools-cache').then(cache => {
+      return cache.addAll([
+        './index.html',
+        './style.css',
+        './app.js',
+        './manifest.json',
+        './icon.png',
+        './D744E2B6-1AB3-466B-A4E8-A64711BD01F5.png'
+      ]);
     })
   );
-  self.skipWaiting();
+  self.skipWaiting(); // Activate immediately
 });
-self.addEventListener('activate', (evt) => {
-  evt.waitUntil(
-    caches.keys().then((keyList) =>
+
+// Intercept requests and serve from cache first
+self.addEventListener('fetch', event => {
+  event.respondWith(
+    caches.match(event.request).then(response => {
+      return response || fetch(event.request);
+    })
+  );
+});
+
+// Activate and remove old caches if necessary
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    caches.keys().then(keys =>
       Promise.all(
-        keyList.map((key) => {
-          if (key !== CACHE_NAME) {
-            return caches.delete(key);
-          }
-        })
+        keys.filter(key => key !== 'field-tools-cache')
+            .map(key => caches.delete(key))
       )
     )
   );
   self.clients.claim();
-});
-self.addEventListener('fetch', (evt) => {
-  evt.respondWith(
-    caches.match(evt.request).then((response) => {
-      return response || fetch(evt.request);
-    })
-  );
 });
