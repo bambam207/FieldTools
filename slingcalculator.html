@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Field Tools – Sling Load Calculator</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link rel="manifest" href="manifest.json"/>
+  <link rel="apple-touch-icon" href="icon-192.png"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-title" content="Field Tools"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+  <script>
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('service-worker.js');
+  </script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <header>
+    <h1>Field Tools</h1>
+    <nav>
+      <label for="toolsMenu">TOOLS:&nbsp;</label>
+      <select id="toolsMenu" onchange="window.location=this.value">
+        <option value="index.html" selected>Sling Load Calculator</option>
+        <option value="container.html">Container Balance</option>
+        <option value="weightconversion.html">Weight Conversion</option>
+        <option value="weightcalculator.html">Weight Calculator</option>
+        <option value="pressureconversion.html">Pressure Conversion</option>
+        <option value="bolttorque.html">Bolt Torque Values</option>
+      </select>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="tool">
+      <h2>Sling Load Calculator</h2>
+      <img src="D744E2B6-1AB3-466B-A4E8-A64711BD01F5.png"
+           alt="Sling Diagram"
+           style="max-width:100%;height:auto;margin-bottom:1em;"/>
+
+      <label>Weight Unit:
+        <select id="weightUnit">
+          <option value="lbs">lbs</option>
+          <option value="us_ton">US Ton</option>
+          <option value="kg">kg</option>
+          <option value="metric_ton">Metric Ton</option>
+        </select>
+      </label>
+
+      <label>Length Unit:
+        <select id="lengthUnit">
+          <option value="ft">ft</option>
+          <option value="m">m</option>
+        </select>
+      </label>
+
+      <label>Total Load:    <input type="number" id="load"    placeholder="Required"/></label>
+      <label>D1:              <input type="number" id="d1"      placeholder="Required"/></label>
+      <label>D2:              <input type="number" id="d2"      placeholder="Required"/></label>
+      <label>Hook Height:     <input type="number" id="height" placeholder="Optional"/></label>
+      <label>L1:              <input type="number" id="l1"     placeholder="Optional"/></label>
+      <label>L2:              <input type="number" id="l2"     placeholder="Optional"/></label>
+
+      <button onclick="calcSling()">Calculate</button>
+
+      <table id="resultTable"
+             style="width:100%;border-collapse:collapse;margin-top:1em;">
+        <thead>
+          <tr>
+            <th>Mode</th><th>L1 &amp; Angle</th><th>L2 &amp; Angle</th><th>T1</th><th>T2</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+  </main>
+</body>
+</html>
