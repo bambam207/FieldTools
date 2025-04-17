@@ -1,80 +1,183 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <title>Field Tools – Sling Load Calculator</title>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Field Tools – Sling Load Calculator</title>
   <link rel="stylesheet" href="style.css"/>
-  <link rel="manifest" href="manifest.json"/>
-  <link rel="apple-touch-icon" href="icon-192.png"/>
-  <meta name="apple-mobile-web-app-capable" content="yes"/>
-  <meta name="apple-mobile-web-app-title" content="Field Tools"/>
-  <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
-
-  <script>
-    if ('serviceWorker' in navigator) navigator.serviceWorker.register('service-worker.js');
-  </script>
-  <script defer src="app.js"></script>
+  <style>
+    /* quick centering & spacing */
+    body { font-family:sans-serif; padding:1rem; }
+    .container { max-width:480px; margin:0 auto; }
+    .row { margin-bottom:0.75rem; }
+    label { display:block; margin-bottom:0.25rem; }
+    input, select, button { width:100%; padding:0.5rem; box-sizing:border-box; }
+    button { margin-top:1rem; }
+    table { width:100%; border-collapse:collapse; margin-top:1rem; }
+    th, td { border:1px solid #444; padding:0.5rem; text-align:center; }
+  </style>
 </head>
 <body>
-  <header>
-    <h1>Field Tools</h1>
-    <nav>
-      <label for="toolsMenu">TOOLS:&nbsp;</label>
-      <select id="toolsMenu" onchange="window.location=this.value">
-        <option value="index.html">Home</option>
-        <option value="slingcalculator.html" selected>Sling Load Calculator</option>
-        <option value="container.html">Container Balance</option>
-        <option value="weightconversion.html">Weight Conversion</option>
-        <option value="weightcalculator.html">Weight Calculator</option>
-        <option value="pressureconversion.html">Pressure Conversion</option>
-        <option value="bolttorque.html">Bolt Torque Values</option>
+  <div class="container">
+    <h1>Sling Load Calculator</h1>
+
+    <div class="row">
+      <label for="weightUnit">Weight Unit:</label>
+      <select id="weightUnit">
+        <option value="lbs">lbs</option>
+        <option value="kg">kg</option>
+        <option value="us_ton">US tons</option>
+        <option value="metric_ton">metric tons</option>
       </select>
-    </nav>
-  </header>
+    </div>
 
-  <main class="container">
-    <section class="tool">
-      <h2>Sling Load Calculator</h2>
-      <img src="D744E2B6-1AB3-466B-A4E8-A64711BD01F5.png"
-           alt="Sling Diagram"
-           style="max-width:100%;height:auto;margin-bottom:1em;"/>
+    <div class="row">
+      <label for="lengthUnit">Length Unit:</label>
+      <select id="lengthUnit">
+        <option value="ft">ft</option>
+        <option value="m">m</option>
+      </select>
+    </div>
 
-      <label>Weight Unit:
-        <select id="weightUnit">
-          <option value="lbs">lbs</option>
-          <option value="us_ton">US Ton</option>
-          <option value="kg">kg</option>
-          <option value="metric_ton">Metric Ton</option>
-        </select>
-      </label>
+    <div class="row">
+      <label for="load">Total Load:</label>
+      <input id="load" type="number" placeholder="Required"/>
+    </div>
 
-      <label>Length Unit:
-        <select id="lengthUnit">
-          <option value="ft">ft</option>
-          <option value="m">m</option>
-        </select>
-      </label>
+    <div class="row">
+      <label for="d1">Distance to CG from Left (D1):</label>
+      <input id="d1" type="number" placeholder="Required"/>
+    </div>
 
-      <label>Total Load: <input type="number" id="load" placeholder="Required"/></label>
-      <label>D1:         <input type="number" id="d1"   placeholder="Required"/></label>
-      <label>D2:         <input type="number" id="d2"   placeholder="Required"/></label>
-      <label>Hook Height:<input type="number" id="height" placeholder="Optional"/></label>
-      <label>L1:         <input type="number" id="l1"    placeholder="Optional"/></label>
-      <label>L2:         <input type="number" id="l2"    placeholder="Optional"/></label>
+    <div class="row">
+      <label for="d2">Distance to CG from Right (D2):</label>
+      <input id="d2" type="number" placeholder="Required"/>
+    </div>
 
-      <button onclick="calcSling()">Calculate</button>
+    <div class="row">
+      <label for="height">Vertical Hook Height (H) [opt]:</label>
+      <input id="height" type="number" placeholder="Optional"/>
+    </div>
 
-      <table id="resultTable"
-             style="width:100%;border-collapse:collapse;margin-top:1em;">
-        <thead>
-          <tr>
-            <th>Mode</th><th>L1 &amp; Angle</th><th>L2 &amp; Angle</th><th>T1</th><th>T2</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </section>
-  </main>
+    <div class="row">
+      <label for="l1">Left Sling Length (L1) [opt]:</label>
+      <input id="l1" type="number" placeholder="Optional"/>
+    </div>
+
+    <div class="row">
+      <label for="l2">Right Sling Length (L2) [opt]:</label>
+      <input id="l2" type="number" placeholder="Optional"/>
+    </div>
+
+    <button id="go">Calculate</button>
+
+    <table id="resultTable">
+      <thead>
+        <tr>
+          <th>Mode</th>
+          <th>L1 &amp; Angle</th>
+          <th>L2 &amp; Angle</th>
+          <th>Tension 1</th>
+          <th>Tension 2</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <script>
+  // Unit conversion factors
+  function getConversionFactors() {
+    const wU = document.getElementById('weightUnit').value;
+    const lU = document.getElementById('lengthUnit').value;
+    let wf = 1, wD = 'lbs';
+    if(wU==='kg'){ wf=2.20462; wD='kg'; }
+    if(wU==='us_ton'){ wf=2000; wD='US tons'; }
+    if(wU==='metric_ton'){ wf=2204.62; wD='metric tons'; }
+    let lf = 1, lD = 'ft';
+    if(lU==='m'){ lf=3.28084; lD='m'; }
+    return { wf, lf, wD, lD };
+  }
+
+  function calcSling() {
+    const { wf, lf, wD, lD } = getConversionFactors();
+    const load = parseFloat(document.getElementById('load').value) * wf;
+    const D1   = parseFloat(document.getElementById('d1').value)   * lf;
+    const D2   = parseFloat(document.getElementById('d2').value)   * lf;
+    const Hin  = document.getElementById('height').value;
+    const L1in = document.getElementById('l1').value;
+    const L2in = document.getElementById('l2').value;
+    const tbody = document.querySelector('#resultTable tbody');
+    tbody.innerHTML = '';
+
+    if(isNaN(load)||isNaN(D1)||isNaN(D2)) {
+      tbody.innerHTML = '<tr><td colspan="5">Please fill Load, D1 & D2.</td></tr>';
+      return;
+    }
+
+    const hasH = Hin!=='' && !isNaN(parseFloat(Hin));
+    const hasL = L1in!=='' && L2in!=='' && !isNaN(parseFloat(L1in)) && !isNaN(parseFloat(L2in));
+
+    // Presets
+    if(!hasH && !hasL) {
+      [60,50,45,35].forEach(deg=>{
+        const θ   = deg*Math.PI/180;
+        const L1b = D1/Math.cos(θ);
+        const L2b = D2/Math.cos(θ);
+        const H1  = D1*Math.tan(θ);
+        const H2  = D2*Math.tan(θ);
+        const T1  = load*D2*L1b/(H1*(D1+D2));
+        const T2  = load*D1*L2b/(H2*(D1+D2));
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>Preset ${deg}°</td>
+          <td>${(L1b/lf).toFixed(2)} ${lD}<br>${deg}°</td>
+          <td>${(L2b/lf).toFixed(2)} ${lD}<br>${deg}°</td>
+          <td>${(T1/wf).toFixed(2)} ${wD}</td>
+          <td>${(T2/wf).toFixed(2)} ${wD}</td>
+        `;
+        tbody.appendChild(row);
+      });
+      return;
+    }
+
+    // Manual or Auto legs
+    let mode, L1b, L2b;
+    if(hasL) {
+      L1b = parseFloat(L1in)*lf;
+      L2b = parseFloat(L2in)*lf;
+      mode='Manual Legs';
+    } else {
+      const H = parseFloat(Hin)*lf;
+      L1b = Math.hypot(D1,H);
+      L2b = Math.hypot(D2,H);
+      mode='From Height';
+    }
+
+    const H1 = Math.sqrt(L1b*L1b - D1*D1);
+    const H2 = Math.sqrt(L2b*L2b - D2*D2);
+    if(isNaN(H1)||isNaN(H2)||H1<=0||H2<=0) {
+      tbody.innerHTML = '<tr><td colspan="5">Invalid geometry.</td></tr>';
+      return;
+    }
+
+    const a1 = Math.asin(H1/L1b)*180/Math.PI;
+    const a2 = Math.asin(H2/L2b)*180/Math.PI;
+    const T1 = load*D2*L1b/(H1*(D1+D2));
+    const T2 = load*D1*L2b/(H2*(D1+D2));
+
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>${mode}</td>
+      <td>${(L1b/lf).toFixed(2)} ${lD}<br>${a1.toFixed(1)}°</td>
+      <td>${(L2b/lf).toFixed(2)} ${lD}<br>${a2.toFixed(1)}°</td>
+      <td>${(T1/wf).toFixed(2)} ${wD}</td>
+      <td>${(T2/wf).toFixed(2)} ${wD}</td>
+    `;
+    tbody.appendChild(row);
+  }
+
+  document.getElementById('go').addEventListener('click', calcSling);
+  </script>
 </body>
 </html>
