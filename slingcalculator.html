@@ -1,84 +1,149 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta
-    name="viewport"
-    content="width=device-width,initial-scale=1,maximum-scale=1"
-  />
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Field Tools – Sling Load Calculator</title>
-  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* reset a bit */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: sans-serif;
+      background: #f9f9f9;
+      color: #222;
+      padding: 0;
+    }
+    header {
+      background: #333;
+      color: #fff;
+      padding: 1rem;
+      text-align: center;
+    }
+    main {
+      max-width: 480px;
+      margin: 1rem auto;
+      padding: 0 1rem;
+    }
+    img.diagram {
+      width: 100%;
+      max-width: 400px;
+      display: block;
+      margin: 1rem auto;
+    }
+    .form-row {
+      display: flex;
+      flex-wrap: wrap;
+      margin-bottom: 0.75rem;
+      gap: 0.5rem;
+    }
+    .form-row label {
+      flex: 1 0 45%;
+      min-width: 120px;
+      line-height: 1.4;
+    }
+    .form-row select,
+    .form-row input {
+      flex: 1 0 45%;
+      padding: 0.4rem;
+      font-size: 1rem;
+    }
+    button#calcBtn {
+      display: block;
+      width: 100%;
+      background: #444;
+      color: #fff;
+      border: none;
+      padding: 0.75rem;
+      font-size: 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      margin: 1rem 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 2rem;
+    }
+    th {
+      background: #333;
+      color: #fff;
+      padding: 0.6rem;
+    }
+    td {
+      border: 1px solid #666;
+      padding: 0.5rem;
+      text-align: center;
+      background: #fff;
+    }
+    td[colspan] { text-align: left; color: #b00; }
+  </style>
 </head>
 <body>
+
   <header>
     <h1>Sling Load Calculator</h1>
   </header>
 
-  <main class="container">
-    <!-- your diagram file: -->
+  <main>
+    <!-- diagram -->
     <img
       src="D744E2B6-1AB3-466B-A4E8-A64711BD01F5.png"
       alt="Sling load diagram"
-      style="width:100%;max-width:400px;display:block;margin:1rem auto"
+      class="diagram"
     />
 
-    <!-- controls -->
-    <div class="row">
-      <label for="weightUnit">Weight Unit:</label>
+    <!-- row 1: units -->
+    <div class="form-row">
+      <label for="weightUnit">Weight Unit:</label>
       <select id="weightUnit">
         <option value="lbs">lbs</option>
         <option value="kg">kg</option>
         <option value="us_ton">US tons</option>
         <option value="metric_ton">metric tons</option>
       </select>
-    </div>
 
-    <div class="row">
-      <label for="lengthUnit">Length Unit:</label>
+      <label for="lengthUnit">Length Unit:</label>
       <select id="lengthUnit">
         <option value="ft">ft</option>
         <option value="m">m</option>
       </select>
     </div>
 
-    <div class="row">
-      <label for="load">Total Load:</label>
-      <input id="load" type="number" placeholder="Required" />
-    </div>
+    <!-- row 2: required inputs -->
+    <div class="form-row">
+      <label for="load">Total Load:</label>
+      <input id="load" type="number" placeholder="Required"/>
 
-    <div class="row">
       <label for="d1">D1 (left CG):</label>
-      <input id="d1" type="number" placeholder="Required" />
+      <input id="d1" type="number" placeholder="Required"/>
     </div>
 
-    <div class="row">
+    <div class="form-row">
       <label for="d2">D2 (right CG):</label>
-      <input id="d2" type="number" placeholder="Required" />
+      <input id="d2" type="number" placeholder="Required"/>
     </div>
 
-    <div class="row">
-      <label for="height">Hook Height (H) [opt]:</label>
-      <input id="height" type="number" placeholder="Optional" />
+    <!-- row 3: optional -->
+    <div class="form-row">
+      <label for="height">Hook Height (H) [opt]:</label>
+      <input id="height" type="number" placeholder="Optional"/>
+
+      <label for="l1">Left Sling (L1) [opt]:</label>
+      <input id="l1" type="number" placeholder="Optional"/>
+    </div>
+    <div class="form-row">
+      <label for="l2">Right Sling (L2) [opt]:</label>
+      <input id="l2" type="number" placeholder="Optional"/>
     </div>
 
-    <div class="row">
-      <label for="l1">Left Sling (L1) [opt]:</label>
-      <input id="l1" type="number" placeholder="Optional" />
-    </div>
-
-    <div class="row">
-      <label for="l2">Right Sling (L2) [opt]:</label>
-      <input id="l2" type="number" placeholder="Optional" />
-    </div>
-
-    <button id="go">Calculate</button>
+    <button id="calcBtn">Calculate</button>
 
     <table id="resultTable">
       <thead>
         <tr>
           <th>Mode</th>
-          <th>L₁ & θ₁</th>
-          <th>L₂ & θ₂</th>
+          <th>L₁ &amp; θ₁</th>
+          <th>L₂ &amp; θ₂</th>
           <th>T₁</th>
           <th>T₂</th>
         </tr>
@@ -87,7 +152,116 @@
     </table>
   </main>
 
-  <!-- your external JS (version‑bump to bust cache) -->
-  <script defer src="app.js?v=6"></script>
+  <script>
+    // get conversion factors
+    function getFactors(){
+      const wU = document.getElementById('weightUnit').value;
+      const lU = document.getElementById('lengthUnit').value;
+      let wf=1,wD='lbs';
+      if(wU==='kg')        { wf=2.20462; wD='kg'; }
+      if(wU==='us_ton')    { wf=2000;    wD='US tons'; }
+      if(wU==='metric_ton'){ wf=2204.62; wD='metric tons'; }
+      let lf=1,lD='ft';
+      if(lU==='m'){ lf=3.28084; lD='m'; }
+      return { wf,wD,lf,lD };
+    }
+
+    function calcSling(){
+      const { wf,wD,lf,lD }  = getFactors();
+      const loadVal = parseFloat(load.value);
+      const D1val   = parseFloat(d1.value);
+      const D2val   = parseFloat(d2.value);
+      const Hval    = parseFloat(height.value);
+      const L1val   = parseFloat(l1.value);
+      const L2val   = parseFloat(l2.value);
+      const tb      = resultTable.querySelector('tbody');
+      tb.innerHTML = '';
+
+      // must have load, D1, D2
+      if(isNaN(loadVal)||isNaN(D1val)||isNaN(D2val)){
+        tb.innerHTML = '<tr><td colspan="5">Please fill Load, D1 & D2.</td></tr>';
+        return;
+      }
+
+      // convert to base units
+      const loadLbs = loadVal * wf;
+      const D1ft    = D1val   * lf;
+      const D2ft    = D2val   * lf;
+      const Hft     = Hval    * lf;
+      const L1inft  = L1val   * lf;
+      const L2inft  = L2val   * lf;
+
+      const haveH = !isNaN(Hval);
+      const haveL = !isNaN(L1val) && !isNaN(L2val);
+
+      // presets if neither H nor L
+      if(!haveH && !haveL){
+        [60,50,45,35].forEach(deg=>{
+          const θ   = deg * Math.PI/180;
+          const L1b = D1ft / Math.cos(θ);
+          const L2b = D2ft / Math.cos(θ);
+          const H1  = D1ft * Math.tan(θ);
+          const H2  = D2ft * Math.tan(θ);
+          const T1  = loadLbs * D2ft * L1b / (H1 * (D1ft + D2ft));
+          const T2  = loadLbs * D1ft * L2b / (H2 * (D1ft + D2ft));
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>Preset ${deg}°</td>
+            <td>${(L1b/lf).toFixed(2)} ${lD}<br>${deg}°</td>
+            <td>${(L2b/lf).toFixed(2)} ${lD}<br>${deg}°</td>
+            <td>${(T1/wf).toFixed(2)} ${wD}</td>
+            <td>${(T2/wf).toFixed(2)} ${wD}</td>
+          `;
+          tb.appendChild(tr);
+        });
+        return;
+      }
+
+      // determine mode and sling lengths
+      let mode, L1b, L2b;
+      if(haveL){
+        mode = 'Manual Legs';
+        L1b = L1inft; L2b = L2inft;
+      } else {
+        mode = 'From Height';
+        L1b = Math.hypot(D1ft, Hft);
+        L2b = Math.hypot(D2ft, Hft);
+      }
+
+      // check geometry
+      const H1 = Math.sqrt(L1b*L1b - D1ft*D1ft);
+      const H2 = Math.sqrt(L2b*L2b - D2ft*D2ft);
+      if(isNaN(H1)||isNaN(H2)||H1<=0||H2<=0){
+        tb.innerHTML = '<tr><td colspan="5">Invalid geometry.</td></tr>';
+        return;
+      }
+
+      const a1 = Math.asin(H1/L1b)*180/Math.PI;
+      const a2 = Math.asin(H2/L2b)*180/Math.PI;
+      const T1 = loadLbs * D2ft * L1b / (H1 * (D1ft + D2ft));
+      const T2 = loadLbs * D1ft * L2b / (H2 * (D1ft + D2ft));
+
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${mode}</td>
+        <td>${(L1b/lf).toFixed(2)} ${lD}<br>${a1.toFixed(1)}°</td>
+        <td>${(L2b/lf).toFixed(2)} ${lD}<br>${a2.toFixed(1)}°</td>
+        <td>${(T1/wf).toFixed(2)} ${wD}</td>
+        <td>${(T2/wf).toFixed(2)} ${wD}</td>
+      `;
+      tb.appendChild(tr);
+    }
+
+    // hook up
+    const load       = document.getElementById('load');
+    const d1         = document.getElementById('d1');
+    const d2         = document.getElementById('d2');
+    const height     = document.getElementById('height');
+    const l1         = document.getElementById('l1');
+    const l2         = document.getElementById('l2');
+    const resultTable= document.getElementById('resultTable');
+    document.getElementById('calcBtn').onclick = calcSling;
+  </script>
+
 </body>
 </html>
