@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Field Tools – Sling Load Calculator</title>
+  <title>Field Tools – Sling Load Calculator</title>
 
   <!-- PWA / Apple support -->
   <link rel="stylesheet" href="style.css"/>
@@ -19,7 +19,6 @@
   </script>
 
   <style>
-    /* ——— INLINE OVERRIDES (you can remove if style.css covers these) ——— */
     body { background:#f9f9f9; font-family:sans-serif; color:#222; margin:0; }
     header { background:#333; color:#fff; padding:1rem; text-align:center; }
     nav { margin-top:0.5rem; }
@@ -30,11 +29,37 @@
     .form-row { display:flex; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.75rem; }
     .form-row label { flex:0 0 45%; min-width:120px; line-height:1.4; }
     .form-row input, .form-row select { flex:1 0 45%; padding:0.4rem; font-size:1rem; }
-    button#calcBtn { display:block; width:100%; background:#444; color:#fff; border:none;
-                     padding:0.75rem; font-size:1rem; border-radius:4px; cursor:pointer; margin:1rem 0; }
-    table#resultTable { width:100%; margin:1rem auto 2rem; border-collapse:collapse; table-layout:fixed; }
-    table#resultTable th { background:#333; color:#fff; padding:0.6rem; text-align:center; font-weight:normal; }
-    table#resultTable td { border:1px solid #666; padding:0.6rem; text-align:center; background:#fff; }
+    button#calcBtn {
+      display:block;
+      width:100%;
+      background:#444;
+      color:#fff;
+      border:none;
+      padding:0.75rem;
+      font-size:1rem;
+      border-radius:4px;
+      cursor:pointer;
+      margin:1rem 0;
+    }
+    table#resultTable {
+      width:100%;
+      margin:1rem auto 2rem;
+      border-collapse:collapse;
+      table-layout:fixed;
+    }
+    table#resultTable th {
+      background:#333;
+      color:#fff;
+      padding:0.6rem;
+      text-align:center;
+      font-weight:normal;
+    }
+    table#resultTable td {
+      border:1px solid #666;
+      padding:0.6rem;
+      text-align:center;
+      background:#fff;
+    }
     table#resultTable tbody tr:nth-child(even) { background:#f2f2f2; }
     table#resultTable td[colspan] { text-align:left; color:#b00; }
   </style>
@@ -58,7 +83,6 @@
   </header>
 
   <main>
-    <!-- diagram -->
     <img
       src="D744E2B6-1AB3-466B-A4E8-A64711BD01F5.png"
       alt="Sling load diagram"
@@ -124,102 +148,6 @@
     </table>
   </main>
 
-  <script>
-    function getFactors(){
-      const wU = document.getElementById('weightUnit').value;
-      const lU = document.getElementById('lengthUnit').value;
-      let wf=1,wD='lbs';
-      if(wU==='kg'){ wf=2.20462; wD='kg'; }
-      if(wU==='us_ton'){ wf=2000; wD='US tons'; }
-      if(wU==='metric_ton'){ wf=2204.62; wD='metric tons'; }
-      let lf=1,lD='ft';
-      if(lU==='m'){ lf=3.28084; lD='m'; }
-      return { wf,wD,lf,lD };
-    }
-
-    function calcSling(){
-      const { wf,wD,lf,lD } = getFactors();
-      const loadVal = parseFloat(document.getElementById('load').value);
-      const D1val   = parseFloat(document.getElementById('d1').value);
-      const D2val   = parseFloat(document.getElementById('d2').value);
-      const Hval    = parseFloat(document.getElementById('height').value);
-      const L1val   = parseFloat(document.getElementById('l1').value);
-      const L2val   = parseFloat(document.getElementById('l2').value);
-      const tbody   = document.querySelector('#resultTable tbody');
-      tbody.innerHTML = '';
-
-      if(isNaN(loadVal)||isNaN(D1val)||isNaN(D2val)){
-        tbody.innerHTML = '<tr><td colspan="5">Please fill Load, D1 & D2.</td></tr>';
-        return;
-      }
-
-      const loadLbs = loadVal * wf;
-      const D1ft    = D1val   * lf;
-      const D2ft    = D2val   * lf;
-      const Hft     = Hval    * lf;
-      const L1ft    = L1val   * lf;
-      const L2ft    = L2val   * lf;
-
-      const haveH = !isNaN(Hval);
-      const haveL = !isNaN(L1val) && !isNaN(L2val);
-
-      if(!haveH && !haveL){
-        [60,50,45,35].forEach(deg=>{
-          const θ   = deg*Math.PI/180;
-          const L1b = D1ft/Math.cos(θ);
-          const L2b = D2ft/Math.cos(θ);
-          const H1  = D1ft*Math.tan(θ);
-          const H2  = D2ft*Math.tan(θ);
-          const T1  = loadLbs*D2ft*L1b/(H1*(D1ft+D2ft));
-          const T2  = loadLbs*D1ft*L2b/(H2*(D1ft+D2ft));
-          const tr  = document.createElement('tr');
-          tr.innerHTML = `
-            <td>Preset ${deg}°</td>
-            <td>${(L1b/lf).toFixed(2)} ${lD}<br>${deg}°</td>
-            <td>${(L2b/lf).toFixed(2)} ${lD}<br>${deg}°</td>
-            <td>${(T1/wf).toFixed(2)} ${wD}</td>
-            <td>${(T2/wf).toFixed(2)} ${wD}</td>
-          `;
-          tbody.appendChild(tr);
-        });
-        return;
-      }
-
-      let mode, L1b, L2b;
-      if(haveL){
-        mode='Manual Legs';
-        L1b=L1ft; L2b=L2ft;
-      } else {
-        mode='From Height';
-        L1b=Math.hypot(D1ft,Hft);
-        L2b=Math.hypot(D2ft,Hft);
-      }
-
-      const H1 = Math.sqrt(L1b*L1b - D1ft*D1ft);
-      const H2 = Math.sqrt(L2b*L2b - D2ft*D2ft);
-      if(isNaN(H1)||isNaN(H2)||H1<=0||H2<=0){
-        tbody.innerHTML = '<tr><td colspan="5">Invalid geometry.</td></tr>';
-        return;
-      }
-
-      const a1 = Math.asin(H1/L1b)*180/Math.PI;
-      const a2 = Math.asin(H2/L2b)*180/Math.PI;
-      const T1 = loadLbs*D2ft*L1b/(H1*(D1ft+D2ft));
-      const T2 = loadLbs*D1ft*L2b/(H2*(D1ft+D2ft));
-
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${mode}</td>
-        <td>${(L1b/lf).toFixed(2)} ${lD}<br>${a1.toFixed(1)}°</td>
-        <td>${(L2b/lf).toFixed(2)} ${lD}<br>${a2.toFixed(1)}°</td>
-        <td>${(T1/wf).toFixed(2)} ${wD}</td>
-        <td>${(T2/wf).toFixed(2)} ${wD}</td>
-      `;
-      tbody.appendChild(tr);
-    }
-
-    document.getElementById('calcBtn').onclick = calcSling;
-  </script>
-
+  <script src="slingcalc.js"></script>
 </body>
 </html>
