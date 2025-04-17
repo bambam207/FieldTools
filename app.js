@@ -3,9 +3,9 @@ function getConversionFactors() {
   const weightUnit = document.getElementById('weightUnit')?.value || 'lbs';
   const lengthUnit = document.getElementById('lengthUnit')?.value || 'ft';
   let weightFactor = 1, weightDisplayUnit = 'lbs';
-  if (weightUnit === 'us_ton')       { weightFactor = 2000;     weightDisplayUnit = 'US tons'; }
-  else if (weightUnit === 'kg')      { weightFactor = 2.20462;  weightDisplayUnit = 'kg';      }
-  else if (weightUnit === 'metric_ton') { weightFactor = 2204.62; weightDisplayUnit = 'metric tons'; }
+  if (weightUnit === 'us_ton')        { weightFactor = 2000;     weightDisplayUnit = 'US tons'; }
+  else if (weightUnit === 'kg')       { weightFactor = 2.20462;  weightDisplayUnit = 'kg';      }
+  else if (weightUnit === 'metric_ton'){ weightFactor = 2204.62; weightDisplayUnit = 'metric tons'; }
 
   let lengthFactor = 1, lengthDisplayUnit = 'ft';
   if (lengthUnit === 'm') { lengthFactor = 3.28084; lengthDisplayUnit = 'm'; }
@@ -13,7 +13,7 @@ function getConversionFactors() {
   return { weightFactor, lengthFactor, weightDisplayUnit, lengthDisplayUnit };
 }
 
-// ----------------- Sling Load Calculator (unchanged) -----------------
+// ----------------- Sling Load Calculator -----------------
 function calcSling() {
   const { weightFactor, lengthFactor, weightDisplayUnit, lengthDisplayUnit } = getConversionFactors();
   const loadInput = parseFloat(document.getElementById('load').value);
@@ -80,15 +80,15 @@ function calcSling() {
   const H1b = Math.sqrt(L1b*L1b - D1Base*D1Base),
         H2b = Math.sqrt(L2b*L2b - D2Base*D2Base);
 
-  if (isNaN(H1b)||isNaN(H2b)||H1b<=0||H2b<=0) {
+  if (isNaN(H1b) || isNaN(H2b) || H1b <= 0 || H2b <= 0) {
     tbody.innerHTML = '<tr><td colspan="5">Invalid geometry: ensure L > D.</td></tr>';
     return;
   }
 
   const a1 = Math.asin(H1b/L1b)*180/Math.PI,
         a2 = Math.asin(H2b/L2b)*180/Math.PI,
-        T1b = (loadBase*D2Base*L1b)/(H1b*(D1Base+D2Base)),
-        T2b = (loadBase*D1Base*L2b)/(H2b*(D1Base+D2Base));
+        T1b = (loadBase * D2Base * L1b) / (H1b * (D1Base + D2Base)),
+        T2b = (loadBase * D1Base * L2b) / (H2b * (D1Base + D2Base));
 
   const L1 = (L1b/lengthFactor).toFixed(2),
         L2 = (L2b/lengthFactor).toFixed(2),
@@ -109,68 +109,78 @@ function calcSling() {
 // ----------------- Container Balance Calculator -----------------
 function calcContainer() {
   // 1) Units & rack
-  const wU = document.getElementById('cbWeightUnit').value;  
-  const lU = document.getElementById('cbLengthUnit').value;  
-  const L  = parseFloat(document.getElementById('cbContainerType').value); // 20 or 40
-  const marginFt = 8/12;   // 8" no‑go on each end
-  const C = L/2;           // target CG
+  const wU        = document.getElementById('cbWeightUnit').value;  
+  const lU        = document.getElementById('cbLengthUnit').value;  
+  const L         = parseFloat(document.getElementById('cbContainerType').value); // 20 or 40
+  const marginFt  = 8/12;   // 8" no‑go on each end
+  const usableLen = L - 2*marginFt;
 
-  // 2) Converters
-  const toFt = v => (lU==='m' ? v/0.3048 : v);
-  const toLbs = v => {
-    if (wU==='kg')         return v*2.20462;
-    if (wU==='us_ton')     return v*2000;
-    if (wU==='metric_ton') return v*2204.62;
+  // 2) Convert helpers
+  const toFt    = v => (lU === 'm' ? v/0.3048 : v);
+  const toLbs   = v => {
+    if (wU === 'kg')         return v * 2.20462;
+    if (wU === 'us_ton')     return v * 2000;
+    if (wU === 'metric_ton') return v * 2204.62;
     return v;
   };
   const fromLbs = v => {
-    if (wU==='kg')         return (v/2.20462).toFixed(2);
-    if (wU==='us_ton')     return (v/2000).toFixed(2);
-    if (wU==='metric_ton') return (v/2204.62).toFixed(2);
+    if (wU === 'kg')         return (v/2.20462).toFixed(2);
+    if (wU === 'us_ton')     return (v/2000).toFixed(2);
+    if (wU === 'metric_ton') return (v/2204.62).toFixed(2);
     return v.toFixed(2);
   };
 
   // 3) Gather objects
   const objs = [];
-  for (let i=1; i<=6; i++) {
+  for (let i = 1; i <= 6; i++) {
     const w = parseFloat(document.getElementById(`cbLoad${i}W`).value);
     const d = parseFloat(document.getElementById(`cbLoad${i}D`).value);
     if (isNaN(w) || isNaN(d)) continue;
-    objs.push({
-      idx: i,
-      wLbs: toLbs(w),
-      dFt : toFt(d)
-    });
+    objs.push({ idx: i, wLbs: toLbs(w), dFt: toFt(d) });
   }
   if (!objs.length) {
     document.getElementById('containerResult').textContent = 'Enter at least one object.';
     return;
   }
 
-  // 4) Compute CIP0 (flush‑packed, no overlap) and sums
-  let prefix=0, sumW=0, sumWC=0;
-  objs.forEach(o=>{
-    o.cip0 = prefix + o.dFt/2;
-    sumW   += o.wLbs;
-    sumWC  += o.wLbs * o.cip0;
-    prefix += o.dFt;
+  // 4) Total widths
+  const totalWidth = objs.reduce((sum, o) => sum + o.dFt, 0);
+
+  // 5) If they don’t fit between margins, warn & stop
+  const resultDiv = document.getElementById('containerResult');
+  if (totalWidth > usableLen) {
+    resultDiv.innerHTML = `
+      <p style="color:red;font-weight:bold;">
+        ⚠️ Combined widths (${totalWidth.toFixed(2)} ft) exceed usable length (${usableLen.toFixed(2)} ft).<br/>
+        Please reduce or resize your objects so they fit between the 8″ no‑go zones.
+      </p>
+    `;
+    document.querySelector('#containerTable tbody').innerHTML = '';
+    return;
+  }
+
+  // 6) Compute flush‑packed centers (CIP0) and sums
+  let prefix = marginFt, sumW = 0, sumWC = 0;
+  objs.forEach(o => {
+    o.cip0   = prefix + o.dFt/2;
+    sumW    += o.wLbs;
+    sumWC   += o.wLbs * o.cip0;
+    prefix  += o.dFt;
   });
-  const totalWidth = prefix;
 
-  // 5) Raw shift to center CG
-  const rawShift = C - (sumWC/sumW);
+  // 7) Level by weight: shift to center CG, clamp so no object crosses margins
+  const C   = L/2;
+  const raw = C - (sumWC / sumW);
+  // clamp shift so first object center ≥ marginFt and last center ≤ L - marginFt
+  const minShift = marginFt - objs[0].cip0;
+  const last    = objs[objs.length - 1];
+  const maxShift = (L - marginFt) - last.cip0;
+  const g        = Math.max(minShift, Math.min(raw, maxShift));
 
-  // 6) Clamp so no object center goes outside [0,L]
-  //    => CIP(i) = cip0 + g  with g in [minShift, maxShift]
-  const minShift = (o => o.dFt/2 - o.cip0)(objs[0]);           // CIP(1)>=d1/2
-  const last = objs[objs.length-1];
-  const maxShift = (L - last.dFt/2) - last.cip0;               // CIP(n)<=L-dn/2
-  const g = Math.max(minShift, Math.min(rawShift, maxShift));
-
-  // 7) Render table
+  // 8) Render table
   const tbody = document.querySelector('#containerTable tbody');
   tbody.innerHTML = '';
-  objs.forEach(o=>{
+  objs.forEach(o => {
     const x = o.cip0 + g;
     const tr = document.createElement('tr');
     tr.innerHTML = `
@@ -186,18 +196,11 @@ function calcContainer() {
     tbody.appendChild(tr);
   });
 
-  // 8) Show warning if exceeding usable length and summary
-  const usableLen = L - 2*marginFt;
-  let html = '';
-  if (totalWidth > usableLen) {
-    html += `<p style="color:red;font-weight:bold;">
-      ⚠️ Combined widths (${totalWidth.toFixed(2)} ft) exceed usable length (${usableLen.toFixed(2)} ft).<br/>
-      Objects will overlap to fit within 0–${L.toFixed(0)} ft.
-    </p>`;
-  }
-  html += `<p>
-    Rack CG target: ${C.toFixed(2)} ft<br/>
-    Applied shift: ${g.toFixed(2)} ft
-  </p>`;
-  document.getElementById('containerResult').innerHTML = html;
+  // 9) Success summary
+  resultDiv.innerHTML = `
+    <p>
+      Rack CG target: ${(L/2).toFixed(2)} ft<br/>
+      Applied shift: ${g.toFixed(2)} ft
+    </p>
+  `;
 }
