@@ -13,7 +13,7 @@ function getConversionFactors() {
   return { weightFactor, lengthFactor, weightDisplayUnit, lengthDisplayUnit };
 }
 
-// ----------------- Sling Load Calculator -----------------
+// ----------------- Sling Load Calculator (unchanged) -----------------
 function calcSling() {
   const { weightFactor, lengthFactor, weightDisplayUnit, lengthDisplayUnit } = getConversionFactors();
   const loadInput = parseFloat(document.getElementById('load').value);
@@ -143,16 +143,16 @@ function calcContainer() {
     return;
   }
 
-  // 4) Total widths
+  // 4) Total widths end‑to‑end
   const totalWidth = objs.reduce((sum, o) => sum + o.dFt, 0);
 
-  // 5) If they don’t fit between margins, warn & stop
+  // 5) If they exceed container length, error & stop
   const resultDiv = document.getElementById('containerResult');
-  if (totalWidth > usableLen) {
+  if (totalWidth > L) {
     resultDiv.innerHTML = `
       <p style="color:red;font-weight:bold;">
-        ⚠️ Combined widths (${totalWidth.toFixed(2)} ft) exceed usable length (${usableLen.toFixed(2)} ft).<br/>
-        Please reduce or resize your objects so they fit between the 8″ no‑go zones.
+        ⚠️ Combined widths (${totalWidth.toFixed(2)} ft) exceed container length (${L.toFixed(2)} ft).<br/>
+        They must fit within 0 – ${L.toFixed(2)} ft.
       </p>
     `;
     document.querySelector('#containerTable tbody').innerHTML = '';
@@ -162,20 +162,19 @@ function calcContainer() {
   // 6) Compute flush‑packed centers (CIP0) and sums
   let prefix = marginFt, sumW = 0, sumWC = 0;
   objs.forEach(o => {
-    o.cip0   = prefix + o.dFt/2;
-    sumW    += o.wLbs;
-    sumWC   += o.wLbs * o.cip0;
-    prefix  += o.dFt;
+    o.cip0    = prefix + o.dFt/2;
+    sumW     += o.wLbs;
+    sumWC    += o.wLbs * o.cip0;
+    prefix   += o.dFt;
   });
 
-  // 7) Level by weight: shift to center CG, clamp so no object crosses margins
-  const C   = L/2;
-  const raw = C - (sumWC / sumW);
-  // clamp shift so first object center ≥ marginFt and last center ≤ L - marginFt
-  const minShift = marginFt - objs[0].cip0;
-  const last    = objs[objs.length - 1];
-  const maxShift = (L - marginFt) - last.cip0;
-  const g        = Math.max(minShift, Math.min(raw, maxShift));
+  // 7) Level by weight: shift to center CG, clamp so no center crosses margins
+  const C    = L/2;
+  const raw  = C - (sumWC / sumW);
+  const minG = marginFt - objs[0].cip0;
+  const last = objs[objs.length - 1];
+  const maxG = (L - marginFt) - last.cip0;
+  const g    = Math.max(minG, Math.min(raw, maxG));
 
   // 8) Render table
   const tbody = document.querySelector('#containerTable tbody');
@@ -196,11 +195,17 @@ function calcContainer() {
     tbody.appendChild(tr);
   });
 
-  // 9) Success summary
-  resultDiv.innerHTML = `
-    <p>
-      Rack CG target: ${(L/2).toFixed(2)} ft<br/>
-      Applied shift: ${g.toFixed(2)} ft
-    </p>
-  `;
+  // 9) Warning about margins (if needed) + summary
+  let html = '';
+  if (totalWidth > usableLen) {
+    html += `<p style="color:red;font-weight:bold;">
+      ⚠️ Combined widths (${totalWidth.toFixed(2)} ft) exceed usable length (${usableLen.toFixed(2)} ft).<br/>
+      They will occupy the 8″ margin zones.
+    </p>`;
+  }
+  html += `<p>
+    Rack CG target: ${C.toFixed(2)} ft<br/>
+    Applied shift: ${g.toFixed(2)} ft
+  </p>`;
+  resultDiv.innerHTML = html;
 }
