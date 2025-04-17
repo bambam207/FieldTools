@@ -7,93 +7,196 @@
     content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"
   />
   <title>Field Tools – Container Balance</title>
-  <link rel="stylesheet" href="style.css" />
+  <style>
+    body { font-family: sans-serif; padding: 1rem; }
+    .controls, .row { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: .5rem; align-items: center; }
+    label { flex: 1 0 6em; }
+    input, select { flex: 1 0 6em; }
+    button { padding: .5rem 1rem; margin: 1rem 0; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    th, td { border: 1px solid #444; padding: .5rem; text-align: center; }
+    #containerResult p { margin: .5rem 0; }
+  </style>
 </head>
 <body>
-  <header>
-    <h1>Container Balance</h1>
-  </header>
+  <h1>Container Balance</h1>
 
-  <main class="container">
-    <div class="controls">
-      <label for="cbWeightUnit">Weight Unit:</label>
-      <select id="cbWeightUnit">
-        <option value="lbs">lbs</option>
-        <option value="kg">kg</option>
-        <option value="us_ton">US tons</option>
-        <option value="metric_ton">metric tons</option>
-      </select>
+  <div class="controls">
+    <label for="cbWeightUnit">Weight Unit:</label>
+    <select id="cbWeightUnit">
+      <option value="lbs">lbs</option>
+      <option value="kg">kg</option>
+      <option value="us_ton">US tons</option>
+      <option value="metric_ton">metric tons</option>
+    </select>
 
-      <label for="cbLengthUnit">Length Unit:</label>
-      <select id="cbLengthUnit">
-        <option value="ft">ft</option>
-        <option value="m">m</option>
-      </select>
+    <label for="cbLengthUnit">Length Unit:</label>
+    <select id="cbLengthUnit">
+      <option value="ft">ft</option>
+      <option value="m">m</option>
+    </select>
 
-      <label for="cbContainerType">Container Length:</label>
-      <select id="cbContainerType">
-        <option value="20">20 ft</option>
-        <option value="40">40 ft</option>
-      </select>
+    <label for="cbContainerType">Container Length:</label>
+    <select id="cbContainerType">
+      <option value="20">20 ft</option>
+      <option value="40">40 ft</option>
+    </select>
+  </div>
+
+  <div id="loads">
+    <!-- Obj 1 -->
+    <div class="row">
+      <label for="cbLoad1W">Obj 1 Weight:</label>
+      <input id="cbLoad1W" type="number" placeholder="Optional" />
+      <label for="cbLoad1D">Obj 1 Width:</label>
+      <input id="cbLoad1D" type="number" placeholder="Optional" />
     </div>
-
-    <div id="loads">
-      <div class="row">
-        <label for="cbLoad1W">Obj 1 Weight:</label>
-        <input id="cbLoad1W" type="number" placeholder="Optional" />
-        <label for="cbLoad1D">Obj 1 Width:</label>
-        <input id="cbLoad1D" type="number" placeholder="Optional" />
-      </div>
-      <div class="row">
-        <label for="cbLoad2W">Obj 2 Weight:</label>
-        <input id="cbLoad2W" type="number" placeholder="Optional" />
-        <label for="cbLoad2D">Obj 2 Width:</label>
-        <input id="cbLoad2D" type="number" placeholder="Optional" />
-      </div>
-      <!-- repeat for 3–6 -->
-      <div class="row">
-        <label for="cbLoad3W">Obj 3 Weight:</label>
-        <input id="cbLoad3W" type="number" placeholder="Optional" />
-        <label for="cbLoad3D">Obj 3 Width:</label>
-        <input id="cbLoad3D" type="number" placeholder="Optional" />
-      </div>
-      <div class="row">
-        <label for="cbLoad4W">Obj 4 Weight:</label>
-        <input id="cbLoad4W" type="number" placeholder="Optional" />
-        <label for="cbLoad4D">Obj 4 Width:</label>
-        <input id="cbLoad4D" type="number" placeholder="Optional" />
-      </div>
-      <div class="row">
-        <label for="cbLoad5W">Obj 5 Weight:</label>
-        <input id="cbLoad5W" type="number" placeholder="Optional" />
-        <label for="cbLoad5D">Obj 5 Width:</label>
-        <input id="cbLoad5D" type="number" placeholder="Optional" />
-      </div>
-      <div class="row">
-        <label for="cbLoad6W">Obj 6 Weight:</label>
-        <input id="cbLoad6W" type="number" placeholder="Optional" />
-        <label for="cbLoad6D">Obj 6 Width:</label>
-        <input id="cbLoad6D" type="number" placeholder="Optional" />
-      </div>
+    <!-- Obj 2 -->
+    <div class="row">
+      <label for="cbLoad2W">Obj 2 Weight:</label>
+      <input id="cbLoad2W" type="number" placeholder="Optional" />
+      <label for="cbLoad2D">Obj 2 Width:</label>
+      <input id="cbLoad2D" type="number" placeholder="Optional" />
     </div>
+    <!-- repeat for 3–6 -->
+    <div class="row">
+      <label for="cbLoad3W">Obj 3 Weight:</label>
+      <input id="cbLoad3W" type="number" placeholder="Optional" />
+      <label for="cbLoad3D">Obj 3 Width:</label>
+      <input id="cbLoad3D" type="number" placeholder="Optional" />
+    </div>
+    <div class="row">
+      <label for="cbLoad4W">Obj 4 Weight:</label>
+      <input id="cbLoad4W" type="number" placeholder="Optional" />
+      <label for="cbLoad4D">Obj 4 Width:</label>
+      <input id="cbLoad4D" type="number" placeholder="Optional" />
+    </div>
+    <div class="row">
+      <label for="cbLoad5W">Obj 5 Weight:</label>
+      <input id="cbLoad5W" type="number" placeholder="Optional" />
+      <label for="cbLoad5D">Obj 5 Width:</label>
+      <input id="cbLoad5D" type="number" placeholder="Optional" />
+    </div>
+    <div class="row">
+      <label for="cbLoad6W">Obj 6 Weight:</label>
+      <input id="cbLoad6W" type="number" placeholder="Optional" />
+      <label for="cbLoad6D">Obj 6 Width:</label>
+      <input id="cbLoad6D" type="number" placeholder="Optional" />
+    </div>
+  </div>
 
-    <button id="cbGo" type="button">Calculate</button>
+  <button id="cbGo">Calculate</button>
 
-    <table id="containerTable">
-      <thead>
-        <tr>
-          <th>Object</th>
-          <th>Weight</th>
-          <th>Width</th>
-          <th>CG Pos</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-    <div id="containerResult"></div>
-  </main>
+  <table id="containerTable">
+    <thead>
+      <tr>
+        <th>Object</th>
+        <th>Weight</th>
+        <th>Width</th>
+        <th>CG Pos</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  <div id="containerResult"></div>
 
-  <!-- put your script right before </body> with cache‑bust -->
-  <script src="app.js?v=4"></script>
+  <script>
+  // -- Inline JS so we know it's running --
+  function getConversionFactors() {
+    const wU = document.getElementById('cbWeightUnit').value;
+    const lU = document.getElementById('cbLengthUnit').value;
+    let weightFactor = 1, weightDisplay = 'lbs';
+    if (wU==='kg') weightFactor=2.20462, weightDisplay='kg';
+    if (wU==='us_ton') weightFactor=2000, weightDisplay='US tons';
+    if (wU==='metric_ton') weightFactor=2204.62, weightDisplay='metric tons';
+    let lengthFactor=1, lengthDisplay='ft';
+    if (lU==='m') lengthFactor=3.28084, lengthDisplay='m';
+    return { weightFactor, lengthFactor, weightDisplay, lengthDisplay };
+  }
+
+  function calcContainer(){
+    console.clear();
+    console.log('▶ calcContainer()');
+    const { weightFactor, lengthFactor, weightDisplay, lengthDisplay } = getConversionFactors();
+    const L        = +document.getElementById('cbContainerType').value;
+    const marginFt = 8/12;
+    const usableL  = L - 2*marginFt;
+
+    // collect objects
+    const objs=[];
+    for(let i=1;i<=6;i++){
+      const w = +document.getElementById(`cbLoad${i}W`).value;
+      const d = +document.getElementById(`cbLoad${i}D`).value;
+      if (!isNaN(w)&&!isNaN(d)){
+        objs.push({ idx:i, wLbs:w*weightFactor, dFt:d*lengthFactor });
+      }
+    }
+    console.log(' objs:', objs);
+
+    const tbody = document.querySelector('#containerTable tbody');
+    const res   = document.getElementById('containerResult');
+    tbody.innerHTML='';
+    res.innerHTML='';
+
+    if(objs.length===0){
+      res.textContent='Enter at least one object.';
+      return;
+    }
+
+    const totalW = objs.reduce((s,o)=>s+o.dFt,0);
+    console.log(' totalW:', totalW,'usableL:', usableL);
+
+    if(totalW > L){
+      res.innerHTML=`
+        <p style="color:red;font-weight:bold;">
+          ⚠️ widths (${totalW.toFixed(2)}ft) exceed container (${L}ft)
+        </p>`;
+      return;
+    }
+
+    let warning='';
+    if(totalW > usableL){
+      warning=`<p style="color:red;font-weight:bold;">
+        ⚠️ widths (${totalW.toFixed(2)}ft) exceed usable (${usableL.toFixed(2)}ft)
+      </p>`;
+    }
+
+    // compute centers
+    let prefix=marginFt, sumW=0, sumWC=0;
+    objs.forEach(o=>{
+      o.cip0=prefix+o.dFt/2;
+      sumW += o.wLbs;
+      sumWC+= o.wLbs*o.cip0;
+      prefix+= o.dFt;
+    });
+    console.log(' sumW/sumWC:',sumW,sumWC);
+
+    const C=L/2, raw=C - (sumWC/sumW);
+    const minG=marginFt - objs[0].cip0;
+    const last=objs[objs.length-1];
+    const maxG=(L - marginFt) - last.cip0;
+    const g=Math.max(minG,Math.min(raw,maxG));
+    console.log(' shift g:', g);
+
+    // render
+    objs.forEach(o=>{
+      const tr=document.createElement('tr');
+      const pos=(o.cip0+g)/lengthFactor;
+      tr.innerHTML=`
+        <td>Obj ${o.idx}</td>
+        <td>${(o.wLbs/weightFactor).toFixed(2)} ${weightDisplay}</td>
+        <td>${(o.dFt/lengthFactor).toFixed(2)} ${lengthDisplay}</td>
+        <td>${pos.toFixed(2)} ${lengthDisplay}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    res.innerHTML=warning+`
+      <p>CG target: ${C.toFixed(2)}ft &nbsp; shift: ${g.toFixed(2)}ft</p>
+    `;
+  }
+
+  document.getElementById('cbGo').onclick = calcContainer;
+  </script>
 </body>
 </html>
