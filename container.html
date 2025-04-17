@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Field Tools – Container Balance</title>
+  <title>Field Tools – Container Balance</title>
 
   <!-- PWA / Apple support -->
   <link rel="stylesheet" href="style.css"/>
@@ -29,11 +29,34 @@
     .form-row { display:flex; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.75rem; }
     .form-row label { flex:0 0 45%; min-width:120px; line-height:1.4; }
     .form-row input, .form-row select { flex:1 0 45%; padding:0.4rem; font-size:1rem; }
-    button#calcBtn { display:block; width:100%; background:#444; color:#fff; border:none;
-                     padding:0.75rem; font-size:1rem; border-radius:4px; cursor:pointer; margin:1rem 0; }
-    table { width:100%; border-collapse:collapse; table-layout:fixed; margin-bottom:1rem; }
-    th, td { border:1px solid #666; padding:0.6rem; text-align:center; }
-    th { background:#333; color:#fff; font-weight:normal; }
+    button#calcBtn {
+      display:block;
+      width:100%;
+      background:#444;
+      color:#fff;
+      border:none;
+      padding:0.75rem;
+      font-size:1rem;
+      border-radius:4px;
+      cursor:pointer;
+      margin:1rem 0;
+    }
+    table {
+      width:100%;
+      border-collapse:collapse;
+      table-layout:fixed;
+      margin-bottom:1rem;
+    }
+    th, td {
+      border:1px solid #666;
+      padding:0.6rem;
+      text-align:center;
+    }
+    th {
+      background:#333;
+      color:#fff;
+      font-weight:normal;
+    }
     tbody tr:nth-child(even) { background:#f2f2f2; }
     .warning { color:#b00; text-align:left; }
     .summary { text-align:left; margin-top:0.5rem; font-size:0.95rem; }
@@ -89,7 +112,7 @@
       <div class="form-row">
         <label for="w1">Obj 1 Weight:</label>
         <input id="w1" type="number" placeholder="Optional"/>
-        <label for="d1">Obj 1 Width:</label>
+        <label for="d1c">Obj 1 Width:</label>
         <input id="d1c" type="number" placeholder="Optional"/>
       </div>
       <div class="form-row">
@@ -142,86 +165,6 @@
     <div id="summary" class="summary"></div>
   </main>
 
-  <script>
-    function getFactors() {
-      const wU = document.getElementById('weightUnit').value;
-      const lU = document.getElementById('lengthUnit').value;
-      let wD = 'lbs';
-      if (wU==='kg') wD='kg';
-      if (wU==='us_ton') wD='US tons';
-      if (wU==='metric_ton') wD='metric tons';
-      let lD = 'ft';
-      if (lU==='m') lD='m';
-      return { wU, wD, lU, lD };
-    }
-
-    function calcContainer() {
-      const { wU,wD,lU,lD } = getFactors();
-      const cLen   = parseFloat(document.getElementById('containerLen').value);
-      const noGo   = (lU==='ft'?8/12:0.2032);
-      const usable = cLen - 2*noGo;
-
-      // gather weights & widths
-      const ws = [], ds = [];
-      for (let i=1;i<=6;i++){
-        const w = parseFloat(document.getElementById('w'+i).value);
-        const d = parseFloat(document.getElementById('d'+i+'c').value);
-        if (!isNaN(w) && !isNaN(d)){
-          ws.push(w);
-          ds.push(d);
-        }
-      }
-
-      const tbody = document.querySelector('#containerTable tbody');
-      tbody.innerHTML='';
-      document.getElementById('message').innerHTML='';
-      document.getElementById('summary').innerHTML='';
-
-      if (!ws.length) return;
-
-      // sum widths
-      const sumW = ds.reduce((a,b)=>a+b,0);
-      // initial positions
-      const initial = [];
-      let cum=0;
-      for (let i=0;i<ds.length;i++){
-        const pos = cum + ds[i]/2;
-        initial.push(pos);
-        cum += ds[i];
-      }
-
-      // compute overall CG
-      const totW = ws.reduce((a,b)=>a+b,0);
-      const mSum = ws.reduce((a,b,i)=>a + b*initial[i], 0);
-      const cg0  = mSum / totW;
-      const shift = cLen/2 - cg0;
-
-      // render rows
-      for (let i=0;i<ws.length;i++){
-        const tr = document.createElement('tr');
-        const finalPos = initial[i] + shift;
-        tr.innerHTML = `
-          <td>Obj ${i+1}</td>
-          <td>${ws[i].toFixed(2)} ${wD}</td>
-          <td>${ds[i].toFixed(2)} ${lD}</td>
-          <td>${finalPos.toFixed(2)} ${lD}</td>
-        `;
-        tbody.appendChild(tr);
-      }
-
-      // warning if too wide
-      if (sumW > usable) {
-        document.getElementById('message').innerHTML =
-          `<p class="warning">⚠ Combined widths (${sumW.toFixed(2)} ${lD}) exceed usable length (${usable.toFixed(2)} ${lD}) – objects will overlap to fit within ${noGo.toFixed(2)} to ${(cLen-noGo).toFixed(2)} ${lD}.</p>`;
-      }
-
-      document.getElementById('summary').innerHTML =
-        `Total Load: ${totW.toFixed(2)} ${wD}<br>`+
-        `Overall CG (initial): ${cg0.toFixed(2)} ${lD}<br>`+
-        `Applied Shift: ${shift.toFixed(2)} ${lD}`;
-    }
-
-    document.getElementById('calcBtn').addEventListener('click', calcContainer);
-  </script>
+  <script src="container.js"></script>
 </body>
 </html>
