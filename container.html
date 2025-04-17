@@ -8,8 +8,6 @@
   />
   <title>Field Tools – Container Balance</title>
   <link rel="stylesheet" href="style.css" />
-  <!-- version‑stamp to bust cache/SW -->
-  <script defer src="app.js?v=3"></script>
 </head>
 <body>
   <header>
@@ -40,7 +38,6 @@
     </div>
 
     <div id="loads">
-      <!-- repeat this block for Obj 1–6 -->
       <div class="row">
         <label for="cbLoad1W">Obj 1 Weight:</label>
         <input id="cbLoad1W" type="number" placeholder="Optional" />
@@ -53,6 +50,7 @@
         <label for="cbLoad2D">Obj 2 Width:</label>
         <input id="cbLoad2D" type="number" placeholder="Optional" />
       </div>
+      <!-- repeat for 3–6 -->
       <div class="row">
         <label for="cbLoad3W">Obj 3 Weight:</label>
         <input id="cbLoad3W" type="number" placeholder="Optional" />
@@ -94,5 +92,8 @@
     </table>
     <div id="containerResult"></div>
   </main>
+
+  <!-- put your script right before </body> with cache‑bust -->
+  <script src="app.js?v=4"></script>
 </body>
 </html>
