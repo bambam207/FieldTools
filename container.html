@@ -8,7 +8,8 @@
   />
   <title>Field Tools – Container Balance</title>
   <link rel="stylesheet" href="style.css" />
-  <script defer src="app.js"></script>
+  <!-- version‑stamp to bust cache/SW -->
+  <script defer src="app.js?v=3"></script>
 </head>
 <body>
   <header>
@@ -16,63 +17,60 @@
   </header>
 
   <main class="container">
-    <label for="cbWeightUnit">Weight Unit:</label>
-    <select id="cbWeightUnit">
-      <option value="lbs">lbs</option>
-      <option value="kg">kg</option>
-      <option value="us_ton">US tons</option>
-      <option value="metric_ton">metric tons</option>
-    </select>
+    <div class="controls">
+      <label for="cbWeightUnit">Weight Unit:</label>
+      <select id="cbWeightUnit">
+        <option value="lbs">lbs</option>
+        <option value="kg">kg</option>
+        <option value="us_ton">US tons</option>
+        <option value="metric_ton">metric tons</option>
+      </select>
 
-    <label for="cbLengthUnit">Length Unit:</label>
-    <select id="cbLengthUnit">
-      <option value="ft">ft</option>
-      <option value="m">m</option>
-    </select>
+      <label for="cbLengthUnit">Length Unit:</label>
+      <select id="cbLengthUnit">
+        <option value="ft">ft</option>
+        <option value="m">m</option>
+      </select>
 
-    <label for="cbContainerType">Container Length:</label>
-    <select id="cbContainerType">
-      <option value="20">20 ft</option>
-      <option value="40">40 ft</option>
-    </select>
+      <label for="cbContainerType">Container Length:</label>
+      <select id="cbContainerType">
+        <option value="20">20 ft</option>
+        <option value="40">40 ft</option>
+      </select>
+    </div>
 
     <div id="loads">
-      <!-- Obj 1 -->
+      <!-- repeat this block for Obj 1–6 -->
       <div class="row">
         <label for="cbLoad1W">Obj 1 Weight:</label>
         <input id="cbLoad1W" type="number" placeholder="Optional" />
         <label for="cbLoad1D">Obj 1 Width:</label>
         <input id="cbLoad1D" type="number" placeholder="Optional" />
       </div>
-      <!-- Obj 2 -->
       <div class="row">
         <label for="cbLoad2W">Obj 2 Weight:</label>
         <input id="cbLoad2W" type="number" placeholder="Optional" />
         <label for="cbLoad2D">Obj 2 Width:</label>
         <input id="cbLoad2D" type="number" placeholder="Optional" />
       </div>
-      <!-- Obj 3 -->
       <div class="row">
         <label for="cbLoad3W">Obj 3 Weight:</label>
         <input id="cbLoad3W" type="number" placeholder="Optional" />
         <label for="cbLoad3D">Obj 3 Width:</label>
         <input id="cbLoad3D" type="number" placeholder="Optional" />
       </div>
-      <!-- Obj 4 -->
       <div class="row">
         <label for="cbLoad4W">Obj 4 Weight:</label>
         <input id="cbLoad4W" type="number" placeholder="Optional" />
         <label for="cbLoad4D">Obj 4 Width:</label>
         <input id="cbLoad4D" type="number" placeholder="Optional" />
       </div>
-      <!-- Obj 5 -->
       <div class="row">
         <label for="cbLoad5W">Obj 5 Weight:</label>
         <input id="cbLoad5W" type="number" placeholder="Optional" />
         <label for="cbLoad5D">Obj 5 Width:</label>
         <input id="cbLoad5D" type="number" placeholder="Optional" />
       </div>
-      <!-- Obj 6 -->
       <div class="row">
         <label for="cbLoad6W">Obj 6 Weight:</label>
         <input id="cbLoad6W" type="number" placeholder="Optional" />
@@ -81,7 +79,7 @@
       </div>
     </div>
 
-    <button onclick="calcContainer()">Calculate</button>
+    <button id="cbGo" type="button">Calculate</button>
 
     <table id="containerTable">
       <thead>
