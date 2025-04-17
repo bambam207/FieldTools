@@ -5,11 +5,12 @@
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Field Tools – Sling Load Calculator</title>
   <style>
+    /* ——— GLOBAL ——— */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: sans-serif;
       background: #f9f9f9;
-      margin: 0;
-      padding: 0;
+      color: #222;
     }
     header {
       background: #333;
@@ -22,29 +23,35 @@
       margin: 1rem auto;
       padding: 0 1rem;
     }
+
+    /* ——— DIAGRAM ——— */
     img.diagram {
       width: 100%;
       max-width: 400px;
       display: block;
       margin: 1rem auto;
     }
+
+    /* ——— FORM ROWS ——— */
     .form-row {
       display: flex;
       flex-wrap: wrap;
-      margin-bottom: 0.75rem;
       gap: 0.5rem;
+      margin-bottom: 0.75rem;
     }
     .form-row label {
       flex: 0 0 45%;
       min-width: 120px;
       line-height: 1.4;
     }
-    .form-row select,
-    .form-row input {
+    .form-row input,
+    .form-row select {
       flex: 1 0 45%;
       padding: 0.4rem;
       font-size: 1rem;
     }
+
+    /* ——— BUTTON ——— */
     button#calcBtn {
       display: block;
       width: 100%;
@@ -58,11 +65,12 @@
       margin: 1rem 0;
     }
 
-    /* ——— TABLE STYLING ——— */
+    /* ——— TABLE ——— */
     table#resultTable {
       width: 100%;
+      margin: 1rem auto 2rem;
       border-collapse: collapse;
-      margin-bottom: 2rem;
+      table-layout: fixed;
     }
     table#resultTable th {
       background: #333;
@@ -77,16 +85,16 @@
       padding: 0.6rem;
       text-align: center;
       vertical-align: middle;
-      font-size: 0.9rem;
       background: #fff;
+      font-size: 0.9rem;
+      word-wrap: break-word;
     }
-    /* zebra striping */
     table#resultTable tbody tr:nth-child(even) {
       background: #f2f2f2;
     }
-    /* make sure multi‑line cells wrap */
-    table#resultTable td br {
-      line-height: 1.2;
+    table#resultTable td[colspan] {
+      text-align: left;
+      color: #b00;
     }
   </style>
 </head>
@@ -97,14 +105,14 @@
   </header>
 
   <main>
-    <!-- your diagram -->
+    <!-- make sure this filename matches exactly -->
     <img
       src="D744E2B6-1AB3-466B-A4E8-A64711BD01F5.png"
       alt="Sling load diagram"
       class="diagram"
     />
 
-    <!-- unit selectors -->
+    <!-- Units -->
     <div class="form-row">
       <label for="weightUnit">Weight Unit:</label>
       <select id="weightUnit">
@@ -121,7 +129,7 @@
       </select>
     </div>
 
-    <!-- required inputs -->
+    <!-- Required -->
     <div class="form-row">
       <label for="load">Total Load:</label>
       <input id="load" type="number" placeholder="Required"/>
@@ -134,16 +142,16 @@
       <input id="d2" type="number" placeholder="Required"/>
     </div>
 
-    <!-- optional inputs -->
+    <!-- Optional -->
     <div class="form-row">
-      <label for="height">Hook Height (H) [opt]:</label>
+      <label for="height">Hook Height (H):</label>
       <input id="height" type="number" placeholder="Optional"/>
 
-      <label for="l1">Left Sling (L1) [opt]:</label>
+      <label for="l1">Left Sling (L1):</label>
       <input id="l1" type="number" placeholder="Optional"/>
     </div>
     <div class="form-row">
-      <label for="l2">Right Sling (L2) [opt]:</label>
+      <label for="l2">Right Sling (L2):</label>
       <input id="l2" type="number" placeholder="Optional"/>
     </div>
 
@@ -164,40 +172,44 @@
   </main>
 
   <script>
+    // Unit conversion
     function getFactors(){
       const wU = document.getElementById('weightUnit').value;
       const lU = document.getElementById('lengthUnit').value;
       let wf=1,wD='lbs';
-      if(wU==='kg')        { wf=2.20462; wD='kg'; }
-      if(wU==='us_ton')    { wf=2000;    wD='US tons'; }
+      if(wU==='kg'){ wf=2.20462; wD='kg'; }
+      if(wU==='us_ton'){ wf=2000; wD='US tons'; }
       if(wU==='metric_ton'){ wf=2204.62; wD='metric tons'; }
       let lf=1,lD='ft';
       if(lU==='m'){ lf=3.28084; lD='m'; }
       return { wf,wD,lf,lD };
     }
 
+    // Calculation
     function calcSling(){
       const { wf,wD,lf,lD } = getFactors();
-      const loadVal = parseFloat(load.value);
-      const D1val   = parseFloat(d1.value);
-      const D2val   = parseFloat(d2.value);
-      const Hval    = parseFloat(height.value);
-      const L1val   = parseFloat(l1.value);
-      const L2val   = parseFloat(l2.value);
-      const tb      = document.querySelector('#resultTable tbody');
-      tb.innerHTML = '';
+      const loadVal = parseFloat(document.getElementById('load').value);
+      const D1val   = parseFloat(document.getElementById('d1').value);
+      const D2val   = parseFloat(document.getElementById('d2').value);
+      const Hval    = parseFloat(document.getElementById('height').value);
+      const L1val   = parseFloat(document.getElementById('l1').value);
+      const L2val   = parseFloat(document.getElementById('l2').value);
+      const tbody   = document.querySelector('#resultTable tbody');
+      tbody.innerHTML = '';
 
+      // require
       if(isNaN(loadVal)||isNaN(D1val)||isNaN(D2val)){
-        tb.innerHTML = '<tr><td colspan="5">Please fill Load, D1 & D2.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="5">Please fill Load, D1 & D2.</td></tr>';
         return;
       }
 
+      // convert to base units
       const loadLbs = loadVal * wf;
       const D1ft    = D1val   * lf;
       const D2ft    = D2val   * lf;
       const Hft     = Hval    * lf;
-      const L1inft  = L1val   * lf;
-      const L2inft  = L2val   * lf;
+      const L1ft    = L1val   * lf;
+      const L2ft    = L2val   * lf;
 
       const haveH = !isNaN(Hval);
       const haveL = !isNaN(L1val) && !isNaN(L2val);
@@ -220,25 +232,27 @@
             <td>${(T1/wf).toFixed(2)} ${wD}</td>
             <td>${(T2/wf).toFixed(2)} ${wD}</td>
           `;
-          tb.appendChild(tr);
+          tbody.appendChild(tr);
         });
         return;
       }
 
+      // manual vs from-height
       let mode, L1b, L2b;
       if(haveL){
         mode='Manual Legs';
-        L1b=L1inft; L2b=L2inft;
+        L1b=L1ft; L2b=L2ft;
       } else {
         mode='From Height';
         L1b=Math.hypot(D1ft,Hft);
         L2b=Math.hypot(D2ft,Hft);
       }
 
+      // geometry check
       const H1 = Math.sqrt(L1b*L1b - D1ft*D1ft);
       const H2 = Math.sqrt(L2b*L2b - D2ft*D2ft);
       if(isNaN(H1)||isNaN(H2)||H1<=0||H2<=0){
-        tb.innerHTML = '<tr><td colspan="5">Invalid geometry.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="5">Invalid geometry.</td></tr>';
         return;
       }
 
@@ -255,16 +269,9 @@
         <td>${(T1/wf).toFixed(2)} ${wD}</td>
         <td>${(T2/wf).toFixed(2)} ${wD}</td>
       `;
-      tb.appendChild(tr);
+      tbody.appendChild(tr);
     }
 
-    const load   = document.getElementById('load');
-    const d1     = document.getElementById('d1');
-    const d2     = document.getElementById('d2');
-    const height = document.getElementById('height');
-    const l1     = document.getElementById('l1');
-    const l2     = document.getElementById('l2');
-    const resultTable = document.getElementById('resultTable');
     document.getElementById('calcBtn').onclick = calcSling;
   </script>
 
