@@ -105,14 +105,12 @@
   </header>
 
   <main>
-    <!-- make sure this filename matches exactly -->
     <img
       src="D744E2B6-1AB3-466B-A4E8-A64711BD01F5.png"
       alt="Sling load diagram"
       class="diagram"
     />
 
-    <!-- Units -->
     <div class="form-row">
       <label for="weightUnit">Weight Unit:</label>
       <select id="weightUnit">
@@ -129,7 +127,6 @@
       </select>
     </div>
 
-    <!-- Required -->
     <div class="form-row">
       <label for="load">Total Load:</label>
       <input id="load" type="number" placeholder="Required"/>
@@ -142,7 +139,6 @@
       <input id="d2" type="number" placeholder="Required"/>
     </div>
 
-    <!-- Optional -->
     <div class="form-row">
       <label for="height">Hook Height (H):</label>
       <input id="height" type="number" placeholder="Optional"/>
@@ -161,10 +157,10 @@
       <thead>
         <tr>
           <th>Mode</th>
-          <th>Left Leg<br>(L1 & Angle)</th>
-          <th>Right Leg<br>(L2 & Angle)</th>
-          <th>Tension 1</th>
-          <th>Tension 2</th>
+          <th>Left Leg<br>(L1 &amp; Angle)</th>
+          <th>Right Leg<br>(L2 &amp; Angle)</th>
+          <th>Tension<br>1</th>
+          <th>Tension<br>2</th>
         </tr>
       </thead>
       <tbody></tbody>
@@ -172,7 +168,6 @@
   </main>
 
   <script>
-    // Unit conversion
     function getFactors(){
       const wU = document.getElementById('weightUnit').value;
       const lU = document.getElementById('lengthUnit').value;
@@ -185,7 +180,6 @@
       return { wf,wD,lf,lD };
     }
 
-    // Calculation
     function calcSling(){
       const { wf,wD,lf,lD } = getFactors();
       const loadVal = parseFloat(document.getElementById('load').value);
@@ -197,13 +191,11 @@
       const tbody   = document.querySelector('#resultTable tbody');
       tbody.innerHTML = '';
 
-      // require
       if(isNaN(loadVal)||isNaN(D1val)||isNaN(D2val)){
         tbody.innerHTML = '<tr><td colspan="5">Please fill Load, D1 & D2.</td></tr>';
         return;
       }
 
-      // convert to base units
       const loadLbs = loadVal * wf;
       const D1ft    = D1val   * lf;
       const D2ft    = D2val   * lf;
@@ -214,7 +206,6 @@
       const haveH = !isNaN(Hval);
       const haveL = !isNaN(L1val) && !isNaN(L2val);
 
-      // presets
       if(!haveH && !haveL){
         [60,50,45,35].forEach(deg=>{
           const θ   = deg*Math.PI/180;
@@ -237,7 +228,6 @@
         return;
       }
 
-      // manual vs from-height
       let mode, L1b, L2b;
       if(haveL){
         mode='Manual Legs';
@@ -248,7 +238,6 @@
         L2b=Math.hypot(D2ft,Hft);
       }
 
-      // geometry check
       const H1 = Math.sqrt(L1b*L1b - D1ft*D1ft);
       const H2 = Math.sqrt(L2b*L2b - D2ft*D2ft);
       if(isNaN(H1)||isNaN(H2)||H1<=0||H2<=0){
