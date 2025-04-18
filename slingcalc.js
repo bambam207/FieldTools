@@ -5,8 +5,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   form.addEventListener("submit", e => {
     e.preventDefault();
-    tbody.innerHTML = "";
+    tbody.innerHTML = ""; // clear old
 
+    // read inputs
     const W  = parseFloat(document.getElementById("loadWeight").value);
     const C  = parseFloat(document.getElementById("cg").value);
     const H  = parseFloat(document.getElementById("hookHeight").value);
@@ -20,20 +21,20 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // 1) Manual mode if user provided H, L1 & L2
+    // 1) Manual‑override if H + both L1 & L2 are given
     if (!isNaN(H) && !isNaN(L1i) && !isNaN(L2i)) {
-      const a1 = Math.acos(H / L1i);
-      const a2 = Math.acos(H / L2i);
-      const θ1 = a1 * 180/Math.PI;
-      const θ2 = a2 * 180/Math.PI;
-      const T1 = W * Math.sin(a2) / Math.sin(a1 + a2);
-      const T2 = W * Math.sin(a1) / Math.sin(a1 + a2);
+      const a1  = Math.acos(H / L1i);
+      const a2  = Math.acos(H / L2i);
+      const θ1  = a1 * 180/Math.PI;
+      const θ2  = a2 * 180/Math.PI;
+      const T1  = W * Math.sin(a2) / Math.sin(a1 + a2);
+      const T2  = W * Math.sin(a1) / Math.sin(a1 + a2);
 
       const tr = document.createElement("tr");
       tr.innerHTML = `
         <td>Manual</td>
-        <td>${L1i.toFixed(2)} ${lu} & ${θ1.toFixed(1)}°</td>
-        <td>${L2i.toFixed(2)} ${lu} & ${θ2.toFixed(1)}°</td>
+        <td>${L1i.toFixed(2)} ${lu} &amp; ${θ1.toFixed(1)}°</td>
+        <td>${L2i.toFixed(2)} ${lu} &amp; ${θ2.toFixed(1)}°</td>
         <td>${T1.toFixed(2)} ${wu}</td>
         <td>${T2.toFixed(2)} ${wu}</td>
       `;
@@ -41,17 +42,17 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // 2) Preset angles mode
-    [60, 50, 45, 35].forEach(angle => {
+    // 2) Preset‑angle rows (60°, 50°, 45°, 35°)
+    [60,50,45,35].forEach(angle => {
       const rad = angle * Math.PI/180;
-      const L   = C / Math.cos(rad);
-      const T   = W / (2 * Math.sin(rad));
+      const L   = C / Math.cos(rad);            // same L for both legs
+      const T   = W / (2 * Math.sin(rad));      // same tension each leg
 
       const tr = document.createElement("tr");
       tr.innerHTML = `
         <td>Preset ${angle}°</td>
-        <td>${L.toFixed(2)} ${lu} & ${angle}°</td>
-        <td>${L.toFixed(2)} ${lu} & ${angle}°</td>
+        <td>${L.toFixed(2)} ${lu} &amp; ${angle}°</td>
+        <td>${L.toFixed(2)} ${lu} &amp; ${angle}°</td>
         <td>${T.toFixed(2)} ${wu}</td>
         <td>${T.toFixed(2)} ${wu}</td>
       `;
