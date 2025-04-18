@@ -15,14 +15,16 @@
   <style>
     body { margin:0; font-family:sans-serif; background:#f9f9f9; color:#222 }
     header { background:#333; color:#fff; padding:1rem; text-align:center }
-    nav { margin:.5rem 0 }
+    nav { margin-top:.5rem }
     nav label, nav select { color:#ddd; font-size:.9rem }
     main { max-width:480px; margin:1rem auto; padding:0 1rem }
     .diagram { width:100%; margin-bottom:1rem }
 
     form { margin-bottom:1rem }
     .form-group { margin-bottom:1rem }
-    .form-group label { display:block; margin-bottom:.25rem; font-weight:600 }
+    .form-group label {
+      display:block; margin-bottom:.25rem; font-weight:600;
+    }
     .form-group input,
     .form-group select {
       width:100%; padding:.6rem; font-size:1rem;
@@ -42,6 +44,7 @@
     th, td {
       border:1px solid #666; padding:.6rem; text-align:center;
       white-space:nowrap;
+      word-break:keep-all;
     }
     th { background:#333; color:#fff; font-weight:normal }
     tbody tr:nth-child(even) { background:#f2f2f2 }
@@ -71,8 +74,8 @@
         <select id="weightUnit">
           <option value="lbs">lbs</option>
           <option value="kg">kg</option>
-          <option value="us_ton">US tons</option>
-          <option value="metric_ton">metric tons</option>
+          <option value="US T" selected>US T</option>
+          <option value="t">t</option>
         </select>
       </div>
 
@@ -121,8 +124,8 @@
       <thead>
         <tr>
           <th>Mode</th>
-          <th>Left Leg<br>(L₁ & Angle)</th>
-          <th>Right Leg<br>(L₂ & Angle)</th>
+          <th>Left Leg<br>(L₁ &amp; Angle)</th>
+          <th>Right Leg<br>(L₂ &amp; Angle)</th>
           <th>Tension 1</th>
           <th>Tension 2</th>
         </tr>
