@@ -27,54 +27,55 @@
   </header>
 
   <main>
-    <img src="D744E2B6-1AB3-466B-A4E8-A64711BD01F5.png" alt="Sling load diagram" class="diagram"/>
-    <div class="form-row">
-      <label for="weightUnit">Weight Unit:</label>
-      <select id="weightUnit">
-        <option value="lbs">lbs</option>
-        <option value="kg">kg</option>
-        <option value="us_ton">US tons</option>
-        <option value="metric_ton">metric tons</option>
-      </select>
-      <label for="lengthUnit">Length Unit:</label>
-      <select id="lengthUnit">
-        <option value="ft">ft</option>
-        <option value="m">m</option>
-      </select>
-    </div>
+    <img src="D744E2B6-1AB3-466B-A4E8-A64711BD01F5.png"
+         alt="Sling load diagram"
+         class="diagram"/>
 
-    <div class="form-row">
-      <label for="load">Total Load:</label>
-      <input id="load" type="number" placeholder="Required"/>
-      <label for="d1">D1 (left CG):</label>
-      <input id="d1" type="number" placeholder="Required"/>
-    </div>
-    <div class="form-row">
-      <label for="d2">D2 (right CG):</label>
-      <input id="d2" type="number" placeholder="Required"/>
-    </div>
+    <form id="slingForm">
+      <div class="form-row">
+        <label for="weightUnit">Weight Unit:</label>
+        <select id="weightUnit">
+          <option value="lbs">lbs</option>
+          <option value="kg">kg</option>
+          <option value="us_ton">US tons</option>
+          <option value="metric_ton">metric tons</option>
+        </select>
 
-    <div class="form-row">
-      <label for="height">Hook Height (H):</label>
-      <input id="height" type="number" placeholder="Optional"/>
-      <label for="l1">Left Sling (L1):</label>
-      <input id="l1" type="number" placeholder="Optional"/>
-    </div>
-    <div class="form-row">
-      <label for="l2">Right Sling (L2):</label>
-      <input id="l2" type="number" placeholder="Optional"/>
-    </div>
+        <label for="lengthUnit">Length Unit:</label>
+        <select id="lengthUnit">
+          <option value="ft">ft</option>
+          <option value="m">m</option>
+        </select>
+      </div>
 
-    <button id="calcBtn">Calculate</button>
+      <div class="form-row">
+        <label for="loadWeight">Total Load:</label>
+        <input id="loadWeight" type="number" placeholder="Required" required/>
+        <label for="d1">D1 (left CG):</label>
+        <input id="d1" type="number" placeholder="Required" required/>
+      </div>
+
+      <div class="form-row">
+        <label for="d2">D2 (right CG):</label>
+        <input id="d2" type="number" placeholder="Required" required/>
+      </div>
+
+      <div class="form-row">
+        <label for="height">Hook Height (H):</label>
+        <input id="height" type="number" placeholder="Required" required/>
+      </div>
+
+      <button type="submit" id="calcBtn">Calculate</button>
+    </form>
 
     <table id="resultTable">
       <thead>
         <tr>
           <th>Mode</th>
-          <th>Left Leg<br>(L1 &amp; Angle)</th>
-          <th>Right Leg<br>(L2 &amp; Angle)</th>
-          <th>Tension<br>1</th>
-          <th>Tension<br>2</th>
+          <th>Left Leg<br/>(L₁ & θ₁)</th>
+          <th>Right Leg<br/>(L₂ & θ₂)</th>
+          <th>Tension 1</th>
+          <th>Tension 2</th>
         </tr>
       </thead>
       <tbody></tbody>
