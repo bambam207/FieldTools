@@ -8,27 +8,28 @@ document.addEventListener("DOMContentLoaded", () => {
     tbody.innerHTML = ""; // clear old
 
     // read inputs
-    const W  = parseFloat(document.getElementById("loadWeight").value);
-    const C  = parseFloat(document.getElementById("cg").value);
-    const H  = parseFloat(document.getElementById("hookHeight").value);
+    const D1  = parseFloat(document.getElementById("d1").value);
+    const D2  = parseFloat(document.getElementById("d2").value);
+    const H   = parseFloat(document.getElementById("hookHeight").value);
     const L1i = parseFloat(document.getElementById("l1").value);
     const L2i = parseFloat(document.getElementById("l2").value);
-    const wu = document.getElementById("weightUnit").value;
-    const lu = document.getElementById("lengthUnit").value;
+    const W   = parseFloat(document.getElementById("loadWeight").value);
+    const wu  = document.getElementById("weightUnit").value;
+    const lu  = document.getElementById("lengthUnit").value;
 
-    if (isNaN(W) || isNaN(C)) {
-      alert("Please enter both Total Load and Horizontal CG.");
+    if (isNaN(D1) || isNaN(D2) || isNaN(W)) {
+      alert("Please fill in D₁, D₂ and Total Load.");
       return;
     }
 
-    // 1) Manual‑override if H + both L1 & L2 are given
+    // 1) Manual override: if H + L1 + L2 all provided
     if (!isNaN(H) && !isNaN(L1i) && !isNaN(L2i)) {
-      const a1  = Math.acos(H / L1i);
-      const a2  = Math.acos(H / L2i);
-      const θ1  = a1 * 180/Math.PI;
-      const θ2  = a2 * 180/Math.PI;
-      const T1  = W * Math.sin(a2) / Math.sin(a1 + a2);
-      const T2  = W * Math.sin(a1) / Math.sin(a1 + a2);
+      const a1 = Math.acos(H / L1i);
+      const a2 = Math.acos(H / L2i);
+      const θ1 = a1 * 180/Math.PI;
+      const θ2 = a2 * 180/Math.PI;
+      const T1 = W * Math.sin(a2) / Math.sin(a1 + a2);
+      const T2 = W * Math.sin(a1) / Math.sin(a1 + a2);
 
       const tr = document.createElement("tr");
       tr.innerHTML = `
@@ -42,17 +43,19 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // 2) Preset‑angle rows (60°, 50°, 45°, 35°)
-    [60,50,45,35].forEach(angle => {
+    // 2) Preset modes: 60°, 50°, 45°, 35°
+    [60, 50, 45, 35].forEach(angle => {
       const rad = angle * Math.PI/180;
-      const L   = C / Math.cos(rad);            // same L for both legs
-      const T   = W / (2 * Math.sin(rad));      // same tension each leg
+      const L1  = D1 / Math.cos(rad);
+      const L2  = D2 / Math.cos(rad);
+      // equal-angle lift => same tension each leg
+      const T   = W / (2 * Math.sin(rad));
 
       const tr = document.createElement("tr");
       tr.innerHTML = `
         <td>Preset ${angle}°</td>
-        <td>${L.toFixed(2)} ${lu} &amp; ${angle}°</td>
-        <td>${L.toFixed(2)} ${lu} &amp; ${angle}°</td>
+        <td>${L1.toFixed(2)} ${lu} &amp; ${angle}°</td>
+        <td>${L2.toFixed(2)} ${lu} &amp; ${angle}°</td>
         <td>${T.toFixed(2)} ${wu}</td>
         <td>${T.toFixed(2)} ${wu}</td>
       `;
