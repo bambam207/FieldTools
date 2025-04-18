@@ -18,7 +18,7 @@
 </head>
 <body>
   <header>
-    <!-- ← swap in your container‑balance graphic here -->
+    <!-- swap in your container‑diagram here -->
     <img src="img/container-balance.png" alt="Container Balance Diagram" class="tool-image"/>
     <h1>Field Tools – Container Balance</h1>
     <nav>
@@ -29,35 +29,47 @@
 
   <main>
     <div class="input-row">
-      <label for="container-length">Container Length:</label>
-      <input type="number" id="container-length" placeholder="e.g. 120" min="0" step="any"/>
-      <label for="unit-select">Units:</label>
-      <select id="unit-select">
-        <option value="imperial">inches &amp; lbs</option>
-        <option value="metric">meters &amp; kg</option>
+      <label for="weight-unit">Weight Unit:</label>
+      <select id="weight-unit">
+        <option value="ton">tons</option>
+        <option value="lb">lbs</option>
+        <option value="kg">kg</option>
+      </select>
+
+      <label for="length-unit">Length Unit:</label>
+      <select id="length-unit">
+        <option value="ft">ft</option>
+        <option value="m">m</option>
+      </select>
+
+      <label for="container-size">Container Size:</label>
+      <select id="container-size">
+        <option value="20">20</option>
+        <option value="40">40</option>
       </select>
     </div>
 
-    <table id="objects-table">
+    <table class="tool-table" id="objects-table">
       <thead>
         <tr>
           <th>Obj</th>
           <th>Weight</th>
           <th>Width</th>
-          <th>Pos (opt.)</th>
         </tr>
       </thead>
       <tbody>
-        <!-- your JS will inject 6 rows here -->
+        <!-- JS will inject 6 rows here -->
       </tbody>
     </table>
 
-    <button id="calc-btn">Calculate</button>
+    <button class="tool-btn" id="calc-btn">Calculate</button>
 
     <div class="results">
       <p>Total Weight: <strong id="total-weight">0</strong></p>
-      <p>CG from Front: <strong id="cg-pos">0</strong></p>
+      <p>Container Length: <strong id="container-length-display">0</strong> <span id="len-unit-label"></span></p>
       <p id="warning" class="warning"></p>
+      <h2>Object CG Positions</h2>
+      <ul id="positions-list"></ul>
     </div>
   </main>
 
