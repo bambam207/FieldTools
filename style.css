@@ -114,3 +114,26 @@ table tbody tr:nth-child(even) {
     font-size: 14px;
   }
 }
+
+/* ── Force nav dropdown text to dark grey ───────────────────────── */
+header nav select#toolsMenu {
+  /* ensure selected text is dark grey */
+  color: #333333 !important;
+  /* cover WebKit browsers */
+  -webkit-text-fill-color: #333333 !important;
+  /* optional: keep native arrow */
+  appearance: none;
+}
+
+header nav select#toolsMenu option {
+  color: #333333 !important;
+}
+
+/* If you switch to link‑based nav in the future: */
+nav a {
+  color: #333333 !important;
+}
+nav a:hover,
+nav a:focus {
+  color: #333333 !important;
+}
