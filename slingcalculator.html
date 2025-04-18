@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Field Tools – Sling Load Calculator</title>
 
-  <!-- PWA support & main CSS -->
+  <!-- PWA & your main CSS -->
   <link rel="stylesheet" href="style.css"/>
   <link rel="manifest" href="manifest.json"/>
   <link rel="apple-touch-icon" href="icon-192.png"/>
@@ -70,6 +70,7 @@
          class="diagram"/>
 
     <form id="slingForm">
+      <!-- Units -->
       <div class="form-group">
         <label for="weightUnit">Weight Unit</label>
         <select id="weightUnit">
@@ -79,7 +80,6 @@
           <option value="metric_ton">metric tons</option>
         </select>
       </div>
-
       <div class="form-group">
         <label for="lengthUnit">Length Unit</label>
         <select id="lengthUnit">
@@ -88,29 +88,33 @@
         </select>
       </div>
 
+      <!-- Required CG inputs -->
       <div class="form-group">
-        <label for="loadWeight">Total Load (W) [Required]</label>
-        <input id="loadWeight" type="number" placeholder="Required" required/>
+        <label for="d1">Horizontal CG from Left (D₁) [Required]</label>
+        <input id="d1" type="number" placeholder="Required" required/>
+      </div>
+      <div class="form-group">
+        <label for="d2">Horizontal CG from Right (D₂) [Required]</label>
+        <input id="d2" type="number" placeholder="Required" required/>
       </div>
 
+      <!-- Optional vertical height & manual override -->
       <div class="form-group">
-        <label for="cg">Horizontal CG Distance (C) [Required]</label>
-        <input id="cg" type="number" placeholder="Required" required/>
-      </div>
-
-      <div class="form-group">
-        <label for="hookHeight">Vertical Hook Height (H) [Optional]</label>
+        <label for="hookHeight">Vertical Hook Height (H) [Optional]</label>
         <input id="hookHeight" type="number" placeholder="Optional"/>
       </div>
-
       <div class="form-group">
-        <label for="l1">Left Leg Length (L1) [Optional]</label>
+        <label for="l1">Left Leg Length (L₁) [Optional]</label>
         <input id="l1" type="number" placeholder="Optional"/>
+      </div>
+      <div class="form-group">
+        <label for="l2">Right Leg Length (L₂) [Optional]</label>
+        <input id="l2" type="number" placeholder="Optional"/>
       </div>
 
       <div class="form-group">
-        <label for="l2">Right Leg Length (L2) [Optional]</label>
-        <input id="l2" type="number" placeholder="Optional"/>
+        <label for="loadWeight">Total Load (W) [Required]</label>
+        <input id="loadWeight" type="number" placeholder="Required" required/>
       </div>
 
       <button type="submit" id="calcBtn">Calculate</button>
@@ -120,8 +124,8 @@
       <thead>
         <tr>
           <th>Mode</th>
-          <th>Left Leg<br/>(L1 &amp; Angle)</th>
-          <th>Right Leg<br/>(L2 &amp; Angle)</th>
+          <th>Left Leg<br>(L₁ & Angle)</th>
+          <th>Right Leg<br>(L₂ & Angle)</th>
           <th>Tension 1</th>
           <th>Tension 2</th>
         </tr>
