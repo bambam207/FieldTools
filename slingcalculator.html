@@ -1,11 +1,10 @@
+<!-- slingcalculator.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Field Tools – Sling Load Calculator</title>
-
-  <!-- PWA / Apple support -->
   <link rel="stylesheet" href="style.css"/>
   <link rel="manifest" href="manifest.json"/>
   <link rel="apple-touch-icon" href="icon-192.png"/>
@@ -17,79 +16,18 @@
       navigator.serviceWorker.register('service-worker.js');
     }
   </script>
-
-  <style>
-    body { background:#f9f9f9; font-family:sans-serif; color:#222; margin:0; }
-    header { background:#333; color:#fff; padding:1rem; text-align:center; }
-    nav { margin-top:0.5rem; }
-    nav label { color:#ddd; font-size:0.9rem; }
-    nav select { padding:0.3rem; font-size:0.9rem; }
-    main { max-width:480px; margin:1rem auto; padding:0 1rem; }
-    img.diagram { width:100%; max-width:400px; display:block; margin:1rem auto; }
-    .form-row { display:flex; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.75rem; }
-    .form-row label { flex:0 0 45%; min-width:120px; line-height:1.4; }
-    .form-row input, .form-row select { flex:1 0 45%; padding:0.4rem; font-size:1rem; }
-    button#calcBtn {
-      display:block;
-      width:100%;
-      background:#444;
-      color:#fff;
-      border:none;
-      padding:0.75rem;
-      font-size:1rem;
-      border-radius:4px;
-      cursor:pointer;
-      margin:1rem 0;
-    }
-    table#resultTable {
-      width:100%;
-      margin:1rem auto 2rem;
-      border-collapse:collapse;
-      table-layout:fixed;
-    }
-    table#resultTable th {
-      background:#333;
-      color:#fff;
-      padding:0.6rem;
-      text-align:center;
-      font-weight:normal;
-    }
-    table#resultTable td {
-      border:1px solid #666;
-      padding:0.6rem;
-      text-align:center;
-      background:#fff;
-    }
-    table#resultTable tbody tr:nth-child(even) { background:#f2f2f2; }
-    table#resultTable td[colspan] { text-align:left; color:#b00; }
-  </style>
 </head>
 <body>
-
   <header>
     <h1>Field Tools</h1>
     <nav>
       <label for="toolsMenu">TOOLS:&nbsp;</label>
-      <select id="toolsMenu" onchange="window.location=this.value">
-        <option value="index.html">Home</option>
-        <option value="slingcalculator.html" selected>Sling Load Calculator</option>
-        <option value="container.html">Container Balance</option>
-        <option value="weightconversion.html">Weight Conversion</option>
-        <option value="weightcalculator.html">Weight Calculator</option>
-        <option value="pressureconversion.html">Pressure Conversion</option>
-        <option value="bolttorque.html">Bolt Torque Values</option>
-      </select>
+      <select id="toolsMenu"></select>
     </nav>
   </header>
 
   <main>
-    <img
-      src="D744E2B6-1AB3-466B-A4E8-A64711BD01F5.png"
-      alt="Sling load diagram"
-      class="diagram"
-    />
-
-    <!-- units -->
+    <img src="D744E2B6-1AB3-466B-A4E8-A64711BD01F5.png" alt="Sling load diagram" class="diagram"/>
     <div class="form-row">
       <label for="weightUnit">Weight Unit:</label>
       <select id="weightUnit">
@@ -98,7 +36,6 @@
         <option value="us_ton">US tons</option>
         <option value="metric_ton">metric tons</option>
       </select>
-
       <label for="lengthUnit">Length Unit:</label>
       <select id="lengthUnit">
         <option value="ft">ft</option>
@@ -106,11 +43,9 @@
       </select>
     </div>
 
-    <!-- required inputs -->
     <div class="form-row">
       <label for="load">Total Load:</label>
       <input id="load" type="number" placeholder="Required"/>
-
       <label for="d1">D1 (left CG):</label>
       <input id="d1" type="number" placeholder="Required"/>
     </div>
@@ -119,11 +54,9 @@
       <input id="d2" type="number" placeholder="Required"/>
     </div>
 
-    <!-- optional inputs -->
     <div class="form-row">
       <label for="height">Hook Height (H):</label>
       <input id="height" type="number" placeholder="Optional"/>
-
       <label for="l1">Left Sling (L1):</label>
       <input id="l1" type="number" placeholder="Optional"/>
     </div>
@@ -148,6 +81,7 @@
     </table>
   </main>
 
+  <script src="nav.js"></script>
   <script src="slingcalc.js"></script>
 </body>
 </html>
