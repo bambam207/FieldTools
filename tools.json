@@ -1,0 +1,9 @@
+[
+  { "name": "Home", "file": "index.html" },
+  { "name": "Sling Load Calculator", "file": "slingcalculator.html" },
+  { "name": "Container Balance", "file": "container.html" },
+  { "name": "Weight Conversion", "file": "weightconversion.html" },
+  { "name": "Weight Calculator", "file": "weightcalculator.html" },
+  { "name": "Pressure Conversion", "file": "pressureconversion.html" },
+  { "name": "Bolt Torque Values", "file": "bolttorque.html" }
+]
