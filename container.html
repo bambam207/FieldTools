@@ -9,21 +9,21 @@
   <link rel="manifest" href="manifest.json"/>
   <link rel="apple-touch-icon" href="icon-192.png"/>
 
-  <!-- ensure basic reset -->
   <style>
     body { margin:0; font-family:sans-serif; }
   </style>
 </head>
 <body>
   <header class="tool-header">
-    <!-- your diagram at top -->
-    <img src="img/container-balance.png"
-         alt="Container Balance Diagram"
-         class="tool-image"/>
+    <!-- your uploaded diagram -->
+    <img 
+      src="D59FF921-1A7D-4D24-ACED-8A1639528E03.png" 
+      alt="Container Balance Diagram" 
+      class="tool-image"
+    />
 
     <h1>Field Tools – Container Balance</h1>
 
-    <!-- nav will be populated via JS -->
     <nav class="tool-nav" id="tool-nav"></nav>
   </header>
 
@@ -64,8 +64,9 @@
 
     <div class="results">
       <p>Total Weight: <strong id="total-weight">0</strong></p>
-      <p>Container Length: <strong id="container-length-display">0</strong> 
-         <span id="len-unit-label"></span>
+      <p>
+        Container Length: <strong id="container-length-display">0</strong> 
+        <span id="len-unit-label"></span>
       </p>
       <p id="warning" class="warning"></p>
 
