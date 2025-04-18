@@ -5,9 +5,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   form.addEventListener("submit", e => {
     e.preventDefault();
-    tbody.innerHTML = ""; // clear previous results
+    tbody.innerHTML = ""; // clear old rows
 
-    // grab inputs
     const D1  = parseFloat(document.getElementById("d1").value);
     const D2  = parseFloat(document.getElementById("d2").value);
     const W   = parseFloat(document.getElementById("loadWeight").value);
@@ -17,18 +16,19 @@ document.addEventListener("DOMContentLoaded", () => {
     const wu  = document.getElementById("weightUnit").value;
     const lu  = document.getElementById("lengthUnit").value;
 
-    // sanity check
     if (isNaN(D1) || isNaN(D2) || isNaN(W)) {
-      alert("Please enter CG‐from‐Left (D₁), CG‐from‐Right (D₂) and Load (W)");
+      alert("Please enter CG‑from‑Left (D₁), CG‑from‑Right (D₂) and Load (W).");
       return;
     }
 
-    // 1) Manual mode: L1 & L2 provided
-    if (!isNaN(L1i) && !isNaN(L2i) && !isNaN(H)) {
-      const a1 = Math.acos(H / L1i);
-      const a2 = Math.acos(H / L2i);
+    // 1) Manual mode: L1 & L2 provided (ignore H)
+    if (!isNaN(L1i) && !isNaN(L2i)) {
+      // angles from D/L
+      const a1 = Math.acos(D1 / L1i);
+      const a2 = Math.acos(D2 / L2i);
       const θ1 = a1 * 180/Math.PI;
       const θ2 = a2 * 180/Math.PI;
+      // tensions
       const T1 = (W * Math.sin(a2)) / Math.sin(a1 + a2);
       const T2 = (W * Math.sin(a1)) / Math.sin(a1 + a2);
 
@@ -45,8 +45,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // 2) Hook‑height mode: H provided, L1/L2 blank
-    if (!isNaN(H) && isNaN(L1i) && isNaN(L2i)) {
-      // compute leg lengths from geometry
+    if (!isNaN(H)) {
       const L1 = Math.hypot(D1, H);
       const L2 = Math.hypot(D2, H);
       const a1 = Math.atan2(H, D1);
@@ -68,12 +67,12 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // 3) Preset‑angles: H, L1, L2 all blank
+    // 3) Preset‑angles: neither L1/L2 nor H provided
     [60,50,45,35].forEach(angle => {
       const rad = angle * Math.PI/180;
       const L1  = D1 / Math.cos(rad);
       const L2  = D2 / Math.cos(rad);
-      const T   = W / (2 * Math.sin(rad)); // same tension each leg
+      const T   = W / (2 * Math.sin(rad)); // same per leg
 
       const tr = document.createElement("tr");
       tr.innerHTML = `
