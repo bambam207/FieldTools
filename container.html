@@ -41,35 +41,41 @@
 
       <h2>Container Balance</h2>
 
-      <div class="input-row">
-        <label for="weight-unit">Weight Unit:</label>
+      <!-- Block‐style labels + inputs -->
+      <label for="weight-unit">
+        Weight Unit:
         <select id="weight-unit">
           <option value="ton">tons</option>
           <option value="lb">lbs</option>
           <option value="kg">kg</option>
         </select>
+      </label>
 
-        <label for="length-unit">Length Unit:</label>
+      <label for="length-unit">
+        Length Unit:
         <select id="length-unit">
           <option value="ft">ft</option>
           <option value="m">m</option>
         </select>
+      </label>
 
-        <label for="container-size">Container Size:</label>
+      <label for="container-size">
+        Container Size:
         <select id="container-size">
           <option value="20">20′</option>
           <option value="40">40′</option>
         </select>
-      </div>
+      </label>
 
-      <!-- NEW: user‑specified first‑object position -->
-      <label for="first-pos">First Object Position (optional):</label>
-      <input 
-        type="number" 
-        id="first-pos" 
-        placeholder="Optional" 
-        step="any"
-      />
+      <label for="first-pos">
+        First Object Position (optional):
+        <input 
+          type="number" 
+          id="first-pos" 
+          placeholder="Optional" 
+          step="any"
+        />
+      </label>
 
       <table class="tool-table" id="objects-table">
         <thead>
