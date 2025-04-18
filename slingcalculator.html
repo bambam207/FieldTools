@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Field Tools – Sling Load Calculator</title>
 
-  <!-- common PWA support & your main CSS -->
+  <!-- PWA support & main CSS -->
   <link rel="stylesheet" href="style.css"/>
   <link rel="manifest" href="manifest.json"/>
   <link rel="apple-touch-icon" href="icon-192.png"/>
@@ -51,9 +51,7 @@
   </style>
 
   <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('service-worker.js');
-    }
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('service-worker.js');
   </script>
 </head>
 <body>
@@ -91,27 +89,27 @@
       </div>
 
       <div class="form-group">
-        <label for="loadWeight">Total Load (W) [Required]</label>
+        <label for="loadWeight">Total Load (W) [Required]</label>
         <input id="loadWeight" type="number" placeholder="Required" required/>
       </div>
 
       <div class="form-group">
-        <label for="cg">Horizontal CG Distance (C) [Required]</label>
+        <label for="cg">Horizontal CG Distance (C) [Required]</label>
         <input id="cg" type="number" placeholder="Required" required/>
       </div>
 
       <div class="form-group">
-        <label for="hookHeight">Vertical Hook Height (H) [Optional]</label>
+        <label for="hookHeight">Vertical Hook Height (H) [Optional]</label>
         <input id="hookHeight" type="number" placeholder="Optional"/>
       </div>
 
       <div class="form-group">
-        <label for="l1">Left Leg Length (L1) [Optional]</label>
+        <label for="l1">Left Leg Length (L1) [Optional]</label>
         <input id="l1" type="number" placeholder="Optional"/>
       </div>
 
       <div class="form-group">
-        <label for="l2">Right Leg Length (L2) [Optional]</label>
+        <label for="l2">Right Leg Length (L2) [Optional]</label>
         <input id="l2" type="number" placeholder="Optional"/>
       </div>
 
@@ -122,8 +120,8 @@
       <thead>
         <tr>
           <th>Mode</th>
-          <th>Left Leg<br/>(L1 & Angle)</th>
-          <th>Right Leg<br/>(L2 & Angle)</th>
+          <th>Left Leg<br/>(L1 &amp; Angle)</th>
+          <th>Right Leg<br/>(L2 &amp; Angle)</th>
           <th>Tension 1</th>
           <th>Tension 2</th>
         </tr>
