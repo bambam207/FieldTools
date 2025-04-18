@@ -1,20 +1,57 @@
-<!-- container.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Field Tools – Container Balance</title>
+  <title>Field Tools – Sling Load Calculator</title>
+
   <link rel="stylesheet" href="style.css"/>
   <link rel="manifest" href="manifest.json"/>
   <link rel="apple-touch-icon" href="icon-192.png"/>
   <meta name="apple-mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-title" content="Field Tools"/>
   <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
-  <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('service-worker.js');
+
+  <style>
+    body { margin:0; font-family:sans-serif; background:#f9f9f9; color:#222 }
+    header { background:#333; color:#fff; padding:1rem; text-align:center }
+    nav { margin-top:.5rem }
+    nav label, nav select { color:#ddd; font-size:.9rem }
+    main { max-width:480px; margin:1rem auto; padding:0 1rem }
+    .diagram { width:100%; margin-bottom:1rem }
+
+    form { margin-bottom:1rem }
+    .form-group { margin-bottom:1rem }
+    .form-group label {
+      display:block; margin-bottom:.25rem; font-weight:600;
     }
+    .form-group input,
+    .form-group select {
+      width:100%; padding:.6rem; font-size:1rem;
+      border:1px solid #ccc; border-radius:4px; background:#fff;
+      box-sizing:border-box;
+    }
+    button#calcBtn {
+      display:block; width:100%; padding:.75rem; font-size:1rem;
+      background:#444; color:#fff; border:none; border-radius:4px;
+      cursor:pointer;
+    }
+
+    table {
+      width:100%; border-collapse:collapse; table-layout:fixed;
+      margin-bottom:1rem;
+    }
+    th, td {
+      border:1px solid #666; padding:.6rem; text-align:center;
+      white-space:nowrap;
+      word-break:keep-all;
+    }
+    th { background:#333; color:#fff; font-weight:normal }
+    tbody tr:nth-child(even) { background:#f2f2f2 }
+  </style>
+
+  <script>
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('service-worker.js');
   </script>
 </head>
 <body>
@@ -27,60 +64,77 @@
   </header>
 
   <main>
-    <h2>Container Balance</h2>
-    <div class="form-row">
-      <label for="weightUnit">Weight Unit:</label>
-      <select id="weightUnit">
-        <option value="lbs">lbs</option>
-        <option value="kg">kg</option>
-        <option value="us_ton">US tons</option>
-        <option value="metric_ton">metric tons</option>
-      </select>
-      <label for="lengthUnit">Length Unit:</label>
-      <select id="lengthUnit">
-        <option value="ft">ft</option>
-        <option value="m">m</option>
-      </select>
-    </div>
+    <img src="D744E2B6-1AB3-466B-A4E8-A64711BD01F5.png"
+         alt="Sling load diagram"
+         class="diagram"/>
 
-    <div class="form-row">
-      <label for="containerLen">Container Length:</label>
-      <select id="containerLen">
-        <option value="20">20</option>
-        <option value="40">40</option>
-      </select>
-    </div>
+    <form id="slingForm">
+      <div class="form-group">
+        <label for="weightUnit">Weight Unit</label>
+        <select id="weightUnit">
+          <option value="lbs">lbs</option>
+          <option value="kg">kg</option>
+          <option value="US T" selected>US T</option>
+          <option value="t">t</option>
+        </select>
+      </div>
 
-    <div id="loads">
-      <!-- Repeat blocks -->
-      ${[1,2,3,4,5,6].map(i => `
-        <div class="form-row">
-          <label for="w${i}">Obj ${i} Weight:</label>
-          <input id="w${i}" type="number" placeholder="Optional"/>
-          <label for="d${i}c">Obj ${i} Width:</label>
-          <input id="d${i}c" type="number" placeholder="Optional"/>
-        </div>`).join('')}
-    </div>
+      <div class="form-group">
+        <label for="lengthUnit">Length Unit</label>
+        <select id="lengthUnit">
+          <option value="ft">ft</option>
+          <option value="m">m</option>
+        </select>
+      </div>
 
-    <button id="calcBtn">Calculate</button>
+      <div class="form-group">
+        <label for="d1">CG from Left (D₁) [Required]</label>
+        <input id="d1" type="number" placeholder="Required" required/>
+      </div>
 
-    <table id="containerTable">
+      <div class="form-group">
+        <label for="d2">CG from Right (D₂) [Required]</label>
+        <input id="d2" type="number" placeholder="Required" required/>
+      </div>
+
+      <div class="form-group">
+        <label for="loadWeight">Total Load (W) [Required]</label>
+        <input id="loadWeight" type="number" placeholder="Required" required/>
+      </div>
+
+      <div class="form-group">
+        <label for="hookHeight">Hook Height (H) [Optional]</label>
+        <input id="hookHeight" type="number" placeholder="Optional"/>
+      </div>
+
+      <div class="form-group">
+        <label for="l1">Left Leg (L₁) [Optional]</label>
+        <input id="l1" type="number" placeholder="Optional"/>
+      </div>
+
+      <div class="form-group">
+        <label for="l2">Right Leg (L₂) [Optional]</label>
+        <input id="l2" type="number" placeholder="Optional"/>
+      </div>
+
+      <button type="submit" id="calcBtn">Calculate</button>
+    </form>
+
+    <table id="resultTable">
       <thead>
         <tr>
-          <th>Object</th>
-          <th>Weight</th>
-          <th>Width</th>
-          <th>CG Pos</th>
+          <th>Mode</th>
+          <th>Left Leg<br>(L₁ &amp; Angle)</th>
+          <th>Right Leg<br>(L₂ &amp; Angle)</th>
+          <th>Tension 1</th>
+          <th>Tension 2</th>
         </tr>
       </thead>
       <tbody></tbody>
     </table>
-
-    <div id="message"></div>
-    <div id="summary" class="summary"></div>
   </main>
 
   <script src="nav.js"></script>
-  <script src="container.js"></script>
+  <script src="slingcalc.js"></script>
 </body>
 </html>
