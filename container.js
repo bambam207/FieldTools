@@ -1,37 +1,47 @@
-// container.js
 document.addEventListener('DOMContentLoaded', () => {
-  if (!document.querySelector('#objects-table')) return;
+  if (!document.getElementById('objects-table')) return;
   initContainerTool();
 });
 
 function initContainerTool() {
   const tbody = document.querySelector('#objects-table tbody');
-  // inject 6 rows
+  // inject six rows
   for (let i = 1; i <= 6; i++) {
-    const row = document.createElement('tr');
-    row.innerHTML = `
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
       <td>${i}</td>
       <td><input type="number" class="weight" min="0" step="any" placeholder="0"/></td>
       <td><input type="number" class="width"  min="0" step="any" placeholder="0"/></td>
-      <td><input type="number" class="pos"    min="0" step="any" placeholder="—"/></td>
+      <td><input type="number" class="pos"    min="0" step="any" placeholder=""/></td>
     `;
-    tbody.appendChild(row);
+    tbody.appendChild(tr);
   }
-  document.getElementById('calc-btn').addEventListener('click', calculateBalance);
+
+  document.getElementById('calc-btn')
+          .addEventListener('click', calculateBalance);
 }
 
 function calculateBalance() {
-  const length = parseFloat(document.getElementById('container-length').value) || 0;
+  const length = parseFloat(
+    document.getElementById('container-length').value
+  ) || 0;
   const unit = document.getElementById('unit-select').value;
-  const weights   = [...document.querySelectorAll('.weight')].map(el => parseFloat(el.value)||0);
-  const widths    = [...document.querySelectorAll('.width')]. map(el => parseFloat(el.value)||0);
-  const positions = [...document.querySelectorAll('.pos')].  map(el => el.value!=='' ? parseFloat(el.value) : null);
+
+  const weights   = [...document.querySelectorAll('.weight')]
+                    .map(i => parseFloat(i.value) || 0);
+  const widths    = [...document.querySelectorAll('.width')]
+                    .map(i => parseFloat(i.value) || 0);
+  const positions = [...document.querySelectorAll('.pos')]
+                    .map(i => i.value !== '' ? parseFloat(i.value) : null);
 
   const totalW = weights.reduce((a,b) => a + b, 0);
-  // assign positions: use user value if given; else pack sequentially
+
+  // auto‑pack if no pos given
   let cursor = 0;
   const finalPos = widths.map((w,i) => {
-    const p = positions[i] !== null ? positions[i] : cursor + w/2;
+    const p = positions[i] !== null
+      ? positions[i]
+      : cursor + w/2;
     cursor += w;
     return p;
   });
@@ -48,8 +58,11 @@ function calculateBalance() {
     warnEl.textContent = '';
   }
 
-  const wtUnit = unit === 'metric' ? 'kg' : 'lb';
-  const lenUnit = unit === 'metric' ? 'm' : 'in';
-  document.getElementById('total-weight').textContent = totalW.toFixed(2) + ' ' + wtUnit;
-  document.getElementById('cg-pos').       textContent = cg.toFixed(2)  + ' ' + lenUnit + ' from front';
+  const wtU = unit === 'metric' ? 'kg' : 'lb';
+  const lenU = unit === 'metric' ? 'm'  : 'in';
+
+  document.getElementById('total-weight')
+          .textContent = `${totalW.toFixed(2)} ${wtU}`;
+  document.getElementById('cg-pos')
+          .textContent = `${cg.toFixed(2)} ${lenU} from front`;
 }
