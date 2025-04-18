@@ -5,14 +5,16 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>Field Tools – Container Balance</title>
   <link rel="stylesheet" href="style.css"/>
-  <link rel="manifest" href="manifest.json"/>
-  <link rel="apple-touch-icon" href="icon-192.png"/>
-  <meta name="apple-mobile-web-app-capable" content="yes"/>
-  <meta name="apple-mobile-web-app-title" content="Field Tools"/>
-  <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
-  <script>
-    if ('serviceWorker' in navigator) navigator.serviceWorker.register('service-worker.js');
-  </script>
+  <style>
+    /* — Input width fix — */
+    .tool label input,
+    .tool label select,
+    #objects-table td input {
+      max-width: 120px;    /* never wider than 120px */
+      width: 100%;
+      box-sizing: border-box;
+    }
+  </style>
 </head>
 <body>
   <header>
@@ -33,16 +35,11 @@
 
   <main class="container">
     <section class="tool">
-      <img 
-        src="D59FF921-1A7D-4D24-ACED-8A1639528E03.png" 
-        alt="Container Balance Diagram" 
-        class="tool-image"
-      />
-
+      <img src="D59FF921-1A7D-4D24-ACED-8A1639528E03.png"
+           alt="Container Balance Diagram" class="tool-image"/>
       <h2>Container Balance</h2>
 
-      <!-- Block‐style labels + inputs -->
-      <label for="weight-unit">
+      <label>
         Weight Unit:
         <select id="weight-unit">
           <option value="ton">tons</option>
@@ -51,7 +48,7 @@
         </select>
       </label>
 
-      <label for="length-unit">
+      <label>
         Length Unit:
         <select id="length-unit">
           <option value="ft">ft</option>
@@ -59,7 +56,7 @@
         </select>
       </label>
 
-      <label for="container-size">
+      <label>
         Container Size:
         <select id="container-size">
           <option value="20">20′</option>
@@ -67,37 +64,25 @@
         </select>
       </label>
 
-      <label for="first-pos">
-        First Object Position (optional):
-        <input 
-          type="number" 
-          id="first-pos" 
-          placeholder="Optional" 
-          step="any"
-        />
+      <label>
+        First Object CG (opt):
+        <input type="number" id="first-pos" placeholder="e.g. 5.67" step="any"/>
       </label>
 
-      <table class="tool-table" id="objects-table">
+      <table id="objects-table">
         <thead>
-          <tr>
-            <th>Obj</th><th>Weight</th><th>Width</th>
-          </tr>
+          <tr><th>Obj</th><th>Weight</th><th>Width</th></tr>
         </thead>
-        <tbody>
-          <!-- JS injects six rows -->
-        </tbody>
+        <tbody><!-- injected --></tbody>
       </table>
 
-      <button class="tool-btn" id="calc-btn">Calculate</button>
+      <button id="calc-btn">Calculate</button>
 
       <div class="results">
         <p>Total Weight: <strong id="total-weight">0</strong></p>
-        <p>
-          Container Length: <strong id="container-length-display">0</strong> 
-          <span id="len-unit-label"></span>
-        </p>
+        <p>Container Length: <strong id="container-length-display">0</strong> 
+           <span id="len-unit-label"></span></p>
         <p id="warning" class="warning"></p>
-
         <h3>Object CG Positions</h3>
         <ul id="positions-list"></ul>
       </div>
