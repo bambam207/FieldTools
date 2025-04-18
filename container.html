@@ -2,26 +2,130 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Field Tools – Container Balance</title>
+
   <link rel="stylesheet" href="style.css"/>
   <link rel="manifest" href="manifest.json"/>
   <link rel="apple-touch-icon" href="icon-192.png"/>
   <meta name="apple-mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-title" content="Field Tools"/>
   <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
-  <script>
-    if ('serviceWorker' in navigator) navigator.serviceWorker.register('service-worker.js');
-  </script>
 
-  <!-- constrain table inputs -->
   <style>
-    #objects-table td input {
-      box-sizing: border-box;
-      width: 80%;
-      max-width: 100px;
-      padding: 4px;
+    /* ── Sling page base ───────────────────────────────────────── */
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      background: #f9f9f9;
+      color: #222;
+      font-family: sans-serif;
     }
+    header {
+      background: #333;
+      color: #fff;
+      padding: 1rem;
+      text-align: center;
+      flex: 0 0 auto;
+    }
+    nav {
+      margin: .5rem 0;
+    }
+    nav label, nav select {
+      color: #ddd;
+      font-size: .9rem;
+    }
+    main {
+      flex: 1;
+      overflow-y: auto;
+      max-width: 480px;
+      margin: 1rem auto;
+      padding: 0 1rem 2rem;
+      box-sizing: border-box;
+    }
+
+    /* ── Diagram ──────────────────────────────────────────────── */
+    .tool-image {
+      width: 100%;
+      margin-bottom: 1rem;
+    }
+
+    /* ── Input row ───────────────────────────────────────────── */
+    .input-row {
+      display: flex;
+      gap: .5rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+    .input-row label {
+      flex: 1 0 100%;
+      font-weight: 600;
+      margin-bottom: .25rem;
+    }
+    .input-row select {
+      flex: 1;
+      padding: .6rem;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background: #fff;
+      box-sizing: border-box;
+    }
+
+    /* ── Table ───────────────────────────────────────────────── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      margin-bottom: 1rem;
+    }
+    th, td {
+      border: 1px solid #666;
+      padding: .6rem;
+      text-align: center;
+      white-space: nowrap;
+      word-break: keep-all;
+      overflow-wrap: normal;
+    }
+    th {
+      background: #333;
+      color: #fff;
+      font-weight: normal;
+    }
+    tbody tr:nth-child(even) {
+      background: #f2f2f2;
+    }
+    /* inputs inside table */
+    #objects-table td input {
+      width: 100%;
+      padding: .6rem;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background: #fff;
+      box-sizing: border-box;
+    }
+
+    /* ── Button ──────────────────────────────────────────────── */
+    .tool-btn {
+      display: block;
+      width: 100%;
+      padding: .75rem;
+      font-size: 1rem;
+      background: #444;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-bottom: 1rem;
+    }
+
+    /* ── Results ─────────────────────────────────────────────── */
+    .results p { margin: .5rem 0; }
+    .results h3 { margin-top: 1rem; }
   </style>
 </head>
 <body>
@@ -41,62 +145,58 @@
     </nav>
   </header>
 
-  <main class="container">
-    <section class="tool">
-      <img 
-        src="D59FF921-1A7D-4D24-ACED-8A1639528E03.png" 
-        alt="Container Balance Diagram" 
-        class="tool-image"
-      />
+  <main>
+    <img 
+      src="D59FF921-1A7D-4D24-ACED-8A1639528E03.png" 
+      alt="Container Balance Diagram" 
+      class="tool-image"
+    />
 
-      <h2>Container Balance</h2>
+    <div class="input-row">
+      <label for="weight-unit">Weight Unit:</label>
+      <select id="weight-unit">
+        <option value="ton">tons</option>
+        <option value="lb">lbs</option>
+        <option value="kg">kg</option>
+      </select>
 
-      <div class="input-row">
-        <label for="weight-unit">Weight Unit:</label>
-        <select id="weight-unit">
-          <option value="ton">tons</option>
-          <option value="lb">lbs</option>
-          <option value="kg">kg</option>
-        </select>
+      <label for="length-unit">Length Unit:</label>
+      <select id="length-unit">
+        <option value="ft">ft</option>
+        <option value="m">m</option>
+      </select>
 
-        <label for="length-unit">Length Unit:</label>
-        <select id="length-unit">
-          <option value="ft">ft</option>
-          <option value="m">m</option>
-        </select>
+      <label for="container-size">Container Size:</label>
+      <select id="container-size">
+        <option value="20">20′</option>
+        <option value="40">40′</option>
+      </select>
+    </div>
 
-        <label for="container-size">Container Size:</label>
-        <select id="container-size">
-          <option value="20">20′</option>
-          <option value="40">40′</option>
-        </select>
-      </div>
+    <table id="objects-table">
+      <thead>
+        <tr>
+          <th>Obj</th><th>Weight</th><th>Width</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- JS injects six rows -->
+      </tbody>
+    </table>
 
-      <table class="tool-table" id="objects-table">
-        <thead>
-          <tr>
-            <th>Obj</th><th>Weight</th><th>Width</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- JS injects six rows -->
-        </tbody>
-      </table>
+    <button class="tool-btn" id="calc-btn">Calculate</button>
 
-      <button class="tool-btn" id="calc-btn">Calculate</button>
+    <div class="results">
+      <p>Total Weight: <strong id="total-weight">0</strong></p>
+      <p>
+        Container Length: <strong id="container-length-display">0</strong> 
+        <span id="len-unit-label"></span>
+      </p>
+      <p id="warning" class="warning"></p>
 
-      <div class="results">
-        <p>Total Weight: <strong id="total-weight">0</strong></p>
-        <p>
-          Container Length: <strong id="container-length-display">0</strong> 
-          <span id="len-unit-label"></span>
-        </p>
-        <p id="warning" class="warning"></p>
-
-        <h3>Object CG Positions</h3>
-        <ul id="positions-list"></ul>
-      </div>
-    </section>
+      <h3>Object CG Positions</h3>
+      <ul id="positions-list"></ul>
+    </div>
   </main>
 
   <script src="container.js"></script>
