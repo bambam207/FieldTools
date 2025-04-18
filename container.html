@@ -1,4 +1,3 @@
-<!-- container.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,47 +5,55 @@
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Field Tools – Container Balance</title>
   <link rel="stylesheet" href="style.css"/>
-  <!-- navigation header so you don’t have to hand‑edit every page -->
-  <header>
-    <h1>Field Tools – Container Balance</h1>
-    <nav>
-      <ul>
-        <li><a href="sling.html">Sling Load</a></li>
-        <li><a href="container.html" class="active">Container Balance</a></li>
-        <!-- add more as you go -->
-      </ul>
-    </nav>
-  </header>
+  <link rel="manifest" href="manifest.json"/>
+  <link rel="apple-touch-icon" href="icon-192.png"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-title" content="Field Tools"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
 </head>
 <body>
-  <main>
-    <section class="tool-container">
-      <div class="input-row">
-        <label for="container-length">Container Length:</label>
-        <input type="number" id="container-length" placeholder="e.g. 120" min="0" step="any"/>
-        <label for="unit-select">Units:</label>
-        <select id="unit-select">
-          <option value="imperial">inches &amp; lbs</option>
-          <option value="metric">meters &amp; kg</option>
-        </select>
-      </div>
-      <table id="objects-table">
-        <thead>
-          <tr>
-            <th>Obj</th><th>Weight</th><th>Width</th><th>Pos (opt.)</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- JS will inject 6 rows here -->
-        </tbody>
-      </table>
-      <button id="calc-btn">Calculate</button>
-      <div id="results">
-        <p>Total Weight: <strong id="total-weight">0</strong></p>
-        <p>CG from Front: <strong id="cg-pos">0</strong></p>
-        <p id="warning" class="warning"></p>
-      </div>
-    </section>
+  <header class="tool-header">
+    <!-- Top image—same as Sling. Update src -->
+    <img src="img/container-balance.png" alt="Container Balance Diagram" class="tool-image"/>
+    <h1>Field Tools – Container Balance</h1>
+    <nav class="tool-nav">
+      <a href="sling.html">Sling Load</a>
+      <a href="container.html" class="active">Container Balance</a>
+    </nav>
+  </header>
+
+  <main class="tool-main">
+    <div class="input-row">
+      <label for="container-length">Container Length:</label>
+      <input type="number" id="container-length" placeholder="e.g. 120" min="0" step="any"/>
+      <label for="unit-select">Units:</label>
+      <select id="unit-select">
+        <option value="imperial">inches &amp; lbs</option>
+        <option value="metric">meters &amp; kg</option>
+      </select>
+    </div>
+
+    <table class="tool-table" id="objects-table">
+      <thead>
+        <tr>
+          <th>Obj</th>
+          <th>Weight</th>
+          <th>Width</th>
+          <th>Pos (opt.)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- JS injects rows -->
+      </tbody>
+    </table>
+
+    <button class="tool-btn" id="calc-btn">Calculate</button>
+
+    <div class="results">
+      <p>Total Weight: <strong id="total-weight">0</strong></p>
+      <p>CG from Front: <strong id="cg-pos">0</strong></p>
+      <p id="warning" class="warning"></p>
+    </div>
   </main>
 
   <script src="container.js"></script>
