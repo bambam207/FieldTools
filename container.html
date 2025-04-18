@@ -13,6 +13,16 @@
   <script>
     if ('serviceWorker' in navigator) navigator.serviceWorker.register('service-worker.js');
   </script>
+
+  <!-- constrain table inputs -->
+  <style>
+    #objects-table td input {
+      box-sizing: border-box;
+      width: 80%;
+      max-width: 100px;
+      padding: 4px;
+    }
+  </style>
 </head>
 <body>
   <header>
@@ -33,7 +43,6 @@
 
   <main class="container">
     <section class="tool">
-      <!-- your uploaded diagram -->
       <img 
         src="D59FF921-1A7D-4D24-ACED-8A1639528E03.png" 
         alt="Container Balance Diagram" 
