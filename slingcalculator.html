@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Field Tools – Sling Load Calculator</title>
 
-  <!-- common styles -->
+  <!-- common styles & PWA -->
   <link rel="stylesheet" href="style.css"/>
   <link rel="manifest" href="manifest.json"/>
   <link rel="apple-touch-icon" href="icon-192.png"/>
@@ -14,24 +14,26 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
 
   <style>
-    body { background:#f9f9f9; font-family:sans-serif; color:#222; margin:0; }
-    header { background:#333; color:#fff; padding:1rem; text-align:center; }
-    nav { margin-top:0.5rem; }
-    nav label, nav select { color:#ddd; font-size:0.9rem; }
-    main { max-width:480px; margin:1rem auto; padding:0 1rem; }
-    .diagram { width:100%; margin-bottom:1rem; }
-    form { margin-bottom:1rem; }
-    .form-row { display:flex; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.75rem; }
-    .form-row label { flex:0 0 45%; min-width:120px; line-height:1.4; }
-    .form-row input, .form-row select { flex:1 0 45%; padding:0.4rem; font-size:1rem; }
+    body { background:#f9f9f9; font-family:sans-serif; color:#222; margin:0 }
+    header { background:#333; color:#fff; padding:1rem; text-align:center }
+    nav { margin-top:0.5rem }
+    nav label, nav select { color:#ddd; font-size:0.9rem }
+    main { max-width:480px; margin:1rem auto; padding:0 1rem }
+    .diagram { width:100%; margin-bottom:1rem }
+    form { margin-bottom:1rem }
+    .form-row { display:flex; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.75rem }
+    .form-row label { flex:0 0 45%; min-width:120px; line-height:1.4 }
+    .form-row input, .form-row select { flex:1 0 45%; padding:0.4rem; font-size:1rem }
     button#calcBtn {
       display:block; width:100%; background:#444; color:#fff; border:none;
-      padding:0.75rem; font-size:1rem; border-radius:4px; cursor:pointer;
+      padding:0.75rem; font-size:1rem; border-radius:4px; cursor:pointer
     }
-    table { width:100%; border-collapse:collapse; table-layout:fixed; margin-bottom:1rem; }
-    th, td { border:1px solid #666; padding:0.6rem; text-align:center; white-space:nowrap; }
-    th { background:#333; color:#fff; font-weight:normal; }
-    tbody tr:nth-child(even) { background:#f2f2f2; }
+    table { width:100%; border-collapse:collapse; table-layout:fixed; margin-bottom:1rem }
+    th, td {
+      border:1px solid #666; padding:0.6rem; text-align:center; white-space:nowrap
+    }
+    th { background:#333; color:#fff; font-weight:normal }
+    tbody tr:nth-child(even) { background:#f2f2f2 }
   </style>
 
   <script>
@@ -56,6 +58,7 @@
          class="diagram"/>
 
     <form id="slingForm">
+      <!-- units -->
       <div class="form-row">
         <label for="weightUnit">Weight Unit:</label>
         <select id="weightUnit">
@@ -72,6 +75,7 @@
         </select>
       </div>
 
+      <!-- required CG inputs -->
       <div class="form-row">
         <label for="loadWeight">Total Load:</label>
         <input id="loadWeight" type="number" placeholder="Required" required/>
@@ -84,8 +88,17 @@
         <label for="d2">D2 (right CG):</label>
         <input id="d2" type="number" placeholder="Required" required/>
 
-        <label for="height">Hook Height (H):</label>
+        <label for="height">Hook Height (H):</label>
         <input id="height" type="number" placeholder="Required" required/>
+      </div>
+
+      <!-- manual override legs -->
+      <div class="form-row">
+        <label for="l1">Left Sling (L₁):</label>
+        <input id="l1" type="number" placeholder="Optional"/>
+
+        <label for="l2">Right Sling (L₂):</label>
+        <input id="l2" type="number" placeholder="Optional"/>
       </div>
 
       <button type="submit" id="calcBtn">Calculate</button>
