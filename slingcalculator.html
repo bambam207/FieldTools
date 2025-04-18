@@ -18,7 +18,7 @@
       font-family:sans-serif;
       background:#f9f9f9;
       color:#222;
-      padding-bottom:2rem;  /* keep the overall bottom padding */
+      padding-bottom:2rem; /* overall page padding */
     }
     header {
       background:#333;
@@ -33,29 +33,25 @@
       color:#ddd;
       font-size:.9rem;
     }
-
-    /* added margin-bottom here so <main> has extra space below */
+    /* ensure <main> leaves extra room at bottom */
     main {
       max-width:480px;
-      margin:1rem auto 2rem;  /* top/right/bottom */
+      margin:1rem auto 2rem; /* top/right/bottom */
       padding:0 1rem;
     }
-
     .diagram {
       width:100%;
       margin-bottom:1rem;
     }
-
     form {
       margin-bottom:1rem;
     }
     .form-row {
-      display: flex;
-      gap: 0.5rem;
+      display:flex;
+      gap:.5rem;
     }
     .form-row .form-group {
-      flex: 1;
-      margin-bottom: 1rem;
+      flex:1;
     }
     .form-group {
       margin-bottom:1rem;
@@ -86,7 +82,6 @@
       border-radius:4px;
       cursor:pointer;
     }
-
     table {
       width:100%;
       border-collapse:collapse;
@@ -97,9 +92,9 @@
       border:1px solid #666;
       padding:.6rem;
       text-align:center;
-      white-space:nowrap !important;
-      word-break:keep-all !important;
-      overflow-wrap:normal !important;
+      white-space:nowrap;
+      word-break:keep-all;
+      overflow-wrap:normal;
     }
     th {
       background:#333;
@@ -151,12 +146,12 @@
       </div>
 
       <div class="form-group">
-        <label for="d1">CG from Left (D₁)</label>
+        <label for="d1">CG from Left (D1)</label>
         <input id="d1" type="number" placeholder="Required" required/>
       </div>
 
       <div class="form-group">
-        <label for="d2">CG from Right (D₂)</label>
+        <label for="d2">CG from Right (D2)</label>
         <input id="d2" type="number" placeholder="Required" required/>
       </div>
 
@@ -166,12 +161,12 @@
       </div>
 
       <div class="form-group">
-        <label for="l1">Left Leg (L₁)</label>
+        <label for="l1">Left Leg (L1)</label>
         <input id="l1" type="number" placeholder="Optional"/>
       </div>
 
       <div class="form-group">
-        <label for="l2">Right Leg (L₂)</label>
+        <label for="l2">Right Leg (L2)</label>
         <input id="l2" type="number" placeholder="Optional"/>
       </div>
 
@@ -182,10 +177,10 @@
       <thead>
         <tr>
           <th>Mode</th>
-          <th>Left Leg<br>(L₁ & θ₁)</th>
-          <th>Right Leg<br>(L₂ & θ₂)</th>
-          <th>Tension 1 (T₁)</th>
-          <th>Tension 2 (T₂)</th>
+          <th>Left Leg (L1 & Angle)</th>
+          <th>Right Leg (L2 & Angle)</th>
+          <th>Tension 1</th>
+          <th>Tension 2</th>
         </tr>
       </thead>
       <tbody></tbody>
