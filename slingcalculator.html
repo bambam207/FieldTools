@@ -14,7 +14,6 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
 
   <style>
-    /*— your mobile‑friendly form + table styling —*/
     body { margin:0; font-family:sans-serif; background:#f9f9f9; color:#222 }
     header { background:#333; color:#fff; padding:1rem; text-align:center }
     nav { margin-top:.5rem }
@@ -92,13 +91,28 @@
       </div>
 
       <div class="form-group">
-        <label for="loadWeight">Total Load [Required]</label>
+        <label for="loadWeight">Total Load (W) [Required]</label>
         <input id="loadWeight" type="number" placeholder="Required" required/>
       </div>
 
       <div class="form-group">
         <label for="cg">Horizontal CG Distance (C) [Required]</label>
         <input id="cg" type="number" placeholder="Required" required/>
+      </div>
+
+      <div class="form-group">
+        <label for="hookHeight">Vertical Hook Height (H) [Optional]</label>
+        <input id="hookHeight" type="number" placeholder="Optional"/>
+      </div>
+
+      <div class="form-group">
+        <label for="l1">Left Leg Length (L1) [Optional]</label>
+        <input id="l1" type="number" placeholder="Optional"/>
+      </div>
+
+      <div class="form-group">
+        <label for="l2">Right Leg Length (L2) [Optional]</label>
+        <input id="l2" type="number" placeholder="Optional"/>
       </div>
 
       <button type="submit" id="calcBtn">Calculate</button>
@@ -108,16 +122,16 @@
       <thead>
         <tr>
           <th>Mode</th>
-          <th>Left Leg<br/>(L & θ)</th>
-          <th>Right Leg<br/>(L & θ)</th>
-          <th>Tension</th>
+          <th>Left Leg<br/>(L1 & Angle)</th>
+          <th>Right Leg<br/>(L2 & Angle)</th>
+          <th>Tension 1</th>
+          <th>Tension 2</th>
         </tr>
       </thead>
       <tbody></tbody>
     </table>
   </main>
 
-  <!-- order matters: nav first, then calc -->
   <script src="nav.js"></script>
   <script src="slingcalc.js"></script>
 </body>
