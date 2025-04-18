@@ -13,7 +13,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
 
   <style>
-    /* ── Sling page base ───────────────────────────────────────── */
+    /* ─ Sling page base ─────────────────────────────────────── */
     html, body {
       height: 100%;
       margin: 0;
@@ -47,13 +47,13 @@
       box-sizing: border-box;
     }
 
-    /* ── Diagram ──────────────────────────────────────────────── */
+    /* ─ Diagram ────────────────────────────────────────────── */
     .tool-image {
       width: 100%;
       margin-bottom: 1rem;
     }
 
-    /* ── Input row ───────────────────────────────────────────── */
+    /* ─ Input row ─────────────────────────────────────────── */
     .input-row {
       display: flex;
       gap: .5rem;
@@ -75,7 +75,7 @@
       box-sizing: border-box;
     }
 
-    /* ── Table ───────────────────────────────────────────────── */
+    /* ─ Table ─────────────────────────────────────────────── */
     table {
       width: 100%;
       border-collapse: collapse;
@@ -88,7 +88,6 @@
       text-align: center;
       white-space: nowrap;
       word-break: keep-all;
-      overflow-wrap: normal;
     }
     th {
       background: #333;
@@ -98,18 +97,16 @@
     tbody tr:nth-child(even) {
       background: #f2f2f2;
     }
-    /* inputs inside table */
     #objects-table td input {
       width: 100%;
       padding: .6rem;
       font-size: 1rem;
       border: 1px solid #ccc;
       border-radius: 4px;
-      background: #fff;
       box-sizing: border-box;
     }
 
-    /* ── Button ──────────────────────────────────────────────── */
+    /* ─ Button ────────────────────────────────────────────── */
     .tool-btn {
       display: block;
       width: 100%;
@@ -123,7 +120,7 @@
       margin-bottom: 1rem;
     }
 
-    /* ── Results ─────────────────────────────────────────────── */
+    /* ─ Results ───────────────────────────────────────────── */
     .results p { margin: .5rem 0; }
     .results h3 { margin-top: 1rem; }
   </style>
@@ -175,30 +172,100 @@
 
     <table id="objects-table">
       <thead>
-        <tr>
-          <th>Obj</th><th>Weight</th><th>Width</th>
-        </tr>
+        <tr><th>Obj</th><th>Weight</th><th>Width</th></tr>
       </thead>
-      <tbody>
-        <!-- JS injects six rows -->
-      </tbody>
+      <tbody><!-- 6 rows injected by JS --></tbody>
     </table>
 
     <button class="tool-btn" id="calc-btn">Calculate</button>
 
     <div class="results">
       <p>Total Weight: <strong id="total-weight">0</strong></p>
-      <p>
-        Container Length: <strong id="container-length-display">0</strong> 
-        <span id="len-unit-label"></span>
-      </p>
+      <p>Container Length: <strong id="container-length-display">0</strong> 
+         <span id="len-unit-label"></span></p>
       <p id="warning" class="warning"></p>
-
       <h3>Object CG Positions</h3>
       <ul id="positions-list"></ul>
     </div>
   </main>
 
-  <script src="container.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const tbody = document.querySelector('#objects-table tbody');
+      for (let i = 1; i <= 6; i++) {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${i}</td>
+          <td><input type="number" class="weight" min="0" step="any" placeholder="0"/></td>
+          <td><input type="number" class="width"  min="0" step="any" placeholder="0"/></td>
+        `;
+        tbody.appendChild(row);
+      }
+      document.getElementById('calc-btn')
+              .addEventListener('click', calculateBalance);
+    });
+
+    function calculateBalance() {
+      const wUnit = document.getElementById('weight-unit').value;
+      const lUnit = document.getElementById('length-unit').value;
+      const size  = parseFloat(document.getElementById('container-size').value) || 0;
+
+      let containerLen = size;
+      if (lUnit === 'm') containerLen *= 0.3048;
+      let margin = 8/12;
+      if (lUnit === 'm') margin *= 0.3048;
+
+      const weights = [...document.querySelectorAll('.weight')].map(i=>parseFloat(i.value)||0);
+      const widths  = [...document.querySelectorAll('.width')]. map(i=>parseFloat(i.value)||0);
+
+      const totalW     = weights.reduce((a,b)=>a+b,0);
+      const totalWidth = widths.reduce((a,b)=>a+b,0);
+      const center     = containerLen/2;
+      const usable     = containerLen - 2*margin;
+
+      let warn = '';
+      if (totalWidth > usable) {
+        warn = `⚠️ Total width (${totalWidth.toFixed(2)}) exceeds usable (${usable.toFixed(2)})`;
+      }
+
+      let cursor = margin;
+      const initPos = widths.map(w => {
+        const p = cursor + w/2;
+        cursor += w;
+        return p;
+      });
+
+      const cgInit = initPos.reduce((s,p,i)=>s + p*weights[i], 0) / (totalW||1);
+      const shift  = center - cgInit;
+
+      let clamped = false;
+      const finalPos = initPos.map((p,i) => {
+        const raw = p + shift;
+        const min = margin + widths[i]/2;
+        const max = containerLen - margin - widths[i]/2;
+        const cp  = Math.min(Math.max(raw,min),max);
+        if (cp !== raw) clamped = true;
+        return cp;
+      });
+      if (clamped) {
+        warn += (warn ? ' ' : '') + '⚠️ Some CGs were clamped into the 8″ margin';
+      }
+
+      document.getElementById('total-weight').textContent = `${totalW.toFixed(2)} ${wUnit}`;
+      document.getElementById('container-length-display').textContent = `${containerLen.toFixed(2)}`;
+      document.getElementById('len-unit-label').textContent = lUnit;
+      document.getElementById('warning').textContent = warn;
+
+      const list = document.getElementById('positions-list');
+      list.innerHTML = '';
+      finalPos.forEach((p,i) => {
+        if (weights[i]>0 && widths[i]>0) {
+          const li = document.createElement('li');
+          li.textContent = `Obj ${i+1}: CG at ${p.toFixed(2)} ${lUnit} from left`;
+          list.appendChild(li);
+        }
+      });
+    }
+  </script>
 </body>
 </html>
