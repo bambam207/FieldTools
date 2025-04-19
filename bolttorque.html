@@ -16,10 +16,10 @@
     .diagram { width:100%; margin-bottom:1rem; }
     form { margin-bottom:1rem; }
     .form-row { display:flex; gap:.5rem; flex-wrap:wrap; }
-    .form-group { flex:1; min-width: 120px; margin-bottom:1rem; }
+    .form-group { flex:1; min-width:120px; margin-bottom:1rem; }
     .form-group label { display:block; margin-bottom:.25rem; font-weight:600; font-size:1.1rem; }
     .form-group select, .form-group input { width:100%; padding:.6rem; font-size:1rem; border:1px solid #ccc; border-radius:4px; background:#fff; box-sizing:border-box; }
-    button#calcBtn { display:none; } /* no longer needed */
+    button#calcBtn { display:none; }
     .table-container { width:100%; overflow-x:auto; -webkit-overflow-scrolling:touch; }
     table { width:100%; border-collapse:collapse; table-layout:fixed; margin-bottom:1rem; }
     th, td { border:1px solid #666; padding:.6rem; text-align:center; white-space:nowrap; word-break:keep-all; overflow-wrap:normal; font-size:1.1rem; }
@@ -51,6 +51,7 @@
         <div class="form-group">
           <label for="finishType">Finish / Coating</label>
           <select id="finishType" required>
+            <option value="none">Raw (No Finish)</option>
             <option value="blackoxide">Black Oxide (Dry)</option>
             <option value="zincplated">Zinc‑Plated (Dry)</option>
             <option value="cadmium">Cadmium‑Plated (Dry)</option>
