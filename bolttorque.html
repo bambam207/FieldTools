@@ -1,121 +1,121 @@
-// bolttorque.js
-document.addEventListener('DOMContentLoaded', () => {
-  // ——— Build imperial dataset ———
-  const coarseImp = [
-    ['1/4"-20', 20, 6], ['5/16"-18', 18, 17], ['3/8"-16', 16, 35],
-    ['7/16"-14', 14, 55], ['1/2"-13', 13, 80], ['9/16"-12', 12, 110],
-    ['5/8"-11', 11, 180], ['3/4"-10', 10, 245], ['7/8"-9', 9, 350],
-    ['1"-8',     8, 454], ['1-1/8"-7', 7, 607], ['1-1/4"-7', 7, 796],
-    ['1-3/8"-6', 6, 876], ['1-1/2"-6', 6, 1112],['1-3/4"-5', 5, 1538],
-    ['2"-4.5',   4.5,2199],['2-1/4"-4',4,2829], ['2-1/2"-4',4,3538],
-    ['2-3/4"-4', 4,4248], ['3"-4',     4,4958]
-  ];
-  const unfMap = { '20':28,'18':24,'16':24,'14':20,'13':20,'12':18,'11':18,'10':16 };
-  const fineImp = coarseImp
-    .map(([s,p,b]) => unfMap[p] ? [s.replace(`-${p}`,`-${unfMap[p]}`), unfMap[p], b*1.1] : null)
-    .filter(Boolean);
-  function parseImp(sz) {
-    const r = sz.split('"')[0];
-    if (r.includes('-')) {
-      const [M,F] = r.split('-'), [n,d] = F.split('/');
-      return +M + (+n)/(+d);
-    }
-    if (r.includes('/')) {
-      const [n,d] = r.split('/');
-      return (+n)/(+d);
-    }
-    return parseFloat(r)||0;
-  }
-  const allImp = [...coarseImp, ...fineImp].sort((a,b) => {
-    const da = parseImp(a[0]), db = parseImp(b[0]);
-    return da===db ? a[1]-b[1] : da-db;
-  });
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Field Tools – Bolt Torque Calculator</title>
+  <link rel="stylesheet" href="style.css"/>
+  <style>
+    html, body { height:100%; margin:0; padding:0; display:flex; flex-direction:column; background:#f9f9f9; color:#222; font-family:sans-serif; }
+    header { background:#333; color:#fff; padding:1rem; text-align:center; }
+    nav { margin:.5rem; }
+    nav label, nav select { color:#ddd; }
+    main { flex:1; overflow-y:auto; max-width:480px; margin:1rem auto; padding:0 1rem; box-sizing:border-box; }
+    form { margin-bottom:1rem; }
+    .form-row { display:flex; gap:.5rem; flex-wrap:wrap; margin-bottom:1rem; }
+    .form-group { flex:1 1 140px; }
+    .form-group label { display:block; margin-bottom:.25rem; font-weight:600; }
+    .form-group select { width:100%; padding:.6rem; font-size:1rem; border:1px solid #ccc; border-radius:4px; }
+    .table-container { overflow-x:auto; }
+    table { width:100%; border-collapse:collapse; }
+    th, td { border:1px solid #666; padding:.6rem; text-align:center; white-space:nowrap; }
+    th { background:#333; color:#fff; }
+    tbody tr:nth-child(even) { background:#f2f2f2; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Field Tools</h1>
+    <nav>
+      <label for="toolsMenu">TOOLS:</label>
+      <select id="toolsMenu"></select>
+    </nav>
+  </header>
 
-  // ——— Build metric dataset ———
-  const coarseMet = [
-    ['M6×1.0',1.0,10], ['M8×1.25',1.25,25], ['M10×1.5',1.5,50],
-    ['M12×1.75',1.75,88],['M16×2.0',2.0,218],['M20×2.5',2.5,426],
-    ['M24×3.0',3.0,610],['M30×3.5',3.5,1000]
-  ];
-  const fineMet = coarseMet
-    .map(([s,p,n]) => {
-      const m = s.match(/M(\d+)/)[1];
-      const map = {'6':0.75,'8':1,'10':1.25,'12':1.5,'16':1.5,'20':2,'24':3,'30':4};
-      return map[m] ? [`M${m}×${map[m]}`, map[m], n*1.1] : null;
-    })
-    .filter(Boolean);
-  function parseMet(sz) {
-    return parseFloat(sz.slice(1, sz.indexOf('×')))||0;
-  }
-  const allMet = [...coarseMet, ...fineMet].sort((a,b) => {
-    const da = parseMet(a[0]), db = parseMet(b[0]);
-    return da===db ? a[1]-b[1] : da-db;
-  });
+  <main>
+    <form id="boltForm">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="sizeSys">Size System</label>
+          <select id="sizeSys">
+            <option value="imperial" selected>Imperial (inches)</option>
+            <option value="metric">Metric (mm)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="finishType">Finish / Coating</label>
+          <select id="finishType">
+            <option value="none">Raw (No Finish)</option>
+            <option value="blackoxide">Black Oxide</option>
+            <option value="zincplated">Zinc‑Plated</option>
+            <option value="cadmium">Cadmium‑Plated</option>
+            <option value="oiled">Oiled</option>
+            <option value="antiseize">Anti‑Seize</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="boltClass">Bolt Class / Material</label>
+          <select id="boltClass">
+            <optgroup label="Steel Classes">
+              <option value="4.8">4.8</option>
+              <option value="8.8" selected>8.8</option>
+              <option value="10.9">10.9</option>
+              <option value="12.9">12.9</option>
+              <option value="14.9">14.9</option>
+            </optgroup>
+            <optgroup label="Others">
+              <option value="Stainless">Stainless (A2/A4)</option>
+              <option value="Aluminum Alloy">Aluminum Alloy</option>
+              <option value="Delrin">Delrin (Plastic)</option>
+              <option value="Titanium">Titanium (Ti 6Al‑4V)</option>
+            </optgroup>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="substrate">Substrate Material</label>
+          <select id="substrate">
+            <option value="matching">Matching Nut</option>
+            <option value="mildsteel">Mild Steel Plate</option>
+            <option value="highsteel">High‑Strength Steel Plate</option>
+            <option value="stainless">Stainless Steel Plate</option>
+            <option value="aluminum">Aluminum Plate</option>
+            <option value="delrin">Delrin</option>
+            <option value="titanium">Titanium</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="headType">Bolt Head Type</label>
+          <select id="headType">
+            <option value="hex">Hex</option>
+            <option value="socket">Socket Cap</option>
+            <option value="pancake">Pancake</option>
+            <option value="countersunk">Countersunk</option>
+            <option value="flanged">Flanged</option>
+          </select>
+        </div>
+      </div>
+    </form>
 
-  // ——— Coefficients & multipliers ———
-  const classFactors = {
-    '4.8':0.5,'8.8':1,'10.9':1.25,'12.9':1.41,'14.9':1.6,
-    'Stainless':0.6,'Aluminum Alloy':0.5,'Delrin':0.02,'Titanium':0.75
-  };
-  const torqueCoeffs = {
-    none:0.35, blackoxide:0.30, zincplated:0.25,
-    cadmium:0.20, oiled:0.18, antiseize:0.12
-  };
-  const baseKt     = 0.20;
-  const headFactors = { hex:1, socket:1, pancake:0.8, countersunk:0.6, flanged:1 };
+    <div class="table-container">
+      <table id="resultTable">
+        <thead>
+          <tr>
+            <th>Bolt Size</th>
+            <th>Thread Pitch</th>
+            <th>Torque (ft·lb)</th>
+            <th>Torque (N·m)</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </main>
 
-  // ——— Substrate factors (distinct) ———
-  const substrateFactors = {
-    matching: 1.00,  // nut on nut
-    mildsteel: 0.95,
-    highsteel: 1.05,
-    stainless: 0.90,
-    aluminum: 0.80,
-    delrin:    0.70,
-    titanium:  0.90
-  };
-
-  // ——— DOM refs ———
-  const sizeSys     = document.getElementById('sizeSys');
-  const finishType  = document.getElementById('finishType');
-  const boltClass   = document.getElementById('boltClass');
-  const substrate   = document.getElementById('substrate');
-  const headType    = document.getElementById('headType');
-  const tbody       = document.querySelector('#resultTable tbody');
-
-  // ——— Render function ———
-  function render() {
-    const sys     = sizeSys.value;
-    const finish  = finishType.value;
-    const clazz   = boltClass.value;
-    const subMat  = substrate.value;
-    const head    = headType.value;
-
-    const kF = (torqueCoeffs[finish]||baseKt)/baseKt;
-    const cF = classFactors[clazz]||1;
-    const hF = headFactors[head]||1;
-    const sF = substrateFactors[subMat]||1;
-
-    const data = sys==='imperial'? allImp : allMet;
-    tbody.innerHTML='';
-
-    data.forEach(([sz,p,base])=>{
-      const raw   = base * cF * kF * hF * sF;
-      const outFt = sys==='imperial'? raw : raw*0.7376;
-      const outNm = sys==='metric'  ? raw : raw*1.356;
-      const tr    = document.createElement('tr');
-      tr.innerHTML=`
-        <td>${sz}</td>
-        <td>${p}</td>
-        <td>${outFt.toFixed(1)}</td>
-        <td>${outNm.toFixed(1)}</td>
-      `;
-      tbody.appendChild(tr);
-    });
-  }
-
-  // ——— Attach listeners & initial render ———
-  [sizeSys, finishType, boltClass, substrate, headType]
-    .forEach(el=>el.addEventListener('change', render));
-  render();
-});
+  <script src="nav.js"></script>
+  <script src="bolttorque.js"></script>
+</body>
+</html>
