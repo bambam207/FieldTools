@@ -39,15 +39,7 @@
     <h1>Field Tools</h1>
     <nav>
       <label for="toolsMenu">TOOLS:&nbsp;</label>
-      <select id="toolsMenu" onchange="window.location=this.value">
-        <option value="index.html">Home</option>
-        <option value="slingcalculator.html">Sling Load Calculator</option>
-        <option value="container.html" selected>Container Balance</option>
-        <option value="weightconversion.html">Weight Conversion</option>
-        <option value="weightcalculator.html">Weight Calculator</option>
-        <option value="pressureconversion.html">Pressure Conversion</option>
-        <option value="bolttorque.html">Bolt Torque Values</option>
-      </select>
+      <select id="toolsMenu" onchange="window.location=this.value"></select>
     </nav>
   </header>
 
@@ -84,7 +76,7 @@
       </div>
 
       <div class="form-group">
-        <label for="first-pos">First Object CG (opt)</label>
+        <label for="first-pos">First Object CG (optional)</label>
         <input type="number" id="first-pos" placeholder="e.g. 5.67" step="any"/>
       </div>
     </form>
@@ -100,13 +92,18 @@
 
     <div class="results">
       <p>Total Weight: <strong id="total-weight">0</strong></p>
-      <p>Container Length: <strong id="container-length-display">0</strong> <span id="len-unit-label"></span></p>
+      <p>
+        Container Length: <strong id="container-length-display">0</strong>&nbsp;
+        <span id="len-unit-label"></span>
+      </p>
       <p id="warning" class="warning"></p>
+
       <h3>Object CG Positions</h3>
       <ul id="positions-list"></ul>
     </div>
   </main>
 
+  <script src="nav.js"></script>
   <script src="container.js"></script>
 </body>
 </html>
