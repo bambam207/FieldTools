@@ -6,15 +6,14 @@
   <title>Field Tools – Bolt Torque Calculator</title>
   <link rel="stylesheet" href="style.css"/>
   <style>
-    /* sling‑calc styles + responsive form rows */
     html, body { height:100%; margin:0; padding:0; display:flex; flex-direction:column; background:#f9f9f9; color:#222; font-family:sans-serif; }
     header { background:#333; color:#fff; padding:1rem; text-align:center; }
     nav { margin:.5rem; }
     nav label, nav select { color:#ddd; }
     main { flex:1; overflow-y:auto; max-width:480px; margin:1rem auto; padding:0 1rem; box-sizing:border-box; }
     form { margin-bottom:1rem; }
-    .form-row { display:flex; gap:.5rem; flex-wrap:wrap; }
-    .form-group { flex:1; min-width:140px; }
+    .form-row { display:flex; gap:.5rem; flex-wrap:wrap; margin-bottom:1rem; }
+    .form-group { flex:1 1 140px; }
     .form-group label { display:block; margin-bottom:.25rem; font-weight:600; }
     .form-group select { width:100%; padding:.6rem; font-size:1rem; border:1px solid #ccc; border-radius:4px; }
     .table-container { overflow-x:auto; }
@@ -55,7 +54,6 @@
           </select>
         </div>
       </div>
-
       <div class="form-row">
         <div class="form-group">
           <label for="boltClass">Bolt Class / Material</label>
@@ -68,10 +66,10 @@
               <option value="14.9">14.9</option>
             </optgroup>
             <optgroup label="Others">
-              <option value="Stainless">Stainless (A2/A4)</option>
-              <option value="Aluminum Alloy">Aluminum Alloy</option>
-              <option value="Delrin">Delrin (Plastic)</option>
-              <option value="Titanium">Titanium (Ti 6Al‑4V)</option>
+              <option value="Stainless">Stainless (A2/A4)</option>
+              <option value="Aluminum Alloy">Aluminum Alloy</option>
+              <option value="Delrin">Delrin (Plastic)</option>
+              <option value="Titanium">Titanium (Ti 6Al‑4V)</option>
             </optgroup>
           </select>
         </div>
@@ -82,14 +80,13 @@
             <option value="nut-grade2">Steel Nut Grade 2</option>
             <option value="nut-grade5">Steel Nut Grade 5</option>
             <option value="nut-grade8">Steel Nut Grade 8</option>
-            <option value="stainless-nut">Stainless Steel Nut</option>
-            <option value="aluminum-nut">Aluminum Nut</option>
-            <option value="delrin-nut">Delrin Nut</option>
-            <option value="titanium-nut">Titanium Nut</option>
+            <option value="stainless-nut">Stainless Steel Nut</option>
+            <option value="aluminum-nut">Aluminum Nut</option>
+            <option value="delrin-nut">Delrin Nut</option>
+            <option value="titanium-nut">Titanium Nut</option>
           </select>
         </div>
       </div>
-
       <div class="form-row">
         <div class="form-group">
           <label for="headType">Bolt Head Type</label>
