@@ -14,8 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     .map(([sz,p,base]) => {
       const fp = unfMap[p];
       return fp ? [sz.replace(`-${p}`,`-${fp}`), fp, base * 1.1] : null;
-    })
-    .filter(Boolean);
+    }).filter(Boolean);
   const allImp = [...coarseImp, ...fineImp].sort((a,b) => {
     const parse = s => {
       const val = s.split('"')[0].replace('-', '+');
@@ -47,8 +46,12 @@ document.addEventListener('DOMContentLoaded', () => {
     'Stainless':0.6,'Aluminum Alloy':0.5,'Delrin':0.02,'Titanium':0.75
   };
   const torqueCoeffs = {
-    blackoxide:0.30, zincplated:0.25, cadmium:0.20,
-    oiled:0.18, antiseize:0.12
+    none:0.35,
+    blackoxide:0.30,
+    zincplated:0.25,
+    cadmium:0.20,
+    oiled:0.18,
+    antiseize:0.12
   };
   const baseKt = 0.20;
   const headFactors = {
@@ -71,7 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const sizeSys       = selects.sizeSys.value;
     const finish        = selects.finishType.value;
     const boltClass     = selects.boltClass.value;
-    const threadMat     = selects.threadMaterial.value;
+    const threadMaterial= selects.threadMaterial.value;
     const headType      = selects.headType.value;
 
     const kF = (torqueCoeffs[finish]||baseKt) / baseKt;
@@ -81,9 +84,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     tbody.innerHTML = '';
     data.forEach(([sz,p,base]) => {
-      const tF = threadMat === 'matching'
+      const tF = threadMaterial === 'matching'
         ? cF
-        : (classFactors[threadMat] || cF);
+        : (classFactors[threadMaterial] || cF);
       const raw = base * tF * kF * hF;
       const outFt = sizeSys==='imperial' ? raw : raw * 0.7376;
       const outNm = sizeSys==='metric'   ? raw : raw * 1.356;
