@@ -5,9 +5,10 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Field Tools – Bolt Torque Calculator</title>
+
   <link rel="stylesheet" href="style.css"/>
   <style>
-    /* existing styles */
+    /* same styling as Sling Calculator, larger table text */
     html, body { height:100%; margin:0; padding:0; display:flex; flex-direction:column; background:#f9f9f9; color:#222; font-family:sans-serif; }
     header { background:#333; color:#fff; padding:1rem; text-align:center; flex:0 0 auto; }
     nav { margin:.5rem 0; }
@@ -57,19 +58,20 @@
       </div>
 
       <div class="form-group">
-        <label for="boltClass">Bolt Class / Grade</label>
+        <label for="boltClass">Bolt Class / Material</label>
         <select id="boltClass" required>
-          <optgroup label="Metric Classes">
+          <optgroup label="Steel Classes">
             <option value="4.8">4.8</option>
             <option value="8.8" selected>8.8</option>
             <option value="10.9">10.9</option>
             <option value="12.9">12.9</option>
             <option value="14.9">14.9</option>
           </optgroup>
-          <optgroup label="Others">
+          <optgroup label="Other Materials">
             <option value="Stainless">Stainless (A2/A4)</option>
             <option value="Aluminum Alloy">Aluminum Alloy</option>
             <option value="Delrin">Delrin (Plastic)</option>
+            <option value="Titanium">Titanium (Ti 6Al‑4V)</option>
           </optgroup>
         </select>
       </div>
@@ -82,6 +84,7 @@
           <option value="stainless">Stainless Steel</option>
           <option value="aluminum">Aluminum</option>
           <option value="delrin">Delrin (Plastic)</option>
+          <option value="titanium">Titanium</option>
         </select>
       </div>
 
@@ -112,9 +115,7 @@
     </table>
   </main>
 
-  <!-- load navigation logic -->
   <script src="nav.js"></script>
-  <!-- then the calculator logic -->
   <script src="bolttorque.js"></script>
 </body>
 </html>
