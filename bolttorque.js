@@ -1,8 +1,7 @@
 // bolttorque.js
 (() => {
-  // Base torque (ft·lb) for UNC coarse & UNF fine threads at Class 8.8
-  const baseImp = [
-    // UNC Coarse  –  size, pitch, base ftlb @ Class 8.8
+  // Coarse UNC data (ft·lb at Class 8.8, dry, hex-head)
+  const coarseImp = [
     ['1/4"-20', 20, 6],
     ['5/16"-18',18, 17],
     ['3/8"-16', 16, 35],
@@ -22,70 +21,90 @@
     ['2-1/4"-4', 4,2829],
     ['2-1/2"-4', 4,3538],
     ['2-3/4"-4', 4,4248],
-    ['3"-4',     4,4958],
-    // UNF Fine – roughly 10–15% higher torque than coarse
-    ['1/4"-28', 28, 6 * 1.1],
-    ['5/16"-24',24,17 * 1.1],
-    ['3/8"-24', 24,35 * 1.1],
-    ['7/16"-20',20,55 * 1.1],
-    ['1/2"-20', 20,80 * 1.1],
-    ['9/16"-18',18,110 * 1.1],
-    ['5/8"-18', 18,180 * 1.1],
-    ['3/4"-16', 16,245 * 1.1],
-    ['7/8"-14', 14,350 * 1.1],
-    ['1"-14',   14,454 * 1.1]
+    ['3"-4',     4,4958]
   ];
 
-  // Class multipliers
-  const classFactors = {
-    '4.8': 0.5,
-    '8.8': 1,
-    '10.9': 1.25,
-    '12.9': 1.41,
-    '14.9': 1.6
+  // Map coarse pitch -> UNF fine pitch
+  const unfPitchMap = {
+    '20': 28,
+    '18': 24,
+    '16': 24,
+    '14': 20,
+    '13': 20,
+    '12': 18,
+    '11': 18,
+    '10': 16
   };
 
+  // Generate fine UNF entries (~10% higher torque)
+  const fineImp = coarseImp
+    .map(([size, pitch, base]) => {
+      const fp = unfPitchMap[pitch];
+      if (!fp) return null;
+      const newSize = size.replace(`-${pitch}`, `-${fp}`);
+      return [ newSize, fp, base * 1.1 ];
+    })
+    .filter(Boolean);
+
+  // Combine and sort by nominal diameter then pitch
+  const allImp = [...coarseImp, ...fineImp].sort((a, b) => {
+    const parse = s => {
+      // parse '1-1/4' or '3/4' from size string
+      const num = s.split('"')[0];
+      if (num.includes('-')) {
+        const [w,f] = num.split('-');
+        const [n,d] = f.split('/');
+        return parseInt(w) + (parseInt(n)/parseInt(d));
+      }
+      if (num.includes('/')) {
+        const [n,d] = num.split('/');
+        return parseInt(n)/parseInt(d);
+      }
+      return parseFloat(num);
+    };
+    const da = parse(a[0]), db = parse(b[0]);
+    if (da !== db) return da - db;
+    return a[1] - b[1];
+  });
+
+  // Class multipliers
+  const classFactors = { '4.8': 0.5, '8.8': 1, '10.9': 1.25, '12.9': 1.41, '14.9': 1.6 };
+
   // Condition & head factors
-  const condFactor = fs => fs === 'wet' ? 0.75 : 1;
-  const headFactor = ht => ht === 'pancake'   ? 0.8
-                     : ht === 'countersunk' ? 0.6
-                     : 1;
+  const condFactor = cond => cond === 'wet' ? 0.75 : 1;
+  const headFactor = head => head === 'pancake'   ? 0.8
+                         : head === 'countersunk' ? 0.6
+                         : 1;
 
   const form = document.getElementById('boltForm');
   const tbody = document.querySelector('#resultTable tbody');
 
   form.addEventListener('submit', e => {
     e.preventDefault();
-    const sys = form.sizeSys.value;
-    const clazz = form.boltClass.value;
-    const threadMat = form.threadMaterial.value;
-    const head = form.headType.value;
-    const cond = form.lubed.value;
+    const sys   = form.sizeSys.value;       // 'imperial' or 'metric'
+    const clazz = form.boltClass.value;     // e.g. '8.8'
+    const head  = form.headType.value;
+    const cond  = form.lubed.value;
 
-    const cFactor = condFactor(cond);
-    const hFactor = headFactor(head);
-    const cf = classFactors[clazz] || 1;
+    const cF = classFactors[clazz] || 1;
+    const fF = condFactor(cond);
+    const hF = headFactor(head);
 
     tbody.innerHTML = '';
-    if (sys === 'imperial') {
-      baseImp.forEach(([size,pitch,base]) => {
-        // skip if thread material overrides
-        if (threadMat!=='matching') {
-          const map = { steel:'8.8', stainless:'8.8', aluminum:'8.8', delrin:'8.8' };
-          if (threadMat !== 'steel' && threadMat!=='matching') return;
-        }
-        const ftlb = base * cf * cFactor * hFactor;
-        const nm   = ftlb * 1.356;
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${size}</td>
-          <td>${pitch}</td>
-          <td>${ftlb.toFixed(1)}</td>
-          <td>${nm.toFixed(1)}</td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-    // Metric support would be similar, using ISO tables...
+    allImp.forEach(([size, pitch, base]) => {
+      const ftlb = base * cF * fF * hF;
+      const nm   = ftlb * 1.356;
+      const tFt  = sys === 'imperial' ? ftlb.toFixed(1) : (nm * 0.7376).toFixed(1);
+      const tNm  = sys === 'metric'   ? nm.toFixed(1)   : (ftlb * 1.356).toFixed(1);
+
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${size}</td>
+        <td>${pitch}</td>
+        <td>${tFt}</td>
+        <td>${tNm}</td>
+      `;
+      tbody.appendChild(tr);
+    });
   });
 })();
