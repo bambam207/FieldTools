@@ -51,24 +51,33 @@
     <form id="containerForm">
       <div class="form-row">
         <div class="form-group">
-          <label for="weight-unit">Weight Unit</label>
+          <label for="platform-type">PLATFORM TYPE</label>
+          <select id="platform-type">
+            <option value="CONTAINER">CONTAINER</option>
+            <option value="FLATRACK">FLATRACK</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="weight-unit">WEIGHT UNIT</label>
           <select id="weight-unit">
-            <option value="ton">tons</option>
-            <option value="lb">lbs</option>
-            <option value="kg">kg</option>
+            <option value="ton">TONS</option>
+            <option value="lb">LBS</option>
+            <option value="kg">KG</option>
           </select>
         </div>
         <div class="form-group">
-          <label for="length-unit">Length Unit</label>
+          <label for="length-unit">LENGTH UNIT</label>
           <select id="length-unit">
-            <option value="ft">ft</option>
-            <option value="m">m</option>
+            <option value="ft">FT</option>
+            <option value="m">M</option>
           </select>
         </div>
       </div>
 
       <div class="form-group">
-        <label for="container-size">Container Size</label>
+        <label for="container-size">CONTAINER SIZE</label>
         <select id="container-size">
           <option value="20">20′</option>
           <option value="40">40′</option>
@@ -76,19 +85,20 @@
       </div>
 
       <div class="form-group">
-        <label for="first-pos">First Object CG (optional)</label>
+        <label for="first-pos">FIRST OBJECT CG (optional)</label>
         <input type="number" id="first-pos" placeholder="e.g. 5.67" step="any"/>
       </div>
     </form>
 
     <table id="objects-table">
       <thead>
-        <tr><th>Obj</th><th>Weight</th><th>Width</th></tr>
+        <tr><th>OBJ</th><th>WEIGHT</th><th>WIDTH</th></tr>
       </thead>
       <tbody></tbody>
     </table>
 
-    <button id="calc-btn">Calculate</button>
+    <!-- hidden calc btn -->
+    <button id="calc-btn">CALCULATE</button>
 
     <div class="results">
       <p>Total Weight: <strong id="total-weight">0</strong></p>
@@ -99,7 +109,15 @@
       <p id="warning" class="warning"></p>
 
       <h3>Object CG Positions</h3>
-      <ul id="positions-list"></ul>
+      <table id="results-table">
+        <thead>
+          <tr>
+            <th>OBJ</th>
+            <th>CG (<span id="cg-unit-label"></span>)</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
     </div>
   </main>
 
