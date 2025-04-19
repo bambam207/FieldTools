@@ -1,5 +1,5 @@
 // bolttorque.js
-(() => {
+document.addEventListener('DOMContentLoaded', () => {
   // ——— Data sets ———
   const coarseImp = [
     ['1/4"-20',20,6],['5/16"-18',18,17],['3/8"-16',16,35],['7/16"-14',14,55],
@@ -7,18 +7,20 @@
     ['7/8"-9',9,350],['1"-8',8,454],['1-1/8"-7',7,607],['1-1/4"-7',7,796],
     ['1-3/8"-6',6,876],['1-1/2"-6',6,1112],['1-3/4"-5',5,1538],
     ['2"-4.5',4.5,2199],['2-1/4"-4',4,2829],['2-1/2"-4',4,3538],
-    ['2-3/4"-4',4,4248],['3"-4',4,4958],
+    ['2-3/4"-4',4,4248],['3"-4',4,4958]
   ];
-  const unfMap = { '20':28,'18':24,'16':24,'14':20,'13':20,'12':18,'11':18,'10':16 };
+  const unfMap = {'20':28,'18':24,'16':24,'14':20,'13':20,'12':18,'11':18,'10':16};
   const fineImp = coarseImp
     .map(([sz,p,base]) => {
       const fp = unfMap[p];
-      return fp ? [ sz.replace(`-${p}`,`-${fp}`), fp, base * 1.1 ] : null;
-    }).filter(Boolean);
+      return fp ? [sz.replace(`-${p}`,`-${fp}`), fp, base * 1.1] : null;
+    })
+    .filter(Boolean);
   const allImp = [...coarseImp, ...fineImp].sort((a,b) => {
-    const parse = s => { 
-      const u = s.split('"')[0].replace('-', '+');
-      return Function(`return ${u}`)();
+    const parse = s => {
+      const val = s.split('"')[0].replace('-', '+');
+      try { return Function(`return ${val}`)(); }
+      catch { return 0; }
     };
     const da = parse(a[0]), db = parse(b[0]);
     return da === db ? a[1] - b[1] : da - db;
@@ -53,43 +55,47 @@
     hex:1, socket:1, pancake:0.8, countersunk:0.6, flanged:1
   };
 
-  // ——— DOM references ———
-  const selectors = [
-    'sizeSys','finishType','boltClass','threadMaterial','headType'
-  ].map(id => document.getElementById(id));
+  // ——— Grab elements ———
+  const ids = ['sizeSys','finishType','boltClass','threadMaterial','headType'];
+  const selects = ids.reduce((o,id) => {
+    const el = document.getElementById(id);
+    if (!el) console.error(`Missing #${id}`);
+    o[id] = el;
+    return o;
+  }, {});
   const tbody = document.querySelector('#resultTable tbody');
+  if (!tbody) console.error('Missing <tbody>');
 
-  // ——— Render function ———
+  // ——— Render table ———
   function render() {
-    const [ sizeSys, finish, boltClass, threadMat, head ] = selectors.map(el => el.value);
-    const kF = (torqueCoeffs[finish]||baseKt)/baseKt;
-    const cF = classFactors[boltClass]||1;
-    const hF = headFactors[head]||1;
-    const data = sizeSys==='imperial' ? allImp : allMet;
+    const sizeSys       = selects.sizeSys.value;
+    const finish        = selects.finishType.value;
+    const boltClass     = selects.boltClass.value;
+    const threadMat     = selects.threadMaterial.value;
+    const headType      = selects.headType.value;
+
+    const kF = (torqueCoeffs[finish]||baseKt) / baseKt;
+    const cF = classFactors[boltClass] || 1;
+    const hF = headFactors[headType] || 1;
+    const data = sizeSys === 'imperial' ? allImp : allMet;
 
     tbody.innerHTML = '';
-    data.forEach(([sz,pitch,base]) => {
-      // thread material override
-      const tF = threadMat==='matching'
+    data.forEach(([sz,p,base]) => {
+      const tF = threadMat === 'matching'
         ? cF
-        : (classFactors[threadMat]||cF);
+        : (classFactors[threadMat] || cF);
       const raw = base * tF * kF * hF;
-      const imp = sizeSys==='imperial' ? raw : raw * 0.7376;
-      const met = sizeSys==='metric'   ? raw : raw * 1.356;
+      const outFt = sizeSys==='imperial' ? raw : raw * 0.7376;
+      const outNm = sizeSys==='metric'   ? raw : raw * 1.356;
       const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${sz}</td>
-        <td>${pitch}</td>
-        <td>${imp.toFixed(1)}</td>
-        <td>${met.toFixed(1)}</td>
-      `;
+      tr.innerHTML = `<td>${sz}</td><td>${p}</td><td>${outFt.toFixed(1)}</td><td>${outNm.toFixed(1)}</td>`;
       tbody.appendChild(tr);
     });
   }
 
-  // ——— Attach change listeners ———
-  selectors.forEach(el => el.addEventListener('change', render));
+  // ——— React to changes ———
+  Object.values(selects).forEach(el => el.addEventListener('change', render));
 
-  // initial render
+  // initial
   render();
-})();
+});
