@@ -1,54 +1,111 @@
-<!-- container.html -->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Field Tools – Container Balance</title>
-  <link rel="stylesheet" href="style.css"/>
-</head>
-<header>
-  <h1>Field Tools – Container Balance</h1>
-  <nav>
-    <ul>
-      <li><a href="sling.html">Sling Load</a></li>
-      <li><a href="container.html" class="active">Container Balance</a></li>
-      <!-- add more as you go -->
-    </ul>
-  </nav>
-</header>
-<body>
-  <main>
-    <section class="tool-container">
-      <div class="input-row">
-        <label for="container-length">Container Length:</label>
-        <input type="number" id="container-length" placeholder="e.g. 120" min="0" step="any"/>
-        <label for="unit-select">Units:</label>
-        <select id="unit-select">
-          <option value="imperial">inches &amp; lbs</option>
-          <option value="metric">meters &amp; kg</option>
-        </select>
-      </div>
+// container.js
 
-      <table id="objects-table">
-        <thead>
-          <tr><th>Obj</th><th>Weight</th><th>Width</th><th>Pos (opt.)</th></tr>
-        </thead>
-        <tbody>
-          <!-- JS will inject 6 rows here -->
-        </tbody>
-      </table>
+document.addEventListener('DOMContentLoaded', () => {
+  // 1) Inject 6 rows into the objects table
+  const tbody = document.querySelector('#objects-table tbody');
+  tbody.innerHTML = '';
+  for (let i = 1; i <= 6; i++) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${i}</td>
+      <td><input type="number" class="weight" min="0" step="any" placeholder="0"/></td>
+      <td><input type="number" class="width"  min="0" step="any" placeholder="0"/></td>
+    `;
+    tbody.appendChild(tr);
+  }
 
-      <button id="calc-btn">Calculate</button>
+  // 2) Wire up Calculate button
+  document.getElementById('calc-btn')
+          .addEventListener('click', calculateBalance);
 
-      <div id="results">
-        <p>Total Weight: <strong id="total-weight">0</strong></p>
-        <p>CG from Front: <strong id="cg-pos">0</strong></p>
-        <p id="warning" class="warning"></p>
-      </div>
-    </section>
-  </main>
+  // initial run
+  calculateBalance();
+});
 
-  <script src="container.js"></script>
-</body>
-</html>
+function calculateBalance() {
+  // --- Read & convert container size + margin ---
+  const lUnit   = document.getElementById('length-unit').value;    // 'ft' or 'm'
+  const rawSize = parseFloat(document.getElementById('container-size').value) || 0;
+  let L = rawSize;
+  if (lUnit === 'm') L *= 0.3048;
+  const margin = lUnit === 'm' ? (8/12)*0.3048 : (8/12);
+  const center = L / 2;
+  const usable = L - 2 * margin;
+
+  // --- Read weights & widths ---
+  const weights = [...document.querySelectorAll('.weight')]
+    .map(i => parseFloat(i.value) || 0);
+  const widths  = [...document.querySelectorAll('.width')]
+    .map(i => parseFloat(i.value) || 0);
+
+  const totalW     = weights.reduce((s,w) => s + w, 0);
+  const totalWidth = widths.reduce((s,w) => s + w, 0);
+
+  // --- Warning on over‑length ---
+  let warn = '';
+  if (totalWidth > usable) {
+    warn = `⚠️ Total width (${totalWidth.toFixed(2)}) exceeds usable (${usable.toFixed(2)})`;
+  }
+
+  // --- Prepare positions array ---
+  const positions = Array(weights.length).fill(null);
+
+  // --- Anchor Object #1 ---
+  const firstRaw = parseFloat(document.getElementById('first-pos').value);
+  const half0    = widths[0] / 2;
+  const min0     = margin + half0;
+  const max0     = L - margin - half0;
+  let p0 = isNaN(firstRaw)
+    ? min0
+    : Math.min(Math.max(firstRaw, min0), max0);
+  if (!isNaN(firstRaw) && p0 !== firstRaw) {
+    warn += (warn ? ' ' : '') + `⚠️ Obj 1 clamped to ${p0.toFixed(2)}`;
+  }
+  positions[0] = p0;
+
+  // --- Running torque about center ---
+  let torqueSum = weights[0] * (p0 - center);
+
+  // --- Sequential torque‑balance for Objects 2…6 ---
+  for (let i = 1; i < weights.length; i++) {
+    const Wi = weights[i], wi = widths[i];
+    if (Wi <= 0 || wi <= 0) continue;
+
+    // solve Wi*(pi - center) + torqueSum = 0  ⇒  di = −torqueSum / Wi
+    const di = -torqueSum / Wi;
+    let pi = center + di;
+
+    // clamp into the 8" margins
+    const half = wi / 2;
+    const minP = margin + half;
+    const maxP = L - margin - half;
+    if (pi < minP || pi > maxP) {
+      const old = pi;
+      pi = Math.min(Math.max(pi, minP), maxP);
+      warn += (warn ? ' ' : '') +
+        `⚠️ Obj ${i+1} clamped from ${old.toFixed(2)} to ${pi.toFixed(2)}`;
+    }
+
+    positions[i] = pi;
+    torqueSum += Wi * (pi - center);
+  }
+
+  // --- Render outputs ---
+  document.getElementById('total-weight').textContent =
+    `${totalW.toFixed(2)} ${document.getElementById('weight-unit').value}`;
+  document.getElementById('container-length-display').textContent =
+    `${L.toFixed(2)}`;
+  document.getElementById('len-unit-label').textContent =
+    document.getElementById('length-unit').value;
+  document.getElementById('warning').textContent = warn;
+
+  const list = document.getElementById('positions-list');
+  list.innerHTML = '';
+  positions.forEach((p,i) => {
+    if (p !== null && weights[i] > 0 && widths[i] > 0) {
+      const li = document.createElement('li');
+      li.textContent = `Obj ${i+1}: CG at ${p.toFixed(2)} ${document.getElementById('length-unit').value}`;
+      list.appendChild(li);
+    }
+  });
+}
