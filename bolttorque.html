@@ -1,4 +1,3 @@
-<!-- bolttorque.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,19 +6,20 @@
   <title>Field Tools – Bolt Torque Calculator</title>
   <link rel="stylesheet" href="style.css"/>
   <style>
-    /* replicate your sling‐calc styling… */
+    /* sling‑calc styles + responsive form rows */
     html, body { height:100%; margin:0; padding:0; display:flex; flex-direction:column; background:#f9f9f9; color:#222; font-family:sans-serif; }
     header { background:#333; color:#fff; padding:1rem; text-align:center; }
     nav { margin:.5rem; }
     nav label, nav select { color:#ddd; }
-    main { flex:1; overflow-y:auto; max-width:480px; margin:1rem auto; padding:0 1rem; }
-    form { display:flex; flex-wrap:wrap; gap:1rem; margin-bottom:1rem; }
-    .form-group { flex:1 1 120px; }
+    main { flex:1; overflow-y:auto; max-width:480px; margin:1rem auto; padding:0 1rem; box-sizing:border-box; }
+    form { margin-bottom:1rem; }
+    .form-row { display:flex; gap:.5rem; flex-wrap:wrap; }
+    .form-group { flex:1; min-width:140px; }
     .form-group label { display:block; margin-bottom:.25rem; font-weight:600; }
-    .form-group select { width:100%; padding:.5rem; }
+    .form-group select { width:100%; padding:.6rem; font-size:1rem; border:1px solid #ccc; border-radius:4px; }
     .table-container { overflow-x:auto; }
     table { width:100%; border-collapse:collapse; }
-    th, td { border:1px solid #666; padding:.5rem; text-align:center; white-space:nowrap; }
+    th, td { border:1px solid #666; padding:.6rem; text-align:center; white-space:nowrap; }
     th { background:#333; color:#fff; }
     tbody tr:nth-child(even) { background:#f2f2f2; }
   </style>
@@ -35,64 +35,72 @@
 
   <main>
     <form id="boltForm">
-      <div class="form-group">
-        <label for="sizeSys">Size System</label>
-        <select id="sizeSys">
-          <option value="imperial" selected>Imperial (inches)</option>
-          <option value="metric">Metric (mm)</option>
-        </select>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="sizeSys">Size System</label>
+          <select id="sizeSys">
+            <option value="imperial" selected>Imperial (inches)</option>
+            <option value="metric">Metric (mm)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="finishType">Finish / Coating</label>
+          <select id="finishType">
+            <option value="none">Raw (No Finish)</option>
+            <option value="blackoxide">Black Oxide</option>
+            <option value="zincplated">Zinc‑Plated</option>
+            <option value="cadmium">Cadmium‑Plated</option>
+            <option value="oiled">Oiled</option>
+            <option value="antiseize">Anti‑Seize</option>
+          </select>
+        </div>
       </div>
-      <div class="form-group">
-        <label for="finishType">Finish / Coating</label>
-        <select id="finishType">
-          <option value="none">Raw (No Finish)</option>
-          <option value="blackoxide">Black Oxide</option>
-          <option value="zincplated">Zinc‑Plated</option>
-          <option value="cadmium">Cadmium‑Plated</option>
-          <option value="oiled">Oiled</option>
-          <option value="antiseize">Anti‑Seize</option>
-        </select>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="boltClass">Bolt Class / Material</label>
+          <select id="boltClass">
+            <optgroup label="Steel Classes">
+              <option value="4.8">4.8</option>
+              <option value="8.8" selected>8.8</option>
+              <option value="10.9">10.9</option>
+              <option value="12.9">12.9</option>
+              <option value="14.9">14.9</option>
+            </optgroup>
+            <optgroup label="Others">
+              <option value="Stainless">Stainless (A2/A4)</option>
+              <option value="Aluminum Alloy">Aluminum Alloy</option>
+              <option value="Delrin">Delrin (Plastic)</option>
+              <option value="Titanium">Titanium (Ti 6Al‑4V)</option>
+            </optgroup>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="threadMaterial">Threaded Material (Nut/Substrate)</label>
+          <select id="threadMaterial">
+            <option value="matching">Matching Nut</option>
+            <option value="nut-grade2">Steel Nut Grade 2</option>
+            <option value="nut-grade5">Steel Nut Grade 5</option>
+            <option value="nut-grade8">Steel Nut Grade 8</option>
+            <option value="stainless-nut">Stainless Steel Nut</option>
+            <option value="aluminum-nut">Aluminum Nut</option>
+            <option value="delrin-nut">Delrin Nut</option>
+            <option value="titanium-nut">Titanium Nut</option>
+          </select>
+        </div>
       </div>
-      <div class="form-group">
-        <label for="boltClass">Bolt Class / Material</label>
-        <select id="boltClass">
-          <optgroup label="Steel Classes">
-            <option value="4.8">4.8</option>
-            <option value="8.8" selected>8.8</option>
-            <option value="10.9">10.9</option>
-            <option value="12.9">12.9</option>
-            <option value="14.9">14.9</option>
-          </optgroup>
-          <optgroup label="Others">
-            <option value="Stainless">Stainless (A2/A4)</option>
-            <option value="Aluminum Alloy">Aluminum Alloy</option>
-            <option value="Delrin">Delrin (Plastic)</option>
-            <option value="Titanium">Titanium (Ti 6Al‑4V)</option>
-          </optgroup>
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="threadMaterial">Threaded Material (Nut/Substrate)</label>
-        <select id="threadMaterial">
-          <option value="matching">Matching Nut</option>
-          <option value="nut-grade2">Steel Nut Grade 2</option>
-          <option value="nut-grade5">Steel Nut Grade 5</option>
-          <option value="nut-grade8">Steel Nut Grade 8</option>
-          <option value="stainless-nut">Stainless Steel Nut (A2/A4)</option>
-          <option value="aluminum-nut">Aluminum Nut</option>
-          <option value="delrin-nut">Delrin Nut</option>
-          <option value="titanium-nut">Titanium Nut</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="headType">Bolt Head Type</label>
-        <select id="headType">
-          <option value="hex">Hex</option>
-          <option value="socket">Socket Cap</option>
-          <option value="pancake">Pancake</option>
-          <option value="countersunk">Countersunk</option>
-          <option value="flanged">Flanged</option>
-        </select>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="headType">Bolt Head Type</label>
+          <select id="headType">
+            <option value="hex">Hex</option>
+            <option value="socket">Socket Cap</option>
+            <option value="pancake">Pancake</option>
+            <option value="countersunk">Countersunk</option>
+            <option value="flanged">Flanged</option>
+          </select>
+        </div>
       </div>
     </form>
 
