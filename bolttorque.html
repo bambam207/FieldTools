@@ -7,7 +7,7 @@
   <title>Field Tools – Bolt Torque Calculator</title>
   <link rel="stylesheet" href="style.css"/>
   <style>
-    /* same styling as Sling Calculator, responsive tweaks */
+    /* same styling as before… */
     html, body { height:100%; margin:0; padding:0; display:flex; flex-direction:column; background:#f9f9f9; color:#222; font-family:sans-serif; }
     header { background:#333; color:#fff; padding:1rem; text-align:center; flex:0 0 auto; }
     nav { margin:.5rem 0; }
@@ -18,8 +18,7 @@
     .form-row { display:flex; gap:.5rem; flex-wrap:wrap; }
     .form-group { flex:1; min-width:120px; margin-bottom:1rem; }
     .form-group label { display:block; margin-bottom:.25rem; font-weight:600; font-size:1.1rem; }
-    .form-group select, .form-group input { width:100%; padding:.6rem; font-size:1rem; border:1px solid #ccc; border-radius:4px; background:#fff; box-sizing:border-box; }
-    button#calcBtn { display:none; }
+    .form-group select { width:100%; padding:.6rem; font-size:1rem; border:1px solid #ccc; border-radius:4px; background:#fff; box-sizing:border-box; }
     .table-container { width:100%; overflow-x:auto; -webkit-overflow-scrolling:touch; }
     table { width:100%; border-collapse:collapse; table-layout:fixed; margin-bottom:1rem; }
     th, td { border:1px solid #666; padding:.6rem; text-align:center; white-space:nowrap; word-break:keep-all; overflow-wrap:normal; font-size:1.1rem; }
@@ -89,17 +88,6 @@
           <option value="aluminum">Aluminum</option>
           <option value="delrin">Delrin (Plastic)</option>
           <option value="titanium">Titanium</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label for="headType">Bolt Head Type</label>
-        <select id="headType" required>
-          <option value="hex">Hex</option>
-          <option value="socket">Socket Cap</option>
-          <option value="pancake">Pancake</option>
-          <option value="countersunk">Countersunk</option>
-          <option value="flanged">Flanged</option>
         </select>
       </div>
     </form>
