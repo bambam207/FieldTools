@@ -14,48 +14,73 @@ document.addEventListener('DOMContentLoaded', () => {
   // hide the manual Calculate button
   if (calcBtn) calcBtn.style.display = 'none';
 
-  // how many object rows to start with
-  const MAX_OBJS = 6;
+  // inject “Allow overlap” toggle
+  const overlapGroup = document.createElement('div');
+  overlapGroup.className = 'form-group';
+  overlapGroup.innerHTML = `
+    <label>
+      <input type="checkbox" id="allow-overlap"/>
+      Allow overlap for first two items
+    </label>
+  `;
+  document.getElementById('containerForm').appendChild(overlapGroup);
+  const overlapToggle = document.getElementById('allow-overlap');
 
-  // create rows
+  // build 6 rows
+  const MAX_OBJS = 6;
   for (let i = 0; i < MAX_OBJS; i++) {
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td>${i+1}</td>
-      <td><input type="number" step="any" min="0" placeholder="wt" /></td>
-      <td><input type="number" step="any" min="0" placeholder="wd" /></td>
+      <td><input type="number" step="any" min="0" placeholder="wt"></td>
+      <td><input type="number" step="any" min="0" placeholder="wd"></td>
     `;
     tbody.appendChild(tr);
   }
+  const rows = Array.from(tbody.querySelectorAll('tr'));
 
-  // re‑calc on any input change
-  Array.from(document.querySelectorAll(
-    '#objects-table input, #first-pos, #length-unit, #weight-unit, #container-size'
-  )).forEach(el => el.addEventListener('input', calculate));
+  // attach all inputs to recalc
+  const watchers = [
+    '#objects-table input',
+    '#first-pos',
+    '#length-unit',
+    '#weight-unit',
+    '#container-size',
+    '#allow-overlap'
+  ].flatMap(sel => Array.from(document.querySelectorAll(sel)));
+  watchers.forEach(el => el.addEventListener('input', calculate));
 
-  // initial
+  // initial run
   calculate();
 
   function calculate() {
-    // read settings
-    const L   = parseFloat(containerSizeSelect.value) || 0;        // 20 or 40
-    const uL  = lengthUnitSelect.value;                            // 'ft' or 'm'
-    const uW  = weightUnitSelect.value;                            // 'ton','lb','kg'
+    const L        = parseFloat(containerSizeSelect.value) || 0;  // 20 or 40
+    const uL       = lengthUnitSelect.value;                     // 'ft' or 'm'
+    const uW       = weightUnitSelect.value;                     // 'ton','lb','kg'
     const rawFirst = parseFloat(firstPosInput.value);
-    const margin = (uL === 'ft')
-      ? 8/12       // 8 inches → 0.667 ft
-      : 8*0.0254;  // 8 inches → 0.2032 m
+    const allowOv  = overlapToggle.checked;
+    const margin   = (uL === 'ft') ? (8/12) : (8*0.0254);
 
+    // enable/disable rows beyond #2 when overlap is on
+    rows.forEach((tr, i) => {
+      const inputs = tr.querySelectorAll('input');
+      if (allowOv && i >= 2) {
+        inputs.forEach(inp => inp.disabled = true);
+      } else {
+        inputs.forEach(inp => inp.disabled = false);
+      }
+    });
+
+    // update container display
     containerLengthDisp.textContent = L.toFixed(0);
     lenUnitLabel.textContent        = uL;
 
-    // gather items with weight > 0
-    const rows = Array.from(tbody.querySelectorAll('tr'));
+    // gather only enabled rows with weight > 0
     const items = rows.map(tr => {
       const [wIn, wdIn] = tr.querySelectorAll('input');
       return {
-        weight: parseFloat(wIn.value)  || 0,
-        width:  parseFloat(wdIn.value) || 0
+        weight: wIn.disabled ? 0 : parseFloat(wIn.value)  || 0,
+        width:  wdIn.disabled ? 0 : parseFloat(wdIn.value) || 0
       };
     }).filter(it => it.weight > 0);
 
@@ -63,47 +88,54 @@ document.addEventListener('DOMContentLoaded', () => {
     const Wtot = items.reduce((s,i)=>s+i.weight,0);
     totalWeightEl.textContent = Wtot.toFixed(2) + ' ' + uW;
 
-    // warning if sum widths > L
+    // widths warning
     const sumW = items.reduce((s,i)=>s+i.width,0);
     warningEl.textContent = sumW > L
       ? '⚠️ Total widths exceed container length!'
       : '';
 
-    // if no items, clear and exit
+    // clear list if no items
     positionsList.innerHTML = '';
     if (items.length === 0) return;
 
-    // clamp first CG into valid range
-    const w0 = items[0].width;
-    const minFirst = margin + w0/2;
-    const maxFirst = L - margin - w0/2;
-    let x0 = (!isNaN(rawFirst))
-      ? Math.min(maxFirst, Math.max(minFirst, rawFirst))
-      : minFirst;
-    // warn if they tried to go out of bounds
-    if (!isNaN(rawFirst) && (rawFirst < minFirst || rawFirst > maxFirst)) {
-      warningEl.textContent = `⚠️ Obj 1 CG must be between ${minFirst.toFixed(2)} and ${maxFirst.toFixed(2)} ${uL}`;
+    // first CG clamp
+    const w0   = items[0].width;
+    const minF = margin + w0/2;
+    const maxF = L - margin - w0/2;
+    let x0 = !isNaN(rawFirst)
+      ? Math.min(maxF, Math.max(minF, rawFirst))
+      : minF;
+    if (!isNaN(rawFirst) && (rawFirst < minF || rawFirst > maxF)) {
+      warningEl.textContent = `⚠️ Obj 1 CG must be between ${minF.toFixed(2)} and ${maxF.toFixed(2)} ${uL}`;
     }
 
     const xs = [x0];
 
-    // target moment = (L/2)*sum(weights up to i)
-    // iterative: xN = ( (L/2)*sumW_N ‑ sum(wk*xk, k< N) ) / wN
+    // position subsequent items
     for (let i = 1; i < items.length; i++) {
-      const wN    = items[i].weight;
-      const sumWn = items.slice(0, i+1).reduce((s,it)=>s+it.weight, 0);
-      const momN  = (L/2) * sumWn;
-      const prevM = items.slice(0, i).reduce((s,it,j)=>s + it.weight*xs[j], 0);
-      const xi    = (momN - prevM) / wN;
-      // enforce no‑go/margin for every object
+      const wN       = items[i].weight;
+      const sumWn    = items.slice(0, i+1).reduce((s,it)=>s+it.weight, 0);
+      const targetM  = (L/2)*sumWn;
+      const prevM    = items.slice(0, i)
+                        .reduce((s,it,j)=>s + it.weight*xs[j], 0);
+      let xi = (targetM - prevM)/wN;
+
+      // clamp to ends
       const halfW = items[i].width/2;
       const minXi = margin + halfW;
       const maxXi = L - margin - halfW;
-      xs[i] = Math.min(maxXi, Math.max(minXi, xi));
+      xi = Math.min(maxXi, Math.max(minXi, xi));
+
+      // enforce no-overlap for all AFTER item 2
+      if (!allowOv || i >= 2) {
+        const prevEdge = xs[i-1] + (items[i-1].width/2) + halfW;
+        xi = Math.max(xi, prevEdge);
+      }
+
+      xs[i] = xi;
     }
 
-    // render positions
-    positionsList.innerHTML = '';
+    // render
     xs.forEach((x,i) => {
       const li = document.createElement('li');
       li.textContent = `Object ${i+1}: ${x.toFixed(2)} ${uL}`;
